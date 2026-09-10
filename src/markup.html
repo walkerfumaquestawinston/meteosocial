@@ -1,0 +1,146 @@
+<div class="app" id="app">
+  <header class="top">
+    <div class="logo"><span class="mark" aria-hidden="true"></span><span>MeteoSocial</span></div>
+    <div class="search">
+      <span class="ico" aria-hidden="true">🔍</span>
+      <input id="q" type="search" autocomplete="off" data-ph="search_ph" placeholder="Cerca una città nel mondo…" aria-label="Cerca città">
+      <div class="drop hidden" id="drop" role="listbox"></div>
+    </div>
+    <div class="tools">
+      <span class="online" id="online" title="Persone online ora"><i></i><span class="num" id="onlineN">1</span></span>
+      <button class="ib" id="langBtn" title="Language / Lingua">IT</button>
+      <button class="ib" id="themeBtn" title="Tema chiaro/scuro">◐</button>
+      <button class="ib primary" id="shareBtn"><span aria-hidden="true">↗</span><span data-i18n="share">Condividi</span></button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- GLOBE -->
+    <section class="view full active" id="v-globe">
+      <div class="stage" id="globeStage"><canvas id="globeCanvas"></canvas></div>
+      <div class="overlay">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="chip on" id="rotBtn" data-i18n="autorotate">Rotazione automatica</button>
+          <span class="chip" id="wxStamp"></span>
+        </div>
+        <div class="legend"><span data-i18n="cold">Freddo</span><span class="bar"></span><span data-i18n="hot">Caldo</span></div>
+      </div>
+      <div class="tip" id="globeTip"></div>
+      <div class="card-float" id="globeCard"></div>
+      <div class="mapctl"><button class="ib" id="gZoomIn" aria-label="Zoom +">+</button><button class="ib" id="gZoomOut" aria-label="Zoom −">−</button><button class="ib" id="gHome" aria-label="Vai a casa" title="La tua città">⌂</button></div>
+    </section>
+
+    <!-- MAP -->
+    <section class="view full" id="v-map">
+      <div class="stage" id="mapStage"><canvas id="mapCanvas"></canvas></div>
+      <div class="overlay">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="chip on" data-layer="temp" data-i18n="layer_temp">Temperature</button>
+          <button class="chip" data-layer="rain" data-i18n="layer_rain">Pioggia</button>
+          <button class="chip" data-layer="posts" data-i18n="layer_posts">Segnalazioni</button>
+        </div>
+        <span class="chip" id="mapHint" data-i18n="map_hint">Trascina per muoverti · rotella per zoom</span>
+      </div>
+      <div class="tip" id="mapTip"></div>
+      <div class="card-float" id="mapCard"></div>
+      <div class="mapctl"><button class="ib" id="mZoomIn" aria-label="Zoom +">+</button><button class="ib" id="mZoomOut" aria-label="Zoom −">−</button><button class="ib" id="mLocate" aria-label="La mia posizione" title="La mia posizione">◎</button></div>
+    </section>
+
+    <!-- WEATHER -->
+    <section class="view" id="v-weather"><div class="wrap" id="weatherWrap"></div></section>
+
+    <!-- COMMUNITY -->
+    <section class="view" id="v-community"><div class="wrap" style="max-width:720px">
+      <div class="stories" id="stories"></div>
+      <div class="prompt" id="dailyPrompt"><div><span data-i18n="daily_h">#CieloDiOggi</span><small data-i18n="daily_p">Com'è il cielo da te adesso? Raccontalo in una frase.</small></div><span>→</span></div>
+      <div class="feedhead">
+        <div class="modeSeg" id="feedMode"><button data-m="reels" class="on" data-i18n="m_reels">Per te</button><button data-m="list" data-i18n="m_list">Lista</button></div>
+        <div class="filters" id="feedFilters">
+          <button class="chip on" data-f="all" data-i18n="f_all">Tutte</button>
+          <button class="chip" data-f="near" data-i18n="f_near">Vicino a me</button>
+          <button class="chip" data-f="alert" data-i18n="f_alert">Allerte</button>
+          <button class="chip" data-f="photo" data-i18n="f_top">Più utili</button>
+        </div>
+      </div>
+      <div class="note" id="postNote" style="margin-bottom:8px"></div>
+      <div id="feed" class="reels"></div>
+    </div></section>
+
+    <!-- AI -->
+    <section class="view" id="v-ai"><div class="chat">
+      <div class="aihead"><div class="av">✦</div><div><h2 data-i18n="ai_title">Assistente meteo</h2><p data-i18n="ai_sub">Chiedi qualsiasi cosa sul meteo delle città seguite e su cosa dice la community.</p></div></div>
+      <div class="persona" id="persona"><button class="chip on" data-p="friend">😊 <span data-i18n="p_friend">Amico</span></button><button class="chip" data-p="snark">😏 <span data-i18n="p_snark">Sarcastico</span></button><button class="chip" data-p="pro">🎓 <span data-i18n="p_pro">Meteorologo</span></button></div><div class="log" id="chatLog"></div>
+      <div class="chips" id="chatChips"></div>
+      <form id="chatForm"><input id="chatIn" data-ph="ai_ph" placeholder="Es. Domani a Roma serve l'ombrello?" autocomplete="off"><button class="ib primary" type="submit" data-i18n="send">Invia</button></form>
+    </div></section>
+
+    <!-- PROFILE -->
+    <section class="view" id="v-profile"><div class="wrap" style="max-width:640px">
+      <h2 style="font-size:22px" data-i18n="profile_title">Il tuo profilo</h2>
+      <div class="panel" style="margin-top:12px">
+        <div style="display:flex;align-items:center;gap:12px"><div class="av" id="profAv" style="width:52px;height:52px;font-size:20px"></div><div><b id="profName"></b><div class="note" id="profStats"></div></div></div>
+        <div class="field"><label for="nick" data-i18n="nickname">Nome visibile</label><input id="nick" maxlength="24"></div>
+        <div class="field"><label for="homeCity" data-i18n="home_city">La tua città</label><select id="homeCity"></select></div>
+        <div class="field"><label data-i18n="units">Unità</label><div class="seg" id="unitSeg"><button data-u="C" class="on">°C</button><button data-u="F">°F</button></div></div>
+        <div class="field"><label data-i18n="language">Lingua</label><div class="seg" id="langSeg"><button data-l="it" class="on">Italiano</button><button data-l="en">English</button></div></div>
+        <div class="field"><label data-i18n="theme">Tema</label><div class="seg" id="themeSeg"><button data-th="auto" class="on" data-i18n="th_auto">Automatico</button><button data-th="dark" data-i18n="th_dark">Scuro</button><button data-th="light" data-i18n="th_light">Chiaro</button></div></div>
+        <div class="field"><label data-i18n="share_title">Invita amici</label>
+          <div class="share-box"><input id="shareUrl" readonly><button class="ib primary" id="copyBtn" data-i18n="copy">Copia link</button></div>
+          <div class="note" data-i18n="share_note">Chi apre il link vede il globo, le previsioni e la community.</div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <h3 data-i18n="about">Come funziona</h3>
+        <p class="note" style="font-size:13px" data-i18n="about_text">MeteoSocial unisce previsioni reali (fonte Open-Meteo) a una community che racconta il meteo in tempo reale. Le segnalazioni sono osservazioni delle persone: usa sempre le fonti ufficiali per decisioni di sicurezza.</p>
+      </div>
+    </div></section>
+  </main>
+
+  <nav class="nav" id="nav">
+    <button data-v="globe" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span data-i18n="n_globe">Globo</span></button>
+    <button data-v="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-i18n="n_map">Mappa</span></button>
+    <button data-v="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="4"/><path d="M9 2v1.5M9 14.5V16M2 9h1.5M14.5 9H16M4 4l1 1M13 13l1 1M4 14l1-1M13 5l1-1"/><path d="M14 20h5a3 3 0 0 0 .5-6A5 5 0 0 0 10 15.5"/></svg><span data-i18n="n_weather">Meteo</span></button>
+    <button data-v="community"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span data-i18n="n_community">Community</span><span class="badge hidden" id="feedBadge"></span></button>
+    <button data-v="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg><span data-i18n="n_ai">IA</span></button>
+    <button data-v="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span data-i18n="n_profile">Profilo</span></button>
+  </nav>
+</div>
+<button class="fab hidden" id="fab" aria-label="Segnala il meteo">+</button>
+<div class="sheet" id="composer">
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 data-i18n="comp_h">Com'è il cielo da te?</h3><button class="ib" data-close>✕</button></div>
+    <div class="moods" id="moods">
+      <button data-t="obs" data-e="☀️" class="on">☀️</button><button data-t="obs" data-e="⛅">⛅</button><button data-t="rain" data-e="🌧️">🌧️</button><button data-t="storm" data-e="⛈️">⛈️</button><button data-t="snow" data-e="❄️">❄️</button><button data-t="obs" data-e="🌫️">🌫️</button><button data-t="obs" data-e="💨">💨</button><button data-t="heat" data-e="🔥">🔥</button><button data-t="obs" data-e="🥶">🥶</button><button data-t="alert" data-e="🚨">🚨</button>
+    </div>
+    <textarea id="postText" maxlength="280" data-ph="post_ph" placeholder="Es. Qui a San Benedetto c'è un cielo pazzesco 🌅"></textarea>
+    <div class="row">
+      <select id="postCity" aria-label="Città"></select>
+      <button class="ib" id="aiWrite">✨ <span data-i18n="ai_write">Scrivilo con l'IA</span></button>
+      <button class="ib primary" id="postBtn" style="margin-left:auto;height:42px;padding:0 18px" data-i18n="publish">Pubblica</button>
+    </div>
+    <div class="note" id="compNote"></div>
+  </div>
+</div>
+<div class="sheet" id="storyView" style="background:rgba(0,0,0,.85)"><div class="box" id="storyBox" style="padding:0;background:transparent;box-shadow:none;max-width:420px;max-height:92vh"></div></div>
+<div class="modal" id="cardModal"><div class="box"><h3 style="font-size:16px;margin-bottom:10px" data-i18n="card_h">La tua card da condividere</h3><canvas id="cardCanvas" width="540" height="960"></canvas><div class="acts"><button class="ib primary" id="cardSave">💾 <span data-i18n="card_save">Salva immagine</span></button><button class="ib" id="cardShare">↗ <span data-i18n="share">Condividi</span></button><button class="ib" data-close data-i18n="close">Chiudi</button></div><div class="note" data-i18n="card_note">Su telefono: tieni premuto sull'immagine per salvarla nelle foto.</div></div></div>
+<div class="toast" id="toast"></div>
+<div class="intro" id="intro">
+  <div class="box">
+    <div class="logo" style="font-size:22px"><span class="mark"></span>MeteoSocial</div>
+    <h1 style="margin-top:12px" data-i18n="intro_h">Il meteo del mondo, raccontato da chi lo vive.</h1>
+    <p data-i18n="intro_p">Previsioni reali, un globo 3D, una mappa e una community dove segnalare pioggia, temporali e caldo nella tua zona.</p>
+    <div class="feat">
+      <div><span>🌍</span><span data-i18n="fe1">Globo 3D interattivo</span></div>
+      <div><span>🗺️</span><span data-i18n="fe2">Mappa con temperature</span></div>
+      <div><span>💬</span><span data-i18n="fe3">Segnalazioni dal vivo</span></div>
+      <div><span>✦</span><span data-i18n="fe4">Assistente IA</span></div>
+    </div>
+    <div class="field"><label for="introNick" data-i18n="nickname">Nome visibile</label><input id="introNick" maxlength="24" data-ph="nick_ph" placeholder="Es. Luca"></div>
+    <div class="field"><label for="introCity" data-i18n="home_city">La tua città</label><select id="introCity"></select></div>
+    <div style="display:flex;gap:8px;margin-top:16px;align-items:center;flex-wrap:wrap">
+      <button class="ib primary" id="introGo" style="height:44px;padding:0 20px;font-size:15px" data-i18n="start">Entra</button>
+      <div class="seg" id="introLang"><button data-l="it" class="on">IT</button><button data-l="en">EN</button></div>
+    </div>
+  </div>
+</div>
+<script type="application/json" id="state">{"posts":[]}</script>
