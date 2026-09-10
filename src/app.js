@@ -303,7 +303,7 @@ function cityCard(i, el) {
   window.__mapResize = resize; new ResizeObserver(resize).observe(stage);
   function draw() {
     if (!W) return; const dark = isDark(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = dark ? '#0B2540' : '#BFDDF5'; ctx.fillRect(0, 0, W, H);
+    const satOn = !!(window.__mapSat && window.__mapSat(ctx, W, H, S(), cx, cy)); if (!satOn) { ctx.fillStyle = dark ? '#0B2540' : '#BFDDF5'; ctx.fillRect(0, 0, W, H); }
     // land
     ctx.fillStyle = dark ? '#1E3A5C' : '#E8EEDF'; ctx.strokeStyle = dark ? '#4F7DAA' : '#8FAE85'; ctx.lineWidth = 1;
     const s = S(); const offX = -cx * s + W / 2, offY = -cy * s + H / 2;
@@ -311,7 +311,7 @@ function cityCard(i, el) {
       const ox = offX + wrap * s; if (ox > W || ox + s < 0) continue;
       ctx.beginPath();
       for (const poly of LAND) { poly.forEach(([lon, lat], k) => { const [u, v] = merc(lat, lon); const x = u * s + ox, y = v * s + offY; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); }
-      ctx.fill(); ctx.stroke();
+      if (!satOn) ctx.fill(); ctx.stroke();
     }
     // graticule
     ctx.strokeStyle = dark ? 'rgba(255,255,255,.07)' : 'rgba(0,40,80,.09)'; ctx.lineWidth = 1; ctx.beginPath();
@@ -328,6 +328,7 @@ function cityCard(i, el) {
       else { ctx.fillStyle = tempColor(c.t); ctx.strokeStyle = dark ? '#0B1526' : '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 7, 0, 7); ctx.fill(); ctx.stroke(); if ((zoom > 1.2 && free(x, y - 11)) || i === selected) { ctx.fillStyle = dark ? '#EAF1FB' : '#0F1B2E'; ctx.fillText(T(c.t) + '°', x, y - 11); } }
       if (i === selected) { ctx.strokeStyle = dark ? '#fff' : '#0F1B2E'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.stroke(); ctx.fillStyle = dark ? '#EAF1FB' : '#0F1B2E'; ctx.font = '700 13px Sora, sans-serif'; ctx.fillText(c.n, x, y + 26); ctx.font = '600 12px Manrope, sans-serif'; }
     });
+    if (window.__mapOverlay) window.__mapOverlay(ctx, toScreen, W, H);
   }
   window.__mapDraw = draw;
   function hit(e) { const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top; let best = null, bd = 18; WX.forEach((c, i) => { const [x, y] = toScreen(c.lat, c.lon); const d = Math.hypot(x - mx, y - my); if (d < bd) { bd = d; best = i; } }); return best; }
@@ -348,6 +349,7 @@ function cityCard(i, el) {
   $('#mLocate').onclick = () => { if (!navigator.geolocation) return toast(t('locate_err')); navigator.geolocation.getCurrentPosition(p => { const i = nearest(p.coords.latitude, p.coords.longitude); selectCity(i); cityCard(i, $('#mapCard')); toast(t('my_pos') + ': ' + WX[i].n); }, () => toast(t('locate_err')), { timeout: 8000 }); };
   $$('#v-map [data-layer]').forEach(b => b.onclick = () => { layer = b.dataset.layer; $$('#v-map [data-layer]').forEach(x => x.classList.toggle('on', x === b)); draw(); });
   window.__mapFocus = i => { const c = WX[i]; const [u, v] = merc(c.lat, c.lon); cx = u; cy = v; if (zoom < 2.5) zoom = 2.5; draw(); };
+  window.__map = { state: () => ({ zoom, cx, cy, W, H, layer }), toScreen, merc, S };
   window.__mapFocus(prefs.home); zoom = 1.6;
 })();
 
