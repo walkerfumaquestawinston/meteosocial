@@ -273,7 +273,7 @@ function cityCard(i, el) {
   let focusTarget = null;
   window.__globeFocus = i => { const c = WX[i]; focusTarget = { y: Math.PI / 2 - (c.lon + 180) * Math.PI / 180, x: c.lat * Math.PI / 180 * 0.9 }; auto = false; $('#rotBtn').classList.remove('on'); };
   window.__globeRetheme = () => { drawTexture(); stars.material.opacity = isDark() ? 0.7 : 0.15; glow.material.uniforms.col.value.set(isDark() ? 0x38bdf8 : 0x7dd3fc); };
-  window.__globe = { scene, group, earth, sun, markers, R, THREE };
+  window.__globe = { scene, group, earth, sun, markers, R, THREE, camera, renderer, setZoom: z => { targetZ = Math.max(1.5, Math.min(6, z)); }, getZoom: () => camera.position.z, jump: z => { camera.position.z = z; } };
   drawTexture();
   // initial orientation to home city
   window.__globeFocus(prefs.home); auto = true; $('#rotBtn').classList.add('on');
@@ -349,7 +349,7 @@ function cityCard(i, el) {
   $('#mLocate').onclick = () => { if (!navigator.geolocation) return toast(t('locate_err')); navigator.geolocation.getCurrentPosition(p => { const i = nearest(p.coords.latitude, p.coords.longitude); selectCity(i); cityCard(i, $('#mapCard')); toast(t('my_pos') + ': ' + WX[i].n); }, () => toast(t('locate_err')), { timeout: 8000 }); };
   $$('#v-map [data-layer]').forEach(b => b.onclick = () => { layer = b.dataset.layer; $$('#v-map [data-layer]').forEach(x => x.classList.toggle('on', x === b)); draw(); });
   window.__mapFocus = i => { const c = WX[i]; const [u, v] = merc(c.lat, c.lon); cx = u; cy = v; if (zoom < 2.5) zoom = 2.5; draw(); };
-  window.__map = { state: () => ({ zoom, cx, cy, W, H, layer }), toScreen, merc, S };
+  window.__map = { state: () => ({ zoom, cx, cy, W, H, layer }), toScreen, merc, S, setLayer: l => { layer = l; draw(); } };
   window.__mapFocus(prefs.home); zoom = 1.6;
 })();
 
