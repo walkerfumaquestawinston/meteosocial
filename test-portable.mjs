@@ -6,19 +6,22 @@ import { fileURLToPath } from 'node:url';
 import { createLocalEnvironment, startLocalPreview } from './tools/local-preview.mjs';
 
 const root=fileURLToPath(new URL('./',import.meta.url));
+// Il numero atteso viene dal giornale Drizzle, non da una costante: ogni nuova
+// migrazione additiva deve risultare applicata, senza aggiornare il test a mano.
+const expectedMigrations=JSON.parse(fs.readFileSync(path.join(root,'drizzle/meta/_journal.json'),'utf8')).entries.length;
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'meteosocial-portable-test-'));
 let preview,local,checks=0;
 const check=(value,expected)=>{assert.deepEqual(value,expected);checks++};
 try {
   const dataDir=path.join(temp,'preview');
   local=createLocalEnvironment(root,dataDir);
-  check((await local.env.DB.prepare('SELECT COUNT(*) AS n FROM _local_migrations').bind().first()).n,9);
+  check((await local.env.DB.prepare('SELECT COUNT(*) AS n FROM _local_migrations').bind().first()).n,expectedMigrations);
   await local.env.BUCKET.put('../sample',new TextEncoder().encode('local sample'),{httpMetadata:{contentType:'text/plain'}});
   check((await local.env.BUCKET.get('../sample')).httpMetadata.contentType,'text/plain');
   local.close();local=null;
   local=createLocalEnvironment(root,dataDir);
   check(new TextDecoder().decode(await(await local.env.BUCKET.get('../sample')).arrayBuffer()),'local sample');
-  check((await local.env.DB.prepare('SELECT COUNT(*) AS n FROM _local_migrations').bind().first()).n,9);
+  check((await local.env.DB.prepare('SELECT COUNT(*) AS n FROM _local_migrations').bind().first()).n,expectedMigrations);
   await local.env.BUCKET.delete('../sample');check(await local.env.BUCKET.get('../sample'),null);
   local.close();local=null;
 
