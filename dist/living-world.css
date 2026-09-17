@@ -1,0 +1,76 @@
+.living-world{max-width:1100px;margin:auto;padding:20px 24px 100px;color:#f2f7fc;background:transparent;border-radius:0}
+.living-world h1{font-size:var(--t-title);line-height:1.3;margin:0 0 8px;color:#f2f7fc}
+.living-count{margin:0 0 20px;min-height:44px;font-size:var(--t-body);color:#c4d4e5;line-height:1.5}
+.living-layers{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.living-layers button{flex:1;max-width:180px;min-width:0;min-height:48px;padding:12px 8px;background:#102033;border:1px solid #57718c;color:#eaf4ff;border-radius:var(--r-full);font-size:var(--t-body);font-weight:var(--w-medium);white-space:nowrap}
+.living-layers [aria-pressed=true]{background:#ffd4ae;color:#271a10;border-color:#ffd4ae;font-weight:var(--w-bold)}
+.living-layers [data-living-layer=weather][aria-pressed=true],.living-layers [data-living-layer=satellite][aria-pressed=true]{background:#b9e6ff;color:#102239;border-color:#b9e6ff}
+.living-stage{position:relative;min-height:55svh;isolation:isolate;overflow:hidden;background:transparent;border-radius:0}
+.living-canvas{width:100%;height:max(420px,55svh)}
+.living-canvas canvas{display:block;touch-action:none;outline-offset:-4px}
+.living-loading{display:grid;place-content:center;justify-items:center;height:100%;color:#d8eafa}
+.living-loading p{font-size:var(--t-body);color:#d8eafa}
+.living-loading-sphere{width:240px;height:240px;border-radius:var(--r-full);background:radial-gradient(circle at 35% 30%,#173c57,#081221 72%);box-shadow:0 0 24px #4fb6f54d,inset -8px -8px 28px #0008;border:1px solid #416b88}
+.living-more{position:absolute;right:12px;top:12px;z-index:5;margin:0}
+.living-more>summary{display:flex;align-items:center;justify-content:center;min-width:80px;min-height:44px;cursor:pointer;border:1px solid #63839f;border-radius:var(--r-full);background:#102239e8;color:#f2f7fc;padding:8px 16px;list-style:none;font-size:var(--t-small)}
+.living-more>summary::-webkit-details-marker{display:none}
+.living-more[open]{left:12px}
+.living-more[open]>summary{margin-left:auto;width:max-content}
+.living-more-content{max-height:370px;overflow:auto;margin-top:8px;padding:20px;background:#102033f5;border:1px solid #63839f;border-radius:var(--r-card);box-shadow:0 16px 40px #0008;color:#f2f7fc;backdrop-filter:blur(20px)}
+.living-more-content h2{font-size:var(--t-title);color:#f2f7fc}
+.living-more-content p,.living-more-content a{font-size:var(--t-small);color:#c4d8ea;line-height:1.5}
+.living-command-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.living-more-content button{font-size:var(--t-small);min-height:44px;color:#f2f7fc;background:#17334c;border:1px solid #7290a8;border-radius:var(--r-small)}
+.living-more-content fieldset{margin:20px 0 12px;padding:12px;border:1px solid #7290a8;border-radius:var(--r-small);display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.living-more-content legend{font-size:var(--t-small);padding:0 8px;color:#f2f7fc}
+.living-more-content label{font-size:var(--t-small);min-height:44px;display:flex;align-items:center;gap:8px;color:#f2f7fc}
+.living-more-content input{width:20px;height:20px;accent-color:#4fb6f5}
+.living-more-links{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.living-report-button{position:absolute;bottom:16px;right:16px;display:flex;align-items:center;gap:8px;min-height:56px;padding:8px 20px 8px 12px;border:0;border-radius:var(--r-full);background:#ffb777;color:#26180d;box-shadow:0 8px 32px #0006;font-size:var(--t-body);font-weight:var(--w-bold);z-index:4}
+.living-report-button>span:first-child{display:grid;place-items:center;width:40px;height:40px;font-size:var(--t-head)}
+.living-caption{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid #314960;font-size:var(--t-small);color:#c4d4e5}
+.living-caption button{font-size:var(--t-small);color:#ffceaa;background:transparent;border:0;text-decoration:underline;min-height:44px}
+.living-invitation{padding:24px 0;color:#f2f7fc;text-align:center}
+.living-invitation h2{font-size:var(--t-title);color:#f2f7fc;max-width:560px;margin:8px auto}
+.living-invitation p{font-size:var(--t-body);color:#c4d4e5}
+.living-world .living-primary{background:#ffb777;color:#26180d;border:0;font-size:var(--t-body);border-radius:var(--r-full);min-height:48px}
+.living-error{color:#ffb7ab}
+#living-google{position:absolute;inset:0;background:#0b1626;z-index:2}
+#living-google iframe{width:100%;height:100%;border:0}
+#living-google>p{position:absolute;top:60px;left:24px;right:24px;color:#f2f7fc}
+.living-stage:fullscreen{height:100vh;width:100vw;border-radius:0}
+.living-stage:fullscreen .living-canvas{height:100vh}
+@media(max-width:600px){.living-world{padding:16px 0 100px;border-radius:0}.living-stage{margin-inline:-12px;width:calc(100% + 24px)}.living-world h1,.living-count{padding-inline:8px}.living-count{font-size:var(--t-small)}.living-layers{gap:8px}.living-layers button{font-size:var(--t-small);padding:12px 8px}.living-stage{min-height:55svh}.living-canvas{height:max(420px,55svh);min-height:55svh}.living-report-button{bottom:12px;right:12px;font-size:var(--t-small);padding-right:16px}.living-caption{padding:12px 8px}.living-more-content{max-height:320px;padding:16px}}
+@media(prefers-reduced-motion:reduce){.living-world *{animation:none!important;transition:none!important}}
+/* Community views share the same short-lived observations as the globe. */
+.sky-community{color:#f2f7fc;background:rgba(9,20,36,.9);border-radius:var(--r-card);padding:24px;max-width:900px;margin:auto}
+.sky-community h1,.sky-community h2,.sky-community p{color:inherit}.sky-community a{color:#bde5ff}
+.sky-primary{background:#ff9a4d!important;color:#26190e!important;border:0!important;font-weight:var(--w-bold);min-height:52px;padding:12px 20px;border-radius:var(--r-full)}
+.sky-community details{margin-top:32px}.sky-community details a{display:flex;margin-block:8px}
+.sky-report-list{display:grid;gap:16px;margin-top:24px}.sky-report-row{padding:16px 0;border-bottom:1px solid #536a80}.sky-report-row button{display:flex;align-items:center;gap:16px;width:100%;text-align:left;background:transparent;color:#f2f7fc;border:0}.sky-report-row button>span:last-child{display:grid;gap:8px}.sky-report-row img,.sky-zone-photo{width:100%;max-height:360px;object-fit:cover;border-radius:var(--r-card);margin-top:16px}
+.sky-dot{display:block;width:12px;height:12px;border-radius:var(--r-full);background:#ff9a4d;box-shadow:0 0 20px currentColor}.sky-rain{background:#69caff}.sky-hail{background:#bc8bff}.sky-snow{background:#fff}.sky-sun{background:#ffdd68}
+body dialog.sky-sheet{position:fixed;inset:auto 0 0;max-width:640px;width:100%;max-height:90dvh;margin:0 auto;padding:24px;color:#f2f7fc;background:#0d1d30;border-radius:var(--r-card) var(--r-card) 0 0;border:1px solid #5d7790;overflow-y:auto}
+body dialog.sky-sheet :is(h2,h3,p,label,summary){color:inherit}body dialog.sky-sheet h2{font-size:var(--t-title)}body dialog.sky-sheet p{font-size:var(--t-body);line-height:1.6}body dialog.sky-sheet a{color:#bde5ff;min-height:44px;display:inline-flex;align-items:center}
+body dialog.sky-sheet button{min-height:44px;background:#183049;color:#f2f7fc;border:1px solid #718aa1;border-radius:var(--r-small);padding:12px;font-size:var(--t-body)}body dialog.sky-sheet select{width:100%;color:#16202b;background:#f2f7fc;min-height:48px;font-size:var(--t-body)}
+.sky-privacy{font-size:var(--t-small)!important;color:#c3d3e4!important}.sky-options{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.sky-options button{flex:1}.sky-options button[aria-pressed=true]{background:#ffb777!important;color:#26190e!important}.sky-photo-label{display:block;min-height:44px}.sky-photo-label input{display:block;max-width:100%;font-size:var(--t-small);margin-top:8px}.sky-choices{display:grid;gap:8px;margin-top:20px}.sky-choices button{display:grid;grid-template-columns:1fr 24px;text-align:left;gap:4px;padding:16px!important}.sky-choices button strong{grid-column:1}.sky-choices button span:first-of-type{grid-column:1;font-size:var(--t-small);color:#c7d7e7}.sky-choices button span:last-child{grid-column:2;grid-row:1/3;align-self:center}.sky-choices button:hover{background:#294967!important}.sky-choices button:disabled{opacity:.6}
+.sky-success{padding:24px 0;color:#f2f7fc}.sky-success h2{color:#ffb777}.sky-success button{margin:8px 8px 0 0}.sky-disagreement{padding:16px;background:#493329;border-left:4px solid #ff9a4d;color:#fff0e3!important}.sky-model-summary{border-top:1px solid #597084;padding-top:16px}.sky-model-summary .eyebrow{color:#aadfff!important}.sky-people-summary .eyebrow{color:#ffd4ae!important}.sky-fit,.sky-observation{padding:16px 0;border-top:1px solid #597084}.sky-observation button{margin:8px 8px 0 0}.sky-sheet progress{width:100%;accent-color:#ff9a4d}
+@media(max-width:600px){.sky-community{padding:20px 16px}.sky-options button{font-size:var(--t-small)!important}.sky-choices button{padding:12px 16px!important}body dialog.sky-sheet{padding:20px 16px}}
+
+/* Reports age visibly; the shared feed renderer handles expiry and reduced motion. */
+.sky-lived-card{border-color:var(--persone);color:var(--ink);padding:var(--s4) 0}
+.sky-lived-card [data-sky-zone]>span:last-child>span{font-size:var(--t-small);color:var(--ink-2)}
+.sky-lived-card img{max-height:none;aspect-ratio:4/3;border-radius:var(--r-small)}
+.sky-confirmation{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin-top:var(--s3);color:var(--persone);font-size:var(--t-small)}
+.sky-report-row .sky-confirmation button{width:auto;min-height:44px;font-size:var(--t-small);color:var(--persone);padding:var(--s2);border:1px solid var(--persone);border-radius:var(--r-small)}
+.sky-time-left{display:block;width:100%;height:var(--s1);margin-top:var(--s3);border:0;background:var(--persone-soft);color:var(--persone);accent-color:var(--persone)}
+.sky-time-left::-webkit-progress-bar{background:var(--persone-soft)}
+.sky-time-left::-webkit-progress-value{background:var(--persone)}
+.sky-time-left::-moz-progress-bar{background:var(--persone)}
+
+/* Source data use the existing tokens; the globe remains the sole interactive surface. */
+.living-canvas{position:relative}
+.living-world-tools{text-align:center;color:var(--ink-2);font-size:var(--t-small);margin-bottom:var(--s3)}
+.living-world-tools button{min-height:44px;font-size:var(--t-small)}
+#living-world-extremes{color:var(--dato);font-size:var(--t-small);margin-block:var(--s4)}
+#living-world-extremes .actions{display:flex;flex-wrap:wrap;gap:var(--s2)}
+#living-highlight{color:var(--ink);font-size:var(--t-body);margin-block:var(--s4)}

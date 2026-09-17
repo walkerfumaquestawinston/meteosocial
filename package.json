@@ -1,14 +1,24 @@
 {
-  "name": "meteosocial",
-  "version": "0.1.0",
+  "name": "meteoinsieme",
+  "version": "1.0.0",
   "private": true,
-  "description": "MeteoSocial single-file development kit",
-  "engines": {
-    "node": ">=22"
-  },
+  "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "check": "node scripts/check.mjs",
-    "test": "node scripts/check.mjs"
+    "build": "node build.mjs",
+    "db:generate": "drizzle-kit generate",
+    "dev": "vite --config vite.preview.config.mjs"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.44.5",
+    "leaflet": "1.9.4",
+    "maplibre-gl": "5.6.2",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "axe-core": "4.13.0",
+    "drizzle-kit": "0.31.4",
+    "esbuild": "^0.28.2",
+    "vite": "8.3.0"
   }
 }

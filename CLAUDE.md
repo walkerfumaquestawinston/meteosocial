@@ -1,30 +1,47 @@
 # MeteoSocial — istruzioni per Claude
 
-Leggi prima README.md e AI_BRIEF.md. Questo repository contiene un prototipo web vanilla HTML/CSS/JavaScript, single-file per Claude Artifacts. Non è ancora un'app nativa o un servizio social con backend.
+Leggi prima AGENTS.md, PROJECT_STATUS.md, RIPRENDI-QUI.md e PROJECT_VISION.md. In ciascuno i paragrafi più recenti prevalgono sulla cronologia. Le istruzioni esplicite di Walker prevalgono su questi documenti.
 
 ## Punto di partenza
-- Modifica i sorgenti in src/; genera index.html con `npm run build` e includilo nel commit quando cambia.
-- Node.js 22 o successivo; nessuna dipendenza npm da installare. `npm run check` (anche `npm test`) verifica sintassi e coerenza.
-- src/document-start.html contiene doctype, lingua e meta; styles-and-head.html il titolo e i CSS; markup.html include viste e stato iniziale.
-- Ordine effettivo: textures, data, app, app-social-3d-ai, app-v3, app-v4, app-v5, app-v6. Sono script classici con globali e override progressivi: v3–v6 NON sono copie obsolete.
-- src/data-extra.js dichiara WX2 ma non è incluso nell'app. Non inserirlo senza progettare integrazione, deduplicazione e test degli indici città.
-- index.html deve restare utilizzabile come singolo file. Mantieni three.js r128 e lo stile esistente; non migrare framework senza richiesta.
 
-## Vincoli
-- Conserva le sei viste, show(v), i token chiaro/scuro, IT/EN e lo stato JSON con id="state".
-- Ogni nuovo testo UI deve avere una chiave in I18N.it e I18N.en e usare t().
-- Mantieni le capability window.claude.use opzionali (artifact, sample, room, downloads). Il browser ordinario può non fornirle.
-- Non confondere snapshot WX/WX_TIME con meteo aggiornato in tempo reale; radar stimato e segnalazioni community non sono allerte ufficiali.
-- Il profilo locale non equivale ad autenticazione e i video locali non equivalgono a storage condiviso.
-- Non inserire chiavi API o credenziali nel frontend, nei prompt o nei commit. Un futuro collegamento API richiede un endpoint server.
-- Evita riscritture massive dei dataset/base64: leggi solo ciò che serve e preserva provenienza e struttura.
+Ultima pubblicazione verificata: versione 64, fase 24.2 completata (Chi ci lavora). La 24.1 è completata. Il prossimo blocco previsto è 24.6, ma implementarlo solo se assegnato esplicitamente. Non avviare tutte le fasi in autonomia.
 
-## Procedura per ogni modifica
-1. Controlla branch e modifiche esistenti; usa un branch dedicato per nuove funzionalità.
-2. Spiega brevemente obiettivo e file interessati, poi realizza la modifica richiesta.
-3. Esegui npm run build e npm run check.
-4. Per modifiche UI verifica manualmente le sei viste, ricerca, tema chiaro/scuro, IT/EN e dimensioni telefono/desktop. Prova assenza delle capability; verifica quelle disponibili dentro Claude.
-5. Riferisci file cambiati, controlli eseguiti e limiti. I controlli statici non sono un test browser o una prova di funzionamento del runtime Claude.
+La direzione attuale è la mappa locale MapLibre, non il globo 3D o NASA. Conserva il tema, le funzioni già operative, l’onestà dei dati e la moderazione. Nessun numero inventato. Non presentare dati di modello come misure osservate. Il verdetto B2 resta bloccato dalle fonti osservate e dalla pianificazione documentate.
 
-## Prossimi sviluppi
-Il backlog in AI_BRIEF.md è proposto, non già completato né un'autorizzazione a implementarlo tutto. Prima di estendere funzionalità verifica gli override esistenti: foto/video, traduzione e funzioni social sono già parzialmente presenti.
+## Collaborazione
+
+Il repository Sites resta il riferimento per la pubblicazione. Un eventuale repository GitHub sarà lo spazio condiviso per proporre modifiche, non un secondo sito. La sorgente Sites è stata sincronizzata nel repository pubblico walkerfumaquestawinston/meteosocial il 17 settembre 2026 per scelta del proprietario. Leggi docs/CLAUDE_HANDOFF.md per la provenienza.
+
+Prima di lavorare, verifica il commit di partenza e che comprenda l’ultima versione Sites confermata. Se non puoi verificare Sites, chiedi al coordinatore di sincronizzare il commit; non indovinare credenziali o remoti.
+
+Lavora su un ramo separato per il compito assegnato, per esempio claude/nome-compito. Non scrivere direttamente su main, non usare force push, non sovrascrivere il lavoro di Codex. Non modificare contemporaneamente gli stessi file: segnala le dipendenze nel riepilogo della proposta.
+
+Apri una pull request quando GitHub è configurato, oppure consegna un diff con il commit di base se non hai accesso. Scrivi: obiettivo, file modificati, verifiche eseguite, limiti. Il coordinatore integra, risolve eventuali conflitti, verifica e pubblica nello stesso progetto Sites. Non creare un altro sito né cambiare accessi o servizi.
+
+## Struttura e avvio
+
+Attenzione: dist/ contiene anche SORGENTI frontend. Non cancellarla come se fosse solo output.
+- dist/main.js e moduli dist/*.js: frontend; dist/design-system.css e altri CSS: stili.
+- server/*.js: sorgenti backend; dist/server/index.js: output generato.
+- build.mjs: composizione Worker e bundle; dist/app/: bundle generati.
+- db/schema.ts, drizzle/: schema e migrazioni; non riscrivere migrazioni già applicate.
+- tools/local-preview.mjs: database di prova separato dalla produzione.
+
+Usa Node 24 con node:sqlite e il lockfile pnpm esistente. Se mancano dipendenze: pnpm install --frozen-lockfile. Non sostituire il lockfile o aggiornare pacchetti senza necessità.
+
+Controllo ambiente: node tools/resume.mjs --check
+Build: node build.mjs
+Anteprima portabile: node tools/resume.mjs
+
+Esegui solo test pertinenti al cambiamento. Esempi già verificati per le ultime fasi:
+- node test-daily-question.mjs
+- node test-profession.mjs
+- node test-sky-confirm.mjs
+
+Non servono credenziali di produzione per questi test. Se una fonte esterna fallisce, dichiaralo; non usare dati inventati nella versione pubblica.
+
+## Sicurezza e pubblicazione
+
+Non copiare segreti, token, cookie, database locali, foto degli utenti o node_modules su GitHub. Le variabili di produzione restano in Sites. Non chiedere di incollare password nella chat. Il progetto pubblico resta https://scudo-meteo-community.walkerthehate.chatgpt.site.
+
+Le modifiche del codice non trasferiscono account, database di produzione, sessioni o preferenze fra dispositivi. Non promettere sincronizzazione automatica o dialogo automatico fra agenti: il coordinamento avviene tramite compiti, rami e revisioni.

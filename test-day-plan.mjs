@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {planForecast,localNow,validTime} from './dist/day-plan.js';
+const w={timezone:'Europe/Rome',hourly:{time:['2026-09-12T08:00','2026-09-12T18:00','2026-09-13T08:00','2026-09-13T18:00'],temperature_2m:[18,25,19,24],precipitation_probability:[0,null,80,10]}};
+assert.equal(validTime('24:00'),false);assert.equal(validTime('08:30'),true);
+assert.equal(localNow('Europe/Rome',new Date('2026-09-12T06:30Z')),'2026-09-12T08:30');
+let p=planForecast(w,'08:30','18:00',new Date('2026-09-12T06:15Z'));
+assert.equal(p[0].temp,18);assert.equal(p[0].rain,0);assert.equal(p[1].rain,null);
+p=planForecast(w,'08:00','18:00',new Date('2026-09-12T06:15Z'));
+assert.equal(p[0].time,'2026-09-13T08:00');assert.equal(p[0].rain,80);
+p=planForecast(w,'23:00','06:00',new Date('2026-09-12T10:00Z'));
+assert.equal(p[1].time,'2026-09-13T06:00');assert.equal(p[0].available,false);
+assert.equal(planForecast({},'08:00','18:00'),null);
+assert.equal(planForecast(w,'garbage','18:00'),null);
+assert.equal(localNow('Invalid/Zone'),null);
+assert.equal(localNow('America/New_York',new Date('2026-09-13T01:00Z')),'2026-09-12T21:00');
+assert.equal(localNow('Europe/Rome',new Date('2026-10-25T01:30Z')),'2026-10-25T02:30');
+console.log('Day plan: 15 checks passed (timezone, midnight, DST, missing data, next departure).');

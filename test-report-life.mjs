@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {reportLife,agreeingPeople} from './dist/sky-community.js';
+const now=Date.now(),own={id:'own',author:'a',kind:'rain',level:2,latitude:42.96,longitude:13.88,created:now-300000,expires:now+6900000};
+assert.equal(reportLife({expires:now+7200000},now),1);assert.equal(reportLife({expires:now+3600000},now),.5);assert.equal(reportLife({expires:now-1},now),0);
+const other={...own,id:'other',author:'b',created:now-1000};
+assert.equal(agreeingPeople(own,[other,other],now),1);
+assert.equal(agreeingPeople(own,[other,{...other,created:now,kind:'dry'}],now),0,'latest contrary observation wins');
+assert.equal(agreeingPeople(own,[{...other,expires:now},{...other,created:now+1},{...other,latitude:43.5},own],now),0);
+assert.equal(agreeingPeople({...own,phenomenon:'Pioggia',level:null},[{...other,phenomenon:'Pioggia',level:null}],now),1,'quick reports count without fake intensity');
+console.log('Report lifetime and corroboration: expiry, 50% lifetime, unique people, contrary latest report, distance, future times and quick reports passed.');

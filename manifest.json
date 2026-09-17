@@ -1,0 +1,88 @@
+{
+  "name": "MeteoSocial · Meteo e Community",
+  "short_name": "MeteoSocial",
+  "description": "Previsioni affidabili e le testimonianze delle persone che sono già là fuori. Il meteo della tua zona, raccontato da chi ci vive.",
+  "lang": "it",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#080b12",
+  "theme_color": "#080b12",
+  "categories": [
+    "weather",
+    "social",
+    "lifestyle",
+    "news"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Racconta il tuo cielo",
+      "short_name": "Racconta",
+      "description": "Segnala che tempo fa da te, in due tocchi",
+      "url": "/?action=segnala&source=shortcut",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "La mappa del cielo",
+      "short_name": "Mappa",
+      "description": "Meteo e persone nella tua zona",
+      "url": "/#mappa",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "La mia giornata",
+      "short_name": "Giornata",
+      "description": "Che tempo trovo quando esco e quando rientro",
+      "url": "/?view=giornata&source=shortcut",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

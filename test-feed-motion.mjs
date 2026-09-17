@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {createFeedFeedback} from './dist/ui-feedback.js';
+let reduce=false,hidden=false,mediaChange,visibility,animations=[];
+globalThis.matchMedia=()=>({get matches(){return reduce},addEventListener:(event,fn)=>mediaChange=fn});
+globalThis.document={get hidden(){return hidden},documentElement:{classList:{contains:()=>false}},addEventListener:(event,fn)=>visibility=fn};
+globalThis.MutationObserver=class{observe(){}};
+const animate=(frames,options)=>{let resolve;const a={frames,options,cancelled:false,finished:new Promise(r=>resolve=r),cancel(){this.cancelled=true;resolve()},finish(){resolve()}};animations.push(a);return a};
+function row(id,top,expires=Date.now()+7200000){return {dataset:{reportKey:id,expires:String(expires)},style:{},animate,getBoundingClientRect:()=>({top,left:0,width:300,height:80}),cloneNode(){return row(id,top,expires)},setAttribute(k,v){this[k]=v},removeAttribute(){delete this.dataset.reportKey},remove(){this.removed=true}}}
+let rows=[row('old',0)],html='initial',ghosts=[];
+const versions={insert:[row('new',0),row('old',100)],confirmed:[row('new',0),row('old',100)],expired:[row('old',0)],quiet:[row('other',0)]};
+const host={animate,querySelectorAll:()=>rows,getBoundingClientRect:()=>({top:0,left:0,height:rows.length*100}),append:n=>ghosts.push(n),get innerHTML(){return html},set innerHTML(value){html=value;rows=versions[value]}};
+const motion=createFeedFeedback();motion.render(host,'insert');
+assert.equal(animations.filter(a=>a.options.duration===200).length,3,'new row, moved row and container height');
+assert.equal(animations[0].frames[0].transform,'translateY(-8px)');
+assert.equal(animations[1].frames[0].transform,'translateY(-100px)');
+const count=animations.length;motion.render(host,'insert');assert.equal(animations.length,count,'same data does not replay');
+motion.render(host,'confirmed');assert.equal(animations.length,count,'same ID confirmation does not enter twice');
+rows[0].dataset.expires=String(Date.now()-1);motion.render(host,'expired');
+assert.equal(ghosts.length,1);assert.equal(ghosts[0].inert,true);assert.equal(ghosts[0]['aria-hidden'],'true');
+const fade=animations.find(a=>a.options.duration===400);assert.ok(fade);motion.render(host,'expired');assert.equal(fade.cancelled,false,'poll with unchanged content preserves fading');
+reduce=true;mediaChange();assert.equal(fade.cancelled,true);assert.equal(ghosts[0].removed,true);
+const reducedCount=animations.length;motion.render(host,'quiet');assert.equal(animations.length,reducedCount,'reduced motion applies updates instantly');
+reduce=false;hidden=true;visibility();motion.render(host,'insert');assert.equal(animations.length,reducedCount,'no hidden tab motion');
+motion.stop();console.log('Feed motion: insertion, FLIP, stable IDs, expiry, repeated polling, reduced motion and background passed.');

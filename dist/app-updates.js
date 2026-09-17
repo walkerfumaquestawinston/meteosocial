@@ -1,0 +1,8 @@
+export function installUpdates(){
+ if(!('serviceWorker' in navigator))return;
+ let reloading=false,waiting=null;
+ const offer=worker=>{if(!worker||!navigator.serviceWorker.controller)return;waiting=worker;let banner=document.getElementById('app-update');if(!banner){banner=document.createElement('div');banner.id='app-update';banner.setAttribute('role','status');banner.innerHTML='<span>Nuova versione disponibile</span><span aria-hidden="true"> · </span><button type="button">Aggiorna</button>';document.body.append(banner);banner.querySelector('button').onclick=()=>{if(!waiting)return;reloading=true;banner.querySelector('button').disabled=true;banner.querySelector('button').textContent='Aggiornamento…';if(waiting.state==='activated'){location.reload();return}waiting.postMessage({type:'SKIP_WAITING'})}}};
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading){reloading=false;location.reload()}});
+ const register=()=>navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).then(reg=>{offer(reg.waiting);const watch=()=>{const worker=reg.installing;if(!worker)return;const changed=()=>{if(worker.state==='installed')offer(reg.waiting||worker)};worker.addEventListener('statechange',changed);changed()};reg.addEventListener('updatefound',watch);watch();let last=Date.now();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-last>60000){last=Date.now();reg.update().catch(()=>{})}});reg.update().catch(()=>{})}).catch(()=>{});
+ const schedule=()=>setTimeout(register,2500);if(document.readyState==='complete')schedule();else window.addEventListener('load',schedule,{once:true});
+}

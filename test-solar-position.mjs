@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {solarDirection,daylight} from './dist/solar-position.js';
+const at=s=>solarDirection(Date.parse(s));
+const june=at('2026-06-21T12:00:00Z'),dec=at('2026-12-21T12:00:00Z');
+assert.ok(june[1]>.39&&june[1]<.41);assert.ok(dec[1]<-.39&&dec[1]>-.41);
+assert.ok(at('2026-03-20T12:00:00Z')[0]>.99);assert.ok(at('2026-03-20T00:00:00Z')[0]<-.99);
+assert.ok(at('2026-03-20T06:00:00Z')[2]<-.99);assert.ok(at('2026-03-20T18:00:00Z')[2]>.99);
+for(const t of ['2024-02-29T12:00:00Z','2026-12-31T23:59:00Z','2027-01-01T00:00:00Z'])assert.ok(Math.abs(Math.hypot(...at(t))-1)<1e-12);
+assert.equal(daylight(-1),0);assert.equal(daylight(1),1);assert.equal(daylight(0),.5);
+assert.equal(daylight(-Math.sin(Math.PI/90)),0);assert.equal(daylight(Math.sin(Math.PI/90)),1);
+console.log('Solar: solstices, equinox day/night and east/west signs, leap year, normalized vectors and four-degree terminator passed.');

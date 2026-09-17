@@ -1,0 +1,4 @@
+<!doctype html><html lang="it"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prova domanda · dati sintetici</title><link rel="stylesheet" href="/app/style.css"><body><p>PROVA LOCALE · dati sintetici</p><main id="main" style="max-width:375px;margin:auto"></main><script type="module">
+import {createDailyQuestion} from '/daily-question.js';
+let answer=null;const module=createDailyQuestion({get:()=>({place:{name:'San Benedetto del Tronto',latitude:42.95,longitude:13.88}}),api:async(path,body)=>{if(path==='sky/session')return {};if(body)answer=body.risposta;return {id:'fixture',testo:'Oggi serve la giacca?',opzioni:['Sì','No'],giaRisposto:answer!==null,miaRisposta:answer,risposte:answer?{'Sì':answer==='Sì'?1:0,'No':answer==='No'?1:0}:null,totale:answer?1:null,serverNow:Date.now(),scade:Date.now()+3600000}}});document.querySelector('#main').innerHTML=module.slot();module.bind();
+</script></body></html>

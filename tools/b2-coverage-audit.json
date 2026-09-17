@@ -1,0 +1,87 @@
+{
+  "city": "San Benedetto del Tronto",
+  "coordinates": [
+    42.95,
+    13.88
+  ],
+  "before_utc_exclusive": "2026-09-17",
+  "station_catalog_url": "https://data.meteostat.net/stations.db",
+  "hourly_url": "https://data.meteostat.net/hourly/2026/16230.csv.gz",
+  "input_sha256": {
+    "meteostat-stations-b2.db": "4222fd7ebf3612070b2fbb25189d1dc6d906fbc8407b34b1e80beb9a77781ef1",
+    "b2-pescara-hourly.csv": "7e807b40ce65991e21c516331a9be339de84f8af639f46f2cc5951848a2d9094"
+  },
+  "nearest_catalog_stations": [
+    {
+      "station": "16229",
+      "country": "IT",
+      "km": 57.5,
+      "elevation_m": 2138
+    },
+    {
+      "station": "16192",
+      "country": "IT",
+      "km": 57.9,
+      "elevation_m": 196
+    },
+    {
+      "station": "16230",
+      "country": "IT",
+      "km": 63.1,
+      "elevation_m": 10
+    },
+    {
+      "station": "16226",
+      "country": "IT",
+      "km": 78.2,
+      "elevation_m": 668
+    },
+    {
+      "station": "LIAP0",
+      "country": "IT",
+      "km": 78.7,
+      "elevation_m": 674
+    },
+    {
+      "station": "16190",
+      "country": "IT",
+      "km": 79.0,
+      "elevation_m": 141
+    },
+    {
+      "station": "16191",
+      "country": "IT",
+      "km": 85.0,
+      "elevation_m": 12
+    },
+    {
+      "station": "16219",
+      "country": "IT",
+      "km": 90.9,
+      "elevation_m": 1874
+    }
+  ],
+  "pescara_latest_by_source": {
+    "temp": {
+      "dwd_poi": "2026-09-16T14:00:00Z",
+      "metar": "2026-09-05T12:00:00Z",
+      "dwd_mosmix": "2026-09-16T23:00:00Z"
+    },
+    "prcp": {
+      "dwd_mosmix": "2026-09-16T23:00:00Z",
+      "dwd_poi": "2026-09-16T14:00:00Z"
+    }
+  },
+  "pescara_counts_by_source": {
+    "temp": {
+      "dwd_poi": 6026,
+      "metar": 16,
+      "dwd_mosmix": 174
+    },
+    "prcp": {
+      "dwd_mosmix": 1193,
+      "dwd_poi": 5023
+    }
+  },
+  "limitation": "Catalog coverage is not all existing stations. Source labels are not verification. No local accuracy score is produced."
+}

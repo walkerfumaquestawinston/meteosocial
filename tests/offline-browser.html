@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>Test locale della coda offline</title><h1>Prova offline — solo dati di test</h1><button id="run">Verifica salvataggio e reinvio</button><pre id="result" role="status">Pronto</pre><script src="/offline-store.js"></script><script>
+document.querySelector('#run').onclick=async()=>{const db=MeteoOffline,log=[],native=fetch;const check=(v,t)=>{if(!v)throw Error(t);log.push('OK '+t)};try{
+for(const r of await db.all('outbox'))await db.remove('outbox',r.id);
+await db.put('weather',{id:'test-city',data:{temperature:18}});check((await db.get('weather','test-city')).data.temperature===18,'IndexedDB salva e rilegge il meteo');
+const item={id:'test-report',owner:'test-owner',payload:{id:'test-report',observedAt:Date.now()-3600000}};await db.put('outbox',item);
+window.fetch=async()=>{throw Error('test offline')};try{await db.flush()}catch{}check((await db.all('outbox')).length===1,'La rete assente non perde la segnalazione');
+let sent;window.fetch=async(url,options)=>{sent=JSON.parse(options.body);return new Response('{}',{status:201})};await db.flush();check((await db.all('outbox')).length===0,'Il ritorno online svuota la coda');check(sent.observedAt===item.payload.observedAt&&sent.expectedActor===item.owner,'Ora e autore originali preservati');
+await db.put('outbox',{...item,id:'expired',payload:{...item.payload,observedAt:Date.now()-7200001}});let calls=0;window.fetch=async()=>{calls++;return new Response('{}')};await db.flush();check(calls===0&&(await db.all('outbox')).length===0,'Una segnalazione scaduta non viene inviata');
+await db.put('outbox',item);window.fetch=async()=>new Response(JSON.stringify({error:'Sessione cambiata'}),{status:409});await db.flush();check((await db.get('outbox',item.id)).blocked,'Il cambio di sessione richiede intervento');await db.remove('outbox',item.id);await db.remove('weather','test-city');await db.remove('meta','result');document.querySelector('#result').textContent=log.join('\n')+'\nTUTTE LE VERIFICHE SUPERATE';
+}catch(e){document.querySelector('#result').textContent=log.join('\n')+'\nERRORE: '+e.message}finally{window.fetch=native}};
+</script>

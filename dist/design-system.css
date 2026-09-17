@@ -1,0 +1,271 @@
+/* Fase 8.1: readable defaults, explicit dark surfaces, touch-sized controls. */
+html,body,html.atlas-light body{color:#16202b;background:#f6f8fb}
+body{font-size:var(--t-body)}
+body p,body small{color:inherit}
+button,.button,input:not([type=checkbox]):not([type=radio]),select,summary{min-height:44px}
+button,.button,summary,a[role=button]{min-width:44px}
+main a,aside a,.nav-bottom a{min-height:44px;display:inline-flex;align-items:center}
+main a{padding-block:8px}
+main p,main li,main label{font-size:var(--t-body)}
+main small,.small,.meta,.eyebrow,.atmo-kicker,.atmo-footer{font-size:var(--t-small)}
+body .atmo-home,body .atmo-clash{color:#16202b}
+html.atlas-light .atmo-home :is(h1,h2,h3,p,.atmo-kicker,.atmo-footer),
+.atmo-home .atmo-heading p,.atmo-home .atmo-rain p{color:inherit}
+body .atmo-home .atmo-weather,
+body .atmo-alert,body .atmo-timeline,body .atmo-city-sheet,
+body .atmo-clash-city,body .atmo-home .atmo-actions a,
+body .atmo-home .atmo-actions button{color:#f2f7fc;background-color:#102239}
+body .atmo-home .atmo-weather :is(p,h2,span),body .atmo-alert :is(p,small,h2,a),
+body .atmo-timeline :is(p,b,label,span),body .atmo-city-sheet :is(p,h2,a){color:#f2f7fc}
+body .atmo-panel,body .day-plan{background:#fff;color:#16202b;border-color:#63778b}
+body .atmo-panel :is(h2,h3,p,small,strong,span),body .day-plan :is(h2,h3,p,small,strong,span,label){color:#16202b}
+body .atmo-home .atmo-actions a:first-child{background:#b7e7ff;color:#102239}
+body .atmo-home :is(.atmo-rain,.atmo-footer,.atmo-orbit-link,.atmo-tour) a,
+body .atmo-home .atmo-footer a,body .atmo-home .atmo-orbit-link{color:#174e78}
+body .atmo-home .atmo-orbit-link small{color:#3d5167}
+body .atmo-home .atmo-alert-links a{min-height:44px;color:#d4ecff}
+body .atmo-home .atmo-weather-meta,body .atmo-alert small{font-size:var(--t-small)}
+body .atmo-heading button,body .atmo-timeline :is(button,p),body .day-plan-status{font-size:var(--t-small)}
+body .atmo-home .atmo-rain>a{min-height:44px}
+body .atmo-home .atmo-actions a,body .atmo-home .atmo-actions button{font-size:var(--t-body)}
+body .atmo-home .atmo-tour{color:#16202b}
+body .atmo-home .atmo-tour a{color:#174e78}
+body .atmo-home .atmo-panel a{color:#174e78}
+body .atmo-home .atmo-panel .button{color:#102239;background:#b7e7ff}
+body .atmo-home .day-plan-results article{color:#16202b;background:#fff}
+body .day-plan :focus-visible{outline-color:#174e78}
+html.atlas-light .atmo-home .atmo-panel a{color:#174e78!important}
+html.atlas-light .atmo-home .atmo-tour{background:#fff;color:#16202b}
+html.atlas-light .atmo-home .atmo-tour summary{color:#16202b}
+
+/* One navigation; the old destinations remain available through their routes. */
+body>header{position:relative;display:flex;justify-content:center;padding:12px 16px;min-height:68px;background:transparent;color:#16202b;border:0}
+body>header .brand,body>header .ai-entry,body>header .account{display:none}
+body>header #place{display:block!important;max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#16202b;background:#fff;border:1px solid #687c90;border-radius:var(--r-full);padding:8px 20px;font-size:var(--t-body)}
+body .shell{display:block;max-width:1120px;margin:auto;padding:0 16px 104px}
+body .shell>aside{display:none}
+body .shell>nav{position:fixed!important;inset:auto 0 0!important;width:100%!important;height:76px;display:flex!important;justify-content:center;gap:0;padding:4px 8px max(4px,env(safe-area-inset-bottom));background:#0c1929;color:#f2f7fc;border-top:1px solid #4b6178;z-index:90}
+body .shell>nav>a{display:flex!important;flex:1;max-width:180px;min-width:44px;min-height:56px;flex-direction:column;gap:4px;justify-content:center;padding:4px;color:#c6d7e8;background:transparent;font-size:var(--t-small);border-radius:var(--r-small)}
+body .shell>nav>a.active{background:#24435c;color:#fff}
+body .shell>nav>a[href="#studio"],body .shell>nav>.nav-bottom{display:none!important}
+body .shell>nav>a span{width:24px;height:24px;font-size:var(--t-title)}
+body .shell>nav>a svg{width:24px;height:24px}
+@media(max-width:600px){body .shell{padding:0 0 92px}body main{padding:12px}body>header{padding:8px;min-height:60px}}
+:root{--t-label:12px;--t-small:14px;--t-body:16px;--t-title:20px;--t-head:28px;--t-temp:64px;--w-normal:400;--w-medium:500;--w-bold:700;--r-small:8px;--r-card:16px;--r-full:999px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--dato:#4fb6f5;--dato-soft:rgba(79,182,245,.14);--persone:#ff9a4d;--persone-soft:rgba(255,154,77,.16);--allerta:#ff5a47;--ok:#3fbf8f;--ink:#f2f7fc;--ink-2:#afc2d6;--ink-3:#91a5bc;--ink-l:#0d1b2a;--ink-2-l:#122537;--ink-3-l:#14283a;--dato-l:#08283f;--sky-giorno-sereno:linear-gradient(180deg,#3fa9e8 0%,#8fd3f4 100%);--sky-giorno-nuvoloso:linear-gradient(180deg,#7d8fa3 0%,#b4c2ce 100%);--sky-pioggia:linear-gradient(180deg,#46545f 0%,#6e8089 100%);--sky-tramonto:linear-gradient(180deg,#2e3f63 0%,#e88b5a 100%);--sky-notte:linear-gradient(180deg,#070e1c 0%,#132441 100%);--sky-top:#070e1c;--sky-bottom:#132441}
+@property --sky-top{syntax:'<color>';inherits:true;initial-value:#070e1c}
+@property --sky-bottom{syntax:'<color>';inherits:true;initial-value:#132441}
+html[data-sky=giorno-sereno]{--sky-top:#3fa9e8;--sky-bottom:#8fd3f4}
+html[data-sky=giorno-nuvoloso]{--sky-top:#7d8fa3;--sky-bottom:#b4c2ce}
+html[data-sky=pioggia]{--sky-top:#46545f;--sky-bottom:#6e8089}
+html[data-sky=tramonto]{--sky-top:#2e3f63;--sky-bottom:#e88b5a}
+html[data-sky=notte]{--sky-top:#070e1c;--sky-bottom:#132441}
+html[data-sky]{transition:--sky-top 1.2s,--sky-bottom 1.2s}
+html[data-sky] body,html.atlas-light[data-sky] body{background:linear-gradient(180deg,var(--sky-top),var(--sky-bottom)) fixed;min-height:100dvh;color:var(--ink)}
+body .shell>nav{flex-direction:row!important}
+body{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:var(--w-normal)}
+body :is(h1,h2,h3),.temperature,.atmo-temperature{font-family:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;font-weight:var(--w-bold)}
+body .living-world{background:transparent;backdrop-filter:none;box-shadow:none}
+body .atmo-home{color:var(--ink);background:transparent}.sky-light body .atmo-home{color:#16202b}
+body .atmo-home .atmo-weather{background:rgba(9,20,36,.88);backdrop-filter:blur(20px);border:1px solid #628096;border-radius:var(--r-card);box-shadow:0 20px 64px #09142428}
+.sky-light body .atmo-home .atmo-weather{background:rgba(245,250,255,.95);color:#16202b}
+.sky-light body .atmo-home .atmo-weather :is(p,h2,span,strong,small),.sky-light body .atmo-home .atmo-weather-meta{color:#16202b}
+body .atmo-home .atmo-panel,body .day-plan,body .atmo-home .atmo-tour{color:inherit;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding-inline:0}
+body .atmo-home .atmo-panel :is(h2,h3,p,small,strong,span),body .day-plan :is(h2,h3,p,small,strong,span,label){color:inherit}
+body .atmo-home .day-plan-results article{background:transparent;color:inherit;border:0;border-left:2px solid currentColor;box-shadow:none;border-radius:0;padding-left:16px}
+html[data-sky] .atmo-home .atmo-panel a,html[data-sky] .atmo-home .atmo-footer a,html[data-sky] .atmo-home .atmo-tour summary,html[data-sky] .atmo-home .atmo-tour a{color:var(--ink)!important}
+html.sky-light .atmo-home .atmo-panel a,html.sky-light .atmo-home .atmo-footer a,html.sky-light .atmo-home .atmo-tour summary,html.sky-light .atmo-home .atmo-tour a{color:#16202b!important}
+body .atmo-home .atmo-tour{color:inherit}.atmo-home>section{margin-block:32px}
+body .living-more-content{background:#0d1d30;color:var(--ink)}body .living-more-content :is(h2,h3,p,label){color:inherit}body .living-more-content a{color:#c4e8ff}
+body .living-more-content .globe-condition-card{background:transparent;border:0;box-shadow:none;padding:0;color:var(--ink)}body .living-more-content .globe-condition-list button{background:#183049;color:var(--ink)}
+body .living-count,body .living-caption{color:#d3e0ed}.living-invitation .living-primary{background:transparent!important;color:#ffca9c;border:1px solid #d39c70}
+body .living-report-button{background:var(--persone);color:#26190e}.sky-model-summary .eyebrow{color:var(--dato)}
+body .atmo-home .atmo-actions a,body .atmo-home .atmo-actions button{border:1px solid #62788f;background:transparent;color:inherit;box-shadow:none}
+body .atmo-home .atmo-actions a:first-child{background:var(--dato);color:#102239;border-color:var(--dato)}
+body .atmo-home .atmo-rain{color:inherit}body .atmo-home .atmo-rain a{color:inherit}
+@media(prefers-reduced-motion:reduce){html[data-sky]{transition:none}*,*::before,*::after{scroll-behavior:auto!important}}
+
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:400 700;font-display:swap;src:url('/assets/bricolage-latin.woff2') format('woff2')}
+html.atlas-light[data-sky] .atmo-home{background:transparent;color:var(--ink)}
+html.atlas-light.sky-light .atmo-home{color:#16202b}
+html.atlas-light:not(.sky-light) .atmo-home .atmo-heading :is(p,h1){color:var(--ink)}
+html.atlas-light[data-sky] body .shell>nav{background:#0c1929!important}
+html.atlas-light[data-sky] body .shell>nav>a{color:#d3e0ed!important}
+html.atlas-light[data-sky] body .shell>nav>a.active{color:#fff!important;background:#24435c!important}
+body .living-more-content details .globe-condition-card h2{font-size:var(--t-title)}
+html.atlas-light[data-sky] body .forecast-hours article{background:transparent!important;color:inherit!important;border:0;box-shadow:none}
+html.atlas-light[data-sky] body .forecast-hours article :is(time,b,span){color:inherit!important}
+/* The dusk/rain veil keeps text over the sky readable at both gradient stops. */
+html.atlas-light[data-sky=tramonto] body,html.atlas-light[data-sky=pioggia] body{background-image:linear-gradient(#0914248c,#0914248c),linear-gradient(180deg,var(--sky-top),var(--sky-bottom))}
+html body .shell>nav{background:#0c1929!important}
+html body .shell>nav>a{color:#d3e0ed!important}
+html body .shell>nav>a.active{color:#fff!important;background:#24435c!important}
+
+[hidden]{display:none!important}
+
+/* Fase 12.5: weather first, without waiting for the globe. */
+body .living-weather-now{display:flex;align-items:center;gap:4px;height:44px;min-height:44px;margin:0 0 8px;padding:0;color:var(--dato);background:transparent;border:0;border-radius:0;font-size:var(--t-title);font-weight:var(--w-medium);line-height:1.2;text-decoration:none;white-space:nowrap}
+.living-weather-now [data-ui-number]{flex:none;font-variant-numeric:tabular-nums}
+.living-weather-condition{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.living-weather-city{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* Fase 12.1: motion acknowledges actions and data changes only. */
+html body :is(button,a,[role="button"],.card,summary){transition:transform .12s ease,opacity .12s ease,background-color .2s ease,border-color .2s ease}
+html body :is(button,a,[role="button"],summary):active{transform:scale(.97)}
+span.ui-number{display:inline-block}
+.ui-skeleton{position:relative;isolation:isolate;overflow:hidden}
+.ui-skeleton::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 20%,rgba(127,165,191,.22) 48%,transparent 76%);background-size:220% 100%;animation:ui-loading-wave 1.4s ease-in-out infinite}
+@keyframes ui-loading-wave{from{background-position:180% 0}to{background-position:-80% 0}}
+/* The placeholder uses the real weather layout; no inserted or removed spacer. */
+.atmo-weather[data-ui-loading=true] .atmo-temperature,.atmo-weather[data-ui-loading=true] .atmo-weather-meta{visibility:hidden}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html body :is(button,a,[role="button"],summary):active{transform:none}}
+html.reduced-motion *,html.reduced-motion *::before,html.reduced-motion *::after,html.eco-mode *,html.eco-mode *::before,html.eco-mode *::after{animation:none!important;transition:none!important}
+html.reduced-motion body :is(button,a,[role="button"],summary):active,html.eco-mode body :is(button,a,[role="button"],summary):active{transform:none}
+
+/* Fase 12.2: text directly on the sky is distinct from text inside light cards. */
+html[data-sky] body #main{color:var(--ink)}
+html[data-sky] #main>:is(h1,h2,h3,p,.eyebrow),
+html[data-sky] #main :is(.studio-heading,.fit-heading,.atlas-title,.network-title)>div>:is(h1,h2,p,.eyebrow),
+html[data-sky] #main :is(.studio-heading,.fit-heading,.atlas-title,.network-title)>:is(h1,h2,p,.eyebrow),
+html[data-sky] #main>.nearby-workspace>.near-heading :is(h1,h2,p,.eyebrow){color:var(--ink)}
+html.sky-light #main>:is(h1,h2,h3,p,.eyebrow),
+html.sky-light #main :is(.studio-heading,.fit-heading,.atlas-title,.network-title)>div>:is(h1,h2,p,.eyebrow),
+html.sky-light #main :is(.studio-heading,.fit-heading,.atlas-title,.network-title)>:is(h1,h2,p,.eyebrow),
+html.sky-light #main>.nearby-workspace>.near-heading :is(h1,h2,p,.eyebrow){color:#16202b}
+/* These containers already have an opaque light surface. Set their foreground too. */
+body :is(.studio-stage,.studio-tool-group,.brand-sheet,.sky-drop,.room-entry,.room-conversation,.room-invitation,.fit-card,.fit-empty,.fit-editor,.fit-weather-link,.nearby-panel,.near-place,.near-empty,.challenge-card,.challenge-rules,.google-weather-card,.climate-panel){color:#16202b}
+/* Fase 12.3: an opaque fallback survives a missing or unsupported sky gradient. */
+html body,html.atlas-light body,html[data-sky] body,html.atlas-light[data-sky] body{background-color:#0e1620}
+html:not([data-sky]) body{background-image:var(--sky-notte)}
+/* Fase 12.4: UA bolder can resolve to 900 inside a 700-weight parent. */
+body b,body strong{font-weight:var(--w-bold)}
+body .sky-drop .eyebrow{color:#216386}
+
+/* A1–A3: one decision surface, with explicit readable text on every sky. */
+body #main .day-decisions{background:var(--sky-notte);color:var(--ink);padding:var(--s4);border-radius:var(--r-card);margin-block:var(--s4)}
+body #main .day-decision+.day-decision{margin-top:var(--s6)}
+body #main .day-decision-label{font-size:var(--t-small);font-weight:var(--w-medium);color:var(--dato);margin:0 0 var(--s1)}
+body #main .day-decision-phrase{font-size:var(--t-title);font-weight:var(--w-bold);color:var(--ink);margin:0 0 var(--s2)}
+body #main .day-decision-detail{font-size:var(--t-small);font-weight:var(--w-normal);color:var(--ink-3);margin:0}
+
+/* Block B: one compact daily card before the existing globe. */
+body #main .day-compact{background:var(--sky-notte);color:var(--ink);border-radius:var(--r-card);padding:var(--s4);margin-block:var(--s3) var(--s6)}
+body #main .day-compact h2{font-size:var(--t-title);font-weight:var(--w-bold);color:var(--ink);margin:0}
+body #main .day-compact p{color:var(--ink);margin:var(--s2) 0}
+.day-compact-heading{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
+.day-compact-heading button{font-size:var(--t-small);background:transparent;color:var(--ink);border:0}
+.day-compact-hours{margin-block:var(--s2)}
+.day-compact-hours>div{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding-block:var(--s1)}
+.day-compact-hours strong{text-align:right;color:var(--dato);font-size:var(--t-title);font-weight:var(--w-bold)}
+.day-compact-hours small{display:block;font-size:var(--t-small);font-weight:var(--w-normal);color:var(--ink-2)}
+body #main .day-compact-verdict p{font-size:var(--t-title);font-weight:var(--w-bold);line-height:1.3}
+body #main .day-compact .day-compact-note{font-size:var(--t-small);color:var(--ink-3)}
+.day-compact details{color:var(--ink-2);font-size:var(--t-small)}
+.day-compact summary{display:flex;align-items:center;cursor:pointer;font-size:var(--t-small)}
+.day-quick{display:flex;gap:var(--s2);margin-top:var(--s3)}
+.day-quick button{flex:1;background:var(--dato);color:#070e1c;border:0;font-size:var(--t-body);border-radius:var(--r-small)}
+.day-time-selectors{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+.day-time-selectors label{display:grid;gap:var(--s2);font-size:var(--t-body)}
+.day-time-selectors select{width:100%;font-size:var(--t-title);min-height:44px}
+.onboarding-actions{display:grid;gap:var(--s2)}
+.onboarding-step{font-size:var(--t-small);font-weight:var(--w-medium)}
+.living-weather-city{min-width:0;overflow:hidden;text-overflow:ellipsis}
+body #main .day-compact a{color:var(--dato)}
+@media(max-width:360px){.day-time-selectors{grid-template-columns:1fr}}
+
+/* F1: reserve loading and image space; movement uses actual measured row positions. */
+#sky-feed{position:relative;min-block-size:calc(var(--s8)*8)}
+.sky-feed-loading{min-block-size:calc(var(--s8)*8)}
+.sky-loading-shape{min-block-size:calc(var(--s8)*5);border-radius:var(--r-card)}
+.sky-feed-loading.ui-skeleton .sky-loading-shape{background:var(--dato-soft)}
+.sky-report-row img{display:block;aspect-ratio:4/3}
+
+[data-feature-disabled]{display:none!important}
+
+/* F6: keyboard focus, persistent reading preferences and safe edges. */
+html body :is(a,button,input,select,textarea,summary,[role=button],[tabindex]):focus-visible{outline:3px solid var(--persone);outline-offset:var(--s1)}
+html.large-text{--t-label:14px;--t-small:16px;--t-body:20px;--t-title:28px}
+html.contrast body{background-image:var(--sky-notte)!important;color:var(--ink)!important}
+html.contrast body #main,html.contrast body .atmo-home{color:var(--ink)!important}
+html.contrast body .day-decision-detail,html.contrast body .day-compact-note{color:var(--ink)!important}
+html.contrast body :is(button,.button,input,select,textarea){border:2px solid currentColor}
+body>header{padding-top:max(var(--s2),env(safe-area-inset-top))}
+body #main:is([data-page=insieme],[data-page=evento]){color:var(--ink);background:var(--sky-notte);padding:var(--s4);border-radius:var(--r-card)}
+body #main:is([data-page=insieme],[data-page=evento]) :is(h1,h2,h3,p,label){color:var(--ink)}
+body #main:is([data-page=insieme],[data-page=evento]) h2{margin-top:var(--s8)}
+body #main:is([data-page=insieme],[data-page=evento]) article{padding-block:var(--s4)}
+body #main:is([data-page=insieme],[data-page=evento]) a{color:var(--dato)}
+body [data-human-weather]{color:var(--ink);padding-block:var(--s4)}
+html.sky-light:not(.contrast) body [data-human-weather]{color:#16202b}
+/* Verified dark-sky sources must stay readable, including inherited legacy p rules. */
+html body #main [data-local-weather],html body #main [data-local-weather] :is(p,small,strong),html body #main #living-world-freshness{color:var(--ink-2)}
+html body #main [data-local-weather] a{color:var(--dato)}
+html.sky-light:not(.contrast) body #main [data-local-weather],html.sky-light:not(.contrast) body #main [data-local-weather] :is(p,small,strong),html.sky-light:not(.contrast) body #main #living-world-freshness{color:#16202b}
+html.sky-light:not(.contrast) body #main [data-local-weather] a{color:#174e78}
+body #main:is([data-page=insieme],[data-page=evento]) input{color-scheme:dark;background:#132441;color:var(--ink)}
+body #main:is([data-page=insieme],[data-page=evento]) input::placeholder{color:var(--ink-2);opacity:1}
+
+/* Requested single dark theme: explicit foregrounds and surfaces. */
+html body,html.atlas-light body,html[data-sky] body{color-scheme:dark;background-color:#0e1620!important;background-image:var(--sky-notte)!important;color:var(--ink)!important}
+html body #main :is(h1,h2,h3,p,label,small,strong,b,span){color:inherit}
+html body #main,html body #main :is(.weather-workspace,.forecast-section,.atmo-home,.sky-community){color:var(--ink)!important}
+html body #main :is(.card,.weather-hero,.weather-empty,.weather-metrics article,.sun-times,.forecast-hours article,.forecast-day,.weather-compare,.weather-source,.atmo-weather,.atmo-panel,.atmo-tour,.sky-invitation,.sky-report-row,.quick-report-panel,.notice,.day-plan-results article){background:#132441!important;color:var(--ink)!important;border-color:#3b526a!important;box-shadow:none}
+html body #main :is(.weather-metrics,.weather-hero,.sun-times,.forecast-section,.weather-compare,.weather-source) :is(b,strong,span,small,h2,p){color:var(--ink)!important}
+html body #main :is(.weather-big-temp,.day-decision-label){color:var(--dato)!important}
+html body :is(button,input,textarea,select),html body #place{background:#172d43!important;color:var(--ink)!important;border-color:#50677d!important;color-scheme:dark}
+html body :is(input,textarea)::placeholder{color:var(--ink-2)!important;opacity:1}
+html body :is(.sky-primary,.living-report-button){background:var(--persone)!important;color:#16202b!important}
+html body #main a{color:var(--dato)}
+html body #main input[type=checkbox]{appearance:auto;width:20px;height:20px;min-height:20px;min-width:20px;flex:0 0 20px;accent-color:var(--persone);padding:0;margin:0}
+html body #main label:has(input[type=checkbox]){display:flex;align-items:center;gap:var(--s3);min-height:44px;padding-block:var(--s2)}
+html body dialog,html body dialog :is(h2,p,label){background-color:#132441;color:var(--ink)}
+.info-disclosure{display:inline-block;vertical-align:middle;margin-block:var(--s2);color:var(--ink-2);max-width:100%}
+.info-disclosure>summary{display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;cursor:pointer;border:1px solid #50677d;border-radius:var(--r-full);color:var(--ink);font-size:var(--t-body);list-style:none}
+.info-disclosure>summary::-webkit-details-marker{display:none}
+.info-disclosure[open]{display:block;background:#132441;border-radius:var(--r-card);padding:var(--s3)}
+.info-disclosure p,.info-disclosure small{display:block;line-height:1.55}
+.together-menu{margin-top:var(--s8);border-top:1px solid #3b526a;padding-top:var(--s4)}
+.together-menu>summary{cursor:pointer;display:flex;align-items:center;min-height:44px;color:var(--ink-2)}
+.discovery-event{position:relative;padding:var(--s4) 0;border-bottom:1px solid #3b526a}
+.discovery-event>p{margin-bottom:0;color:var(--ink-2)}
+.discovery-event .info-disclosure{margin-block:var(--s1)}
+.discovery-row{display:flex;flex-direction:column;align-items:flex-start;width:100%;gap:var(--s2);margin-block:var(--s2);text-align:left}
+[data-live-discovery]{margin-top:var(--s6)}
+[data-live-discovery] h2{font-size:var(--t-title)}
+.living-center-label{position:absolute;left:var(--s4);top:var(--s4);color:var(--ink);background:#132441;padding:var(--s2) var(--s3);border-radius:var(--r-full);pointer-events:none}
+#main[data-page=insieme]>.together-menu{margin-top:var(--s6)}
+html body #main a.button{background:#172d43;color:var(--ink);border-color:#50677d}
+html body #main .living-primary{background:var(--persone)!important;color:#16202b!important}
+html body #main .living-caption{color:var(--ink-2)}
+html body #main .weather-metrics b{font-size:var(--t-title);color:var(--ink)!important}
+html body>header{background:transparent!important}
+html body #main .living-layers button[aria-pressed=true]{background:var(--persone)!important;color:#16202b!important}
+html body #main .forecast-tabs button[aria-pressed=true]{background:var(--dato-soft)!important;color:var(--ink)!important}
+
+/* Phase 20 A1/A2: pair secondary text with the explicit dark surfaces above.
+   Light tokens remain reserved for actual light surfaces, never sky-light alone. */
+html body #main :is(.weather-source,.weather-compare,.weather-metrics article,.atmo-panel,.day-plan-results article,.sky-report-row) :is(small,.small,.meta){color:var(--ink-3)!important}
+
+/* Forecast acquisition receipts: valid hour and acquisition time stay distinct. */
+.forecast-receipt{flex-basis:100%;grid-column:1/-1;color:var(--ink-2);font-size:var(--t-small);margin-block:var(--s3);overflow-wrap:anywhere}
+.forecast-receipt p{color:var(--ink-2);font-size:var(--t-small);margin:var(--s2) 0}
+.forecast-receipt button{color:var(--ink);background:transparent;min-height:44px;font-size:var(--t-small)}
+.forecast-copy{padding-block:var(--s3);border-bottom:1px solid var(--ink-3);overflow-wrap:anywhere}
+.forecast-copy summary{cursor:pointer;min-height:44px;color:var(--ink);font-size:var(--t-small)}
+.forecast-copy p,.forecast-copy a{font-size:var(--t-small)}
+.forecast-copy a{display:inline-flex;align-items:center;min-height:44px}
+
+/* 24.1: first community action in Oggi, with its own readable dark surface. */
+html body #main .daily-question{background:#132441;color:var(--ink);border-radius:var(--r-card);padding:var(--s4);margin-bottom:var(--s4);border:1px solid #3b526a}
+html body #main .daily-question :is(h2,p,summary){color:var(--ink);margin:var(--s2) 0;overflow-wrap:anywhere}
+html body #main .daily-question h2{font-size:var(--t-title);font-weight:var(--w-bold)}
+html body #main .daily-question .daily-kicker{color:var(--persone);font-size:var(--t-small);font-weight:var(--w-bold)}
+html body #main .daily-question :is(.daily-city,.daily-hint,details,p){font-size:var(--t-small)}
+.daily-choices{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s3) 0}
+html body #main .daily-choices button{flex:1;min-height:44px;min-width:72px;background:#132441;color:var(--ink);border:1px solid var(--persone);border-radius:var(--r-small);font-size:var(--t-body)}
+html body #main .daily-choices button[aria-pressed=true]{background:var(--persone);color:#16202b;font-weight:var(--w-bold)}
+.daily-question summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+.daily-question [data-daily-status]:empty{display:none}
+
+/* Self-declared work context, never a badge or ranking. */
+html body .profession-label{font-size:var(--t-label);font-weight:var(--w-normal);color:var(--ink-3);background:none;border:0;box-shadow:none;margin-inline-start:var(--s2)}
+.profession-profile label,.profession-profile select{display:block;width:100%;margin-block:var(--s2)}
+.profession-profile select{min-height:44px}

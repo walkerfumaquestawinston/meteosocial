@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {createLocalEnvironment} from './tools/local-preview.mjs';
+import worker from './dist/server/index.js';
+const dir=mkdtempSync(path.join(tmpdir(),'moderation-')),local=createLocalEnvironment(process.cwd(),dir),env=local.env;
+const hash=s=>createHash('sha256').update(s).digest('hex');
+const call=async(p,b,who='',cookie='',origin='https://preview.invalid')=>{const h=new Headers({origin});if(who){h.set('oai-authenticated-user-id',who);h.set('oai-authenticated-user-email','test@example.invalid')}if(cookie)h.set('cookie',cookie);if(b!==undefined)h.set('content-type','application/json');const r=await worker.fetch(new Request('https://preview.invalid/api/'+p,{method:b===undefined?'GET':'POST',headers:h,body:b===undefined?undefined:JSON.stringify(b)}),env);return {status:r.status,body:await r.json(),headers:r.headers,cookie:r.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ')}};
+const report=()=>({latitude:42.96,longitude:13.88,accuracy:30,consent:true,id:crypto.randomUUID(),city:'San Benedetto del Tronto',level:2,options:[]});
+try{
+ for(const p of ['posts','sky/reports'])assert.equal((await call(p,{})).status,401);
+ assert.equal((await call('moderation/login',{password:'test-only'})).status,503);
+ env.MODERATION_PASSWORD_HASH=hash('test-only-password');
+ for(const [p,b] of [['reports',undefined],['remove',{}],['ban',{}],['media/sky/x',undefined]])assert.equal((await call('moderation/'+p,b,'regular-user')).status,401);
+ assert.equal((await call('moderation/login',{password:'wrong'})).status,401);
+ assert.equal((await call('moderation/login',{password:'test-only-password'},'','','https://evil.invalid')).status,403);
+ const login=await call('moderation/login',{password:'test-only-password'});assert.equal(login.status,200);const admin=login.cookie;assert.match(login.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);assert.match(login.headers.get('set-cookie'),/Secure/);
+ const device=(await call('sky/session',{},'author')).cookie;
+ const a=await call('sky/reports',report(),'author',device);assert.equal(a.status,201);const id=a.body.report.id;
+ await env.DB.prepare('UPDATE sky_reports SET hidden=1,expires=? WHERE id=?').bind(Date.now()-1,id).run();
+ let list=await call('moderation/reports',undefined,'',admin);assert.equal(list.status,200);assert.equal(list.body.reports[0].id,id);assert.equal(list.body.reports[0].hidden,1);assert.equal('author' in list.body.reports[0],false);assert.equal(typeof list.body.reports[0].photo,'boolean');
+ assert.equal((await call('moderation/remove',{source:'sky',id},'',admin)).status,200);
+ assert.equal((await env.DB.prepare('SELECT deleted FROM sky_reports WHERE id=?').bind(id).first()).deleted,1);
+ assert.equal((await call('moderation/ban',{source:'sky',id},'',admin)).status,200);
+ assert.equal((await call('sky/reports',report(),'author')).status,403);
+ assert.equal((await call('sky/reports',report(),'another-account',device)).status,403);
+ assert.equal((await call('posts',{},'author')).status,403);
+ assert.equal((await call('sky/reports',report(),'unrelated')).status,201);
+ assert.equal((await call('moderation/remove',{source:'sky; DROP TABLE posts;',id},'',admin)).status,400);
+ assert.equal((await call('moderation/remove',{source:'sky',id},'',admin,'https://evil.invalid')).status,403);
+ await env.DB.prepare('UPDATE sky_reports SET created=? WHERE id=?').bind(Date.now()-90000000,id).run();
+ list=await call('moderation/reports',undefined,'',admin);assert.equal(list.body.reports.some(r=>r.id===id),false);
+ assert.equal((await call('moderation/logout',{},'',admin)).status,200);assert.equal((await call('moderation/session',undefined,'',admin)).status,401);
+ const admin2=(await call('moderation/login',{password:'test-only-password'})).cookie;env.MODERATION_PASSWORD_HASH=hash('rotated-test-only');assert.equal((await call('moderation/session',undefined,'',admin2)).status,401);
+ console.log('Moderation passed: missing config, identity, password, CSRF, private list/media, removal, bans, device association, source validation, 24h scope, logout and credential rotation.');
+}finally{local.close();rmSync(dir,{recursive:true,force:true})}

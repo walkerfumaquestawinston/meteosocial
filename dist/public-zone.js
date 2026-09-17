@@ -1,0 +1,2 @@
+// Update the public observations without replacing the page or moving keyboard focus.
+setInterval(async()=>{if(document.hidden)return;try{const r=await fetch(location.href,{cache:'no-store'});if(!r.ok)return;const doc=new DOMParser().parseFromString(await r.text(),'text/html');for(const id of ['zone-map','zone-reports','zone-count','zone-updated']){const old=document.getElementById(id),fresh=doc.getElementById(id);if(old&&fresh&&old.innerHTML!==fresh.innerHTML)old.replaceChildren(...fresh.childNodes)}}catch{}},60000);

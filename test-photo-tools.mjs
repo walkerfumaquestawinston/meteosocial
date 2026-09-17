@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {preparaFoto} from './dist/photo-tools.js';
+let sizes=[],qualities=[],closed=0,dimensions=[];
+globalThis.createImageBitmap=async()=>({width:4000,height:3000,close(){closed++}});
+globalThis.document={createElement:()=>({width:0,height:0,getContext(){return {drawImage(){}}},toBlob(callback,type,q){qualities.push(q);dimensions.push([this.width,this.height]);callback(new Blob([new Uint8Array(sizes.shift()??500000)],{type}))}})};
+sizes=[1600000,1400000];
+assert.equal((await preparaFoto({type:'image/jpeg',size:8000000})).size,1400000);
+assert.deepEqual(qualities,[.82,.7]);assert.deepEqual(dimensions[0],[1600,1200]);assert.equal(closed,1);
+qualities=[];dimensions=[];sizes=[1600000,1400000,1000000];
+assert.equal((await preparaFoto({type:'image/png'},1600,.82,1050000)).size,1000000);
+assert.deepEqual(dimensions[2],[1280,960]);assert.equal(closed,2);
+await assert.rejects(preparaFoto({type:'text/plain'}));
+sizes=Array(10).fill(2000000);await assert.rejects(preparaFoto({type:'image/jpeg'}));assert.equal(closed,3);
+console.log('Photo pipeline: 8 MB source accepted, aspect ratio, quality retry, sky byte budget, further resizing, invalid input and bitmap release passed.');

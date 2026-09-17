@@ -1,0 +1,53 @@
+import {esc,weatherName,valueText} from './weather-tools.js';
+import {climateValue} from './climate-view.js';
+import {createGlobeConditions} from './globe-conditions.js';
+
+export function resolveGlobeRoute(route,enabled){return route==='globo-meteo'?'mondo':route==='mondo'&&enabled?'google3d':route}
+export function googleFrameURL(place,{world=false}={}){
+ if(!Number.isFinite(place?.latitude)||!Number.isFinite(place?.longitude)||Math.abs(place.latitude)>90||Math.abs(place.longitude)>180)throw Error('Scegli una località valida.');
+ // Coordinates stay out of HTTP request URLs and access logs; the frame passes
+ // them to Google only after the visitor presses the load button.
+ return '/google-3d-frame.html#'+new URLSearchParams({lat:String(place.latitude),lng:String(place.longitude),...(world?{world:'1'}:{})});
+}
+export function google3dEntry(enabled){return enabled?'<a class="google-3d-entry" href="#mondo">Apri il globo satellite</a>':''}
+export function validGooglePoint(p){return p&&Number.isFinite(p.latitude)&&Number.isFinite(p.longitude)&&Math.abs(p.latitude)<=90&&Math.abs(p.longitude)<=180}
+
+export function createGoogle3D(ctx){
+ let frame=null,events=null,timer=0,loading=false,selecting=false,labels=true;
+ const $=s=>document.querySelector(s);
+ const active=()=>ctx.get().route==='google3d';
+ const conditions=createGlobeConditions({get:ctx.get,api:ctx.api,send:markers=>{if(frame&&!loading)command('conditions',{markers})},focus:r=>command('focus-condition',{id:r.id})});
+ function summary(){const {weather,weatherError,place}=ctx.get(),w=weather?.current;return `<section class="google-weather-card"><h2>Meteo di ${esc(place.name)}</h2>${w?`<p>${weatherName(w.weather_code)} · ${valueText(w.temperature_2m,'°')}</p><div class="google-weather-values">${[['rain','Pioggia'],['neve','Neve'],['raffiche','Raffiche']].map(([id,label])=>`<div><span>${label}</span><strong>${climateValue(w,id)}</strong></div>`).join('')}</div><p class="google-meta">Modello Open-Meteo · ${esc(w.time?.replace('T',' ')||'Orario non disponibile')} · ${esc(weather.timezone)}. Precipitazioni nell’intervallo precedente della fonte.</p>`:`<p role="status">${weatherError?'Previsioni non disponibili.':'Caricamento delle previsioni…'}</p>`}<div class="google-actions"><a href="#tendenze">Previsioni complete</a><a href="#radar">Radar recente</a><a href="#grandine-mappa">Grandine segnalata</a><button data-google-community>Community qui</button><button data-google-ai>Spiegami il meteo · Lente IA</button></div></section>`}
+ function page(){const {place,enabled}=ctx.get();return `<section class="google-workspace"><div class="atlas-title"><div><h1>Il mondo, da vicino.</h1><p>Esplora il satellite. Scegli un punto e scopri il suo meteo.</p></div><a href="#globo-meteo" class="guide-link">Globo meteo · livelli</a></div><div class="google-search">${ctx.searchForm()}</div><div class="google-view-tools" aria-label="Esplora il satellite"><button data-google-command="world" disabled>Tutta la Terra</button><button data-google-command="center" disabled>Avvicina alla città</button><div class="google-view-pair" role="group" aria-label="Inclinazione"><button data-google-command="flat" disabled aria-pressed="true">Dall’alto</button><button data-google-command="relief" disabled aria-pressed="false">Rilievo 3D</button></div><button data-google-command="labels" disabled aria-pressed="true">Nomi e strade</button></div><div class="google-explore-layout"><section class="google-map-panel" aria-label="Satellite interattivo"><div class="google-map-actions"><button data-google-command="in" disabled aria-label="Ingrandisci satellite">＋</button><button data-google-command="out" disabled aria-label="Riduci satellite">−</button><button data-google-command="north" disabled>Nord ↑</button><button data-google-fullscreen>Schermo intero</button><button data-google-close hidden>Chiudi satellite</button></div>${conditions.controls()}<div id="google-view-host" class="google-view-host"><div class="google-start"><span class="google-start-label">${enabled?'SATELLITE · GOOGLE MAPS':'GOOGLE 3D · NON ANCORA ATTIVO'}</span><h2>Dalla Terra alla tua città.</h2><p>${enabled?'Ruota il pianeta, avvicinati alle strade e guarda i rilievi. Aprendo la vista, la località selezionata viene inviata a Google.':'Il satellite non è disponibile. Puoi esplorare la località nel globo meteo.'}</p>${enabled?'<button data-google-open class="button">Apri il globo satellite</button>':'<a class="button" href="#globo-meteo">Apri il globo meteo</a>'}<a href="#radar">Guarda il radar delle precipitazioni</a></div></div><div class="google-point-tools"><button data-google-command="select" disabled aria-pressed="false">Scegli un punto sulla mappa</button><button data-google-command="point" disabled>Meteo del punto al centro</button></div><p id="google-view-status" role="status">Apri il satellite per iniziare.</p><p class="google-meta">Immagini geografiche Google, non in diretta. Dettaglio e rilievi dipendono dalla copertura. I simboli mostrano campioni meteo, segnalazioni e cataloghi con orari distinti. Il radar animato resta nella mappa Radar.</p></section><aside aria-label="Meteo e fenomeni"><div id="google-conditions-panel">${conditions.panel()}</div><div id="google-weather-slot">${summary()}</div></aside></div></section>`}
+ function message(text){const s=$('#google-view-status');if(s)s.textContent=text}
+ function controls(ready){document.querySelectorAll('[data-google-command]').forEach(b=>b.disabled=!ready);const close=$('[data-google-close]');if(close)close.hidden=!frame}
+ function stop(){conditions.stop();clearTimeout(timer);timer=0;loading=false;frame?.remove();frame=null;controls(false)}
+ function closed(text){stop();const host=$('#google-view-host');if(host)host.innerHTML='<div class="google-start"><h2>Satellite chiuso</h2><p>Riapri la vista per continuare a esplorare.</p><button data-google-open class="button">Riapri il globo satellite</button><a href="#globo-meteo">Apri il globo meteo</a></div>';message(text);bindOpen()}
+ function failed(){closed('Satellite non disponibile. Puoi riprovare o usare il globo meteo e il radar.');const title=$('#google-view-host h2');if(title)title.textContent='La vista non si è caricata'}
+ function command(action,extra={}){frame?.contentWindow.postMessage({type:'meteosocial-google-command',action,...extra},location.origin)}
+ function pressed(action,on){const b=$('[data-google-command="'+action+'"]');if(b)b.setAttribute('aria-pressed',String(on))}
+ function start(){if(frame||loading||!active()||document.hidden||!ctx.get().enabled)return;const host=$('#google-view-host');if(!host)return;loading=true;selecting=false;labels=true;pressed('select',false);pressed('labels',true);pressed('flat',true);pressed('relief',false);message('Caricamento del globo satellite…');frame=document.createElement('iframe');frame.title='Satellite Google · '+ctx.get().place.name;frame.referrerPolicy='strict-origin-when-cross-origin';frame.setAttribute('allow','fullscreen');frame.src=googleFrameURL(ctx.get().place,{world:true});host.replaceChildren(frame);controls(false);timer=setTimeout(failed,45000)}
+ function bindOpen(){document.querySelectorAll('[data-google-open]').forEach(b=>b.onclick=start)}
+ function bindSummary(){const community=$('[data-google-community]');if(community)community.onclick=ctx.community;const ai=$('[data-google-ai]');if(ai)ai.onclick=ctx.askAI}
+ function bind(){if(!active())return;events?.abort();events=new AbortController();bindOpen();bindSummary();conditions.bind();
+  document.querySelectorAll('[data-google-command]').forEach(b=>b.onclick=()=>{if(!frame||loading||b.disabled)return;const action=b.dataset.googleCommand;
+   if(action==='select'){selecting=!selecting;pressed('select',selecting);command('select',{enabled:selecting});message(selecting?'Tocca un punto del territorio: il suo meteo apparirà qui accanto.':'Selezione disattivata. Puoi continuare a esplorare.');return}
+   if(action==='labels'){labels=!labels;pressed('labels',labels);command('labels',{enabled:labels});return}
+   if(['flat','relief','world','center'].includes(action)){pressed('flat',action==='flat'||action==='world');pressed('relief',action==='relief'||action==='center')}
+   command(action);
+  });
+  const full=$('[data-google-fullscreen]');if(full)full.onclick=async()=>{const panel=$('.google-map-panel');try{if(document.fullscreenElement)await document.exitFullscreen();else if(panel?.requestFullscreen)await panel.requestFullscreen();else message('Usa lo zoom del satellite: lo schermo intero non è supportato da questo browser.')}catch{message('Schermo intero non disponibile in questo browser.')}};
+  const close=$('[data-google-close]');if(close)close.onclick=()=>closed('Vista chiusa.');
+  window.addEventListener('message',e=>{if(!frame||e.source!==frame.contentWindow||e.origin!==location.origin||e.data?.type!=='meteosocial-google-view')return;
+   if(e.data.state==='ready'&&loading){clearTimeout(timer);loading=false;controls(true);conditions.start();message('Trascina per esplorare. “Avvicina alla città” mostra la località scelta. Usa due dita su touch screen.')}
+   if(e.data.state==='error')failed();
+   if(e.data.state==='conditions-error')conditions.rendererError();
+   if(e.data.state==='condition'&&typeof e.data.id==='string')conditions.choose(e.data.id);
+   if(e.data.state==='point'&&!loading&&validGooglePoint(e.data.point)){const p=e.data.point;selecting=false;pressed('select',false);command('select',{enabled:false});ctx.choose({...p,name:'Zona '+p.latitude.toFixed(2)+'°, '+p.longitude.toFixed(2)+'°'},{keepCamera:true});message('Zona selezionata. Il meteo si aggiorna accanto al satellite.');}
+  },{signal:events.signal});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&frame)closed('Vista sospesa mentre l’app non era visibile. Riaprila quando ti serve.')},{signal:events.signal});
+ }
+ function updatePlace({center=true}={}){if(!active())return;const {place}=ctx.get();const query=$('#place-query');if(query)query.value=place.name;const results=$('#place-results');if(results)results.replaceChildren();if(frame){frame.title='Satellite Google · '+place.name;command('place',{point:{latitude:place.latitude,longitude:place.longitude},center});if(center){pressed('flat',false);pressed('relief',true)}}refresh();}
+ function refresh(){if(!active())return;conditions.refresh();const slot=$('#google-weather-slot');if(slot){slot.innerHTML=summary();bindSummary()}}
+ return {page,bind,refresh,updatePlace,isOpen:()=>Boolean(frame)&&!loading,dispose(){stop();events?.abort();events=null}};
+}

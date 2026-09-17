@@ -1,0 +1,85 @@
+## Direzione attuale: mappa locale — 16 settembre 2026
+
+La richiesta più recente riguarda MapLibre locale: base rapida, un livello meteo per volta, temperatura continua, vento leggibile, radar onesto, storie essenziali e cartolina 9:16. Il globo e NASA non fanno più parte della navigazione. Il volo introduttivo è soltanto zoom 4→11 sulla mappa, 1,5 secondi, una volta per sessione. Preservare continuità online per lavorare dallo stesso account su un altro PC; non promettere trasferimento delle preferenze browser.
+
+## Nuova direzione: mappa locale e cartolina del cielo
+
+La richiesta corrente sostituisce il globo come schermata e rimuove la scoperta NASA EONET. Unico tab Mappa, MapLibre GL scuro, volo iniziale saltabile verso la città (circa 2 s, disattivato con movimento ridotto). Radar RainViewer ultima ora, vento animato e temperature campionate Open-Meteo. Segnalazioni raggruppate, storie a schermo intero e cartoline fotografiche 9:16. Dettagli e limiti in MAPPA-LOCALE-RELEASE.md. Le richieste storiche di non toccare il globo sono superate esplicitamente. Nessun nuovo servizio a pagamento, chiave o scheduler; dati e credenziali esistenti preservati.
+
+## Aggiornamento prioritario: sei correzioni visive e avvisi eventi
+
+Tema scuro unico; dettagli dietro i; Chiedi a chi è lì in primo piano e strumenti nel menu Altro; scoperta di eventi NASA e voci reali; globo fermo sulla città iniziale. Avvisi eventi opt-in su cambiamento rilevato alla consultazione e recupero dei propri eventi. Migrazione additiva 0020, shell v43. Dettagli in RIFINITURA-SCURA-EVENTI-RELEASE.md. Nessuno scheduler configurato; le precedenti note di avvisi evento assenti sono superate soltanto per il controllo durante consultazione.
+
+## Completamento master — aggiornamento corrente
+
+L’utente autorizza a procedere su tutti i punti rimanenti senza pause. Implementati H1, H2 meteo, H3 inviti, H4 confronto tra aggiornamenti del modello, H5 percepito locale; H6 progettato ma disattivato per densità/validazione. Rifiniti F6 e flag delle funzioni accessorie; verificato C7; materiali G4 in store/. Migrazione additiva 0019, shell v41. Dettagli, test e limiti in COMPLETAMENTO-MASTER-RELEASE.md. Non dichiarare completati scheduler/notifiche eventi automatiche o accuratezza verificata su osservazioni. Le vecchie indicazioni di fermarsi nei paragrafi sotto sono cronologia superata dall’ultima autorizzazione.
+
+## E3/E4/E5 — ultimo intervento
+
+Adattamento approvato: pollini opt-in, mare entro 15 km dalla costa cartografica in Italia/dintorni, quota neve originale DWD novembre–marzo. Fonti, soglie, file e limiti in BLOCCO-E3-E4-E5-RELEASE.md. Nessuna modifica al globo protetto. Prossimo blocco H1/H4, fermarsi in attesa del via.
+
+## G2/G3 — ultimo intervento
+
+Adattamento approvato. Offline persistente e coda con ora originale; avvisi risposte/conferme opt-in e limite condiviso. G2 parziale: nessun avviso automatico uscita/allerta senza scheduler. Vedere BLOCCO-G2-G3-RELEASE.md per file, verifiche e limiti. Fermarsi prima del prossimo blocco.
+
+# Direzione vigente — Documento unico di sviluppo
+
+Il Documento unico più recente dell’utente sostituisce tutte le specifiche precedenti riportate sotto. Terreno: il meteo agli orari della giornata, decisioni comprensibili con incertezza dichiarata, community utile senza metriche di vanità. Verificare il codice prima di intervenire, segnalare difformità e contraddizioni, eseguire un solo blocco autorizzato per volta e fermarsi. Nessun dato inventato. Gli elementi elencati NON TOCCARE restano protetti.
+
+Consegna corrente: C3/C4/C6, integrazione del meteo mondiale e del catalogo NASA approvata. Vedere BLOCCO-C3-C4-C6-RELEASE.md. E2 e prerequisiti H2/G2 limitati alle scuole preservati. D9/D10 preservati ed estesi alle risposte. G1 già verificato. E6 preservato. D7/D8/F5 preservati. C1/C2 e C5 preservati. D2/D4/D5 e D6 preservati. E1 conserva il limite documentato sull’esecuzione senza visitatori. I blocchi successivi richiedono il via dell’utente. Tutto ciò che segue è storico e non prevale sul Documento unico.
+
+# MeteoSocial — riferimento di prodotto
+
+## Riferimento attuale — 15 settembre 2026
+
+**`GLOBO-VIVO-SPECIFICA.md` sostituisce tutte le direzioni precedenti riportate sotto.** Il proprietario autorizza tutte le modifiche e verifiche necessarie e ha chiesto di proseguire fino all'ultima fase senza pause intermedie. Il globo delle osservazioni reali è il centro dell'app; le precedenti sezioni restano conservate. Le sezioni successive di questo documento sono storia del progetto, non nuove autorizzazioni o requisiti prevalenti.
+
+Direttive dell'utente ricevute il 12 settembre 2026. Questo documento conserva la direzione per le prossime sessioni. Le istruzioni successive dell'utente prevalgono. L'ambizione «prima App Meteo Social al mondo» è un posizionamento da verificare, non un fatto da pubblicare.
+
+## Identità
+
+Un social network governato dal meteo: il cielo modifica interfaccia, contenuti e occasioni di interazione. Profili come media brand, senza avatar personali. Post a slide, foto, video e bollettini editoriali. Gaming, tecnologia e cinema sono rubriche coerenti con il clima; non usare i vecchi nomi PREMI START o popcorn club.
+
+## Requisiti richiesti
+
+1. Algoritmo empatico: caldo intenso → tipografia arcade anni Novanta, HUD retro e colori saturi; pioggia intensa → interfaccia scura, elegante e tono malinconico. Feed sotto la pioggia da utenti di tutto il mondo. Controlli chiari, font grandi, animazioni ridotte e ritorno al feed completo.
+2. Fotocamera HUD con barre di stamina e stelle scenografiche legate al meteo. Editor fluido con foto/video, layout Breaking News, slide quadrate, overlay verticali ed esportazione per Instagram/TikTok. Le grafiche devono essere originali, senza usare loghi o asset di GTA, Canva o CapCut.
+3. Media brand: firme, watermark, badge circolari e font; bollettini in stile patch notes. Ricompense grafiche quando cresce la diffusione reale dei contenuti, con criteri pubblici e protezioni contro auto-reazioni/duplicati.
+4. Storm Rooms temporanee e locali, attivate dalle condizioni atmosferiche; Sky-Drop con finestra di cinque minuti dettata dalla luce/meteo; Live Reporter con chat; Street Survival Map di Fit Check per quartiere; Trailer del Weekend automatico dalle proprie riprese.
+5. Weather Co-Op: due dirette da climi opposti in split screen. Loot meteo temporanei con asset esclusivi. Eventi collettivi «Boss Fight» derivati da allerte ufficiali, con tema cittadino per sette giorni al raggiungimento di un obiettivo.
+
+## Confini di qualità
+
+- Le allerte ufficiali sono separate da stime di modello, segnalazioni e grafica ludica. Non ricavare un'allerta rossa da temperatura, colori del feed o post.
+- La stamina è una grafica, non una misura di salute; le stelle non misurano la pericolosità. Niente lampeggi rapidi o contenuti che coprono le azioni utili.
+- Eventi e dirette non devono invitare a uscire in strada durante un pericolo. Si può contribuire da una finestra o con informazioni utili da un posto sicuro. Nessun punteggio per l'esposizione al rischio.
+- Posizione, fotocamera, microfono e notifiche richiedono azioni esplicite. Nessuna registrazione o trasmissione silenziosa. L'app web non può provare da sola la presenza fisica di una persona.
+- «Virale», disponibilità dei ripari, autenticità dei media, IA e streaming non possono essere simulati. Un montaggio creativo non è una verifica dell'evento.
+
+## Sequenza tecnica
+
+Il sito esistente usa moduli JavaScript, Worker, D1 e R2. Si estende questa struttura senza fingere una conversione a Flutter/React Native. Nuovi motori separati: stato climatico e patch notes; canvas editor e gestione media; servizi di redazione; stanze temporanee; servizi futuri di consegna push, streaming e montaggio.
+
+Dirette e Co-Op richiedono un servizio WebRTC con relay/SFU, moderazione e costi; Sky-Drop a app chiusa richiede push e pianificazione; trailer automatici richiedono consenso, archivio media, coda di rendering e musica autorizzata; Boss Fight richiede un ingestore affidabile delle allerte ufficiali. Il dettaglio delle capacità realmente consegnate è nelle note di rilascio. Non presentare questa lista come già operativa.
+
+## Ultime consegne
+
+`EDITORIAL-RELEASE.md` descrive Studio, Redazione e stanze temporanee. `FITCHECK-RELEASE.md` descrive la mappa dei consigli con foto/video, zone approssimate, scadenze e collegamenti alla community. Queste note sono il riferimento per lo stato effettivamente implementato.
+
+`LENTE-RELEASE.md` descrive l'assistente OpenAI contestuale nel globo, nella mappa, nelle previsioni e nella community, con fonti e invio manuale dei soli dati autorizzati.
+
+`ATMOSPHERE-RELEASE.md` descrive la doppia entrata Oggi/Globo, il ciclo giorno/notte e la timeline dei modelli, bollettini DPC italiani, personalità Lente con override prudente, Meteo Clash, Studio a cinque strumenti, città seguite e sessione di testimonianza da fotocamera. Conserva il confine tra quanto funziona sul web e le richieste future di streaming, push, AR e widget nativi.
+
+## Direzione confermata il 13 settembre: mondo collegato
+
+Usare la mappa protagonista e i comandi essenziali della foto di riferimento di Grandinometro come spunto di semplicità, con grafica e percorsi propri. Globo, mappa, precipitazioni, meteo locale, grandine, community e IA devono mantenere il contesto della località. Qualità alta con controllo leggero per i dispositivi meno potenti. Distinguere immagine geografica storica, osservazioni radar recenti, modelli e testimonianze. L'ambizione di mostrare ogni fenomeno climatico in tempo reale resta una direzione, non una copertura già disponibile. Google 3D è un'integrazione opzionale da collegare con risorse autorizzate, non una fonte meteo live. Stato realizzato in `CONNECTED-CLIMATE-RELEASE.md`.
+
+Il proprietario ha autorizzato di iniziare la preparazione di Google 3D con apertura manuale. La consegna preparatoria usa Maps JavaScript / Immersive Maps ed è documentata in `GOOGLE-3D-SETUP.md`; fatturazione e quote richiedono ancora l'account Google del proprietario. Non confondere questa preparazione con un servizio attivato.
+
+## Confronto Grandinometro e qualità
+
+Il proprietario richiede un nuovo confronto delle funzioni grandine, integrazioni utili e qualità verificata. La consegna è in `GRANDINE-COMMUNITY-RELEASE.md`: usare prove concrete e fonti pubbliche, non promettere perfezione assoluta, esclusività mondiale o parità completa senza implementazione. Tenere distinti riscontri degli account, stime dimensionali e rilevamenti ufficiali.
+
+## Direzione confermata il 15 settembre: satellite come Globo
+
+Dopo aver verificato Google funzionante, il proprietario chiede di cambiare il globo e renderlo interattivo con il satellite. La vista principale Globo deve quindi usare Google quando abilitato, con esplorazione della Terra, rilievi e selezione della zona meteo nella stessa pagina. Conservare accessibili i livelli meteo esistenti, senza chiamare live le immagini geografiche. La consegna è descritta in `GLOBO-SATELLITE-RELEASE.md`.

@@ -1,0 +1,50 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {DatabaseSync} from 'node:sqlite';
+import worker from './dist/server/index.js';
+import {mapHailReports} from './dist/hail-map.js';
+import {sharedHailURL,sharedHailPlace,hailReportState} from './dist/hail-tools.js';
+const sqlite=new DatabaseSync(':memory:');sqlite.exec('PRAGMA foreign_keys=ON');for(const f of fs.readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())sqlite.exec(fs.readFileSync('drizzle/'+f,'utf8'));
+let rollbackTest=false;
+const statement=(sql,values=[])=>({bind:(...v)=>statement(sql,v),first:async()=>sqlite.prepare(sql).get(...values)||null,all:async()=>({results:sqlite.prepare(sql).all(...values)}),run:async()=>{if(rollbackTest&&sql.startsWith('INSERT INTO hail_details'))throw Error('isolated transaction failure');return {meta:{changes:Number(sqlite.prepare(sql).run(...values).changes)}}}});
+const env={DB:{prepare:sql=>statement(sql),batch:async statements=>{sqlite.exec('BEGIN');try{const out=[];for(const s of statements)out.push(await s.run());sqlite.exec('COMMIT');return out}catch(e){sqlite.exec('ROLLBACK');throw e}}}};
+let n=0;const check=(v,label)=>{assert.ok(v,label);n++};const origin='https://test.invalid';
+async function request(path,body,user='A',extra={}){const r=await worker.fetch(new Request(origin+'/api/'+path,{method:body?'POST':'GET',headers:{origin,'content-type':'application/json',...(user?{'oai-authenticated-user-id':user,'oai-authenticated-user-email':user+'@example.invalid'}:{}),...extra},body:body?JSON.stringify(body):undefined}),env);return {status:r.status,data:await r.json(),headers:r.headers}}
+const now=Date.now(),base={text:'Grandine dal balcone.',city:'Torino',kind:'Grandine',rapid:true,mapPoint:{latitude:45.070123,longitude:7.680789,consent:true},hail:{observed:now-900000,size:'2to4'}},id=crypto.randomUUID();
+try{
+ await request('profile',{name:'Autore'});await request('profile',{name:'Lettore'},'B');const a=(await request('me')).data.id;
+ check((await request('posts',{...base,id},null)).status===401,'anonymous reports rejected');
+ check((await request('posts',{...base,id},'A',{origin:'https://other.invalid'})).status===403,'cross-origin publication rejected');
+ let r=await request('posts',{...base,id});check(r.status===200,'structured observation saved');let detail=sqlite.prepare('SELECT * FROM hail_details WHERE post=?').get(id);check(detail.observed===base.hail.observed&&detail.size==='2to4','observed time distinct from publication time');
+ r=await request('posts',{...base,id,hail:{observed:now,size:'under1'}});detail=sqlite.prepare('SELECT * FROM hail_details WHERE post=?').get(id);check(r.status===200&&detail.size==='2to4','idempotent retry preserves submitted report');
+ for(const hail of [null,{size:'boulder',observed:now},{size:'unknown',observed:now+60000},{size:'unknown',observed:now-7200000},{size:'unknown',observed:String(now)},{size:'unknown',observed:now+.5}])check((await request('posts',{...base,id:crypto.randomUUID(),hail})).status===400,'invalid hail metadata rejected');
+ check((await request('posts',{...base,id:crypto.randomUUID(),kind:'Pioggia',mapPoint:undefined})).status===400,'hail size not accepted for other phenomena');
+ const failedId=crypto.randomUUID();rollbackTest=true;r=await request('posts',{...base,id:failedId});rollbackTest=false;check(r.status===503&&!sqlite.prepare('SELECT 1 FROM posts WHERE id=?').get(failedId),'atomic failure does not leave half report');
+ r=await request('atlas/hail-map',null,null);let item=r.data.posts.find(p=>p.id===id);check(item.size==='2to4'&&item.observed===base.hail.observed&&item.has_photo===0,'public map fields come from stored data');check(!JSON.stringify(r.data).includes(a)&&!('author' in item),'map exposes no author identity');check(item.mine===0&&item.my_vote===null,'anonymous sees no personal vote state');check(r.headers.get('cache-control')==='no-store','personal state never publicly cached');
+ let point={name:'Torino',latitude:45.07,longitude:7.68};check(mapHailReports(r.data,point,{minutes:15,radius:5}).shown===0,'filter uses observation time, not upload time');check(mapHailReports(r.data,point,{minutes:60,radius:5,size:'2to4'}).shown===1,'dimension and time filters combine');check(mapHailReports(r.data,point,{size:'under1'}).shown===0,'dimension mismatch excluded');
+ check((await request('link',{target:id,kind:'confirm',active:true})).status===400,'author cannot self-confirm');
+ check((await request('link',{target:id,kind:'confirm',active:true},null)).status===401,'anonymous cannot vote');
+ for(let i=0;i<2;i++)check((await request('link',{target:id,kind:'confirm',active:true},'B')).status===200,'repeated confirmation idempotent');
+ item=(await request('atlas/hail-map',null,'B')).data.posts.find(p=>p.id===id);check(item.confirms===1&&item.my_vote==='confirm','one account counted once');
+ await request('link',{target:id,kind:'dispute',active:true},'B');item=(await request('atlas/hail-map',null,'B')).data.posts.find(p=>p.id===id);check(item.confirms===0&&item.disputes===1&&item.my_vote==='dispute','opposite vote replaces prior vote atomically');check(hailReportState(item).includes('contestata'),'disagreement visible, not auto-deleted');
+ await request('link',{target:id,kind:'dispute',active:false},'B');check(sqlite.prepare("SELECT COUNT(*) AS n FROM links WHERE target=? AND kind IN ('confirm','dispute')").get(id).n===0,'vote can be withdrawn');
+ check((await request('link',{target:id,kind:'confirm',active:'true'},'B')).status===400,'boolean vote contract enforced');
+ await request('link',{target:a,kind:'block',active:true},'B');check((await request('atlas/hail-map',null,'B')).data.posts.length===0,'blocked author hidden from map');check((await request('link',{target:id,kind:'confirm',active:true},'B')).status===404,'blocked report cannot receive votes');await request('link',{target:a,kind:'block',active:false},'B');
+ check((await request('hail/end',{id,confirm:true},'B')).status===403,'only author can close observation');check((await request('hail/end',{id})).status===400,'explicit end confirmation required');
+ check((await request('hail/end',{id,confirm:true})).status===200,'author end update stored');const ended=sqlite.prepare('SELECT ended FROM hail_details WHERE post=?').get(id).ended;await request('hail/end',{id,confirm:true});check(sqlite.prepare('SELECT ended FROM hail_details WHERE post=?').get(id).ended===ended,'repeat end does not alter reported timestamp');
+ r=await request('atlas/hail-map');item=r.data.posts.find(p=>p.id===id);check(item.mine===1&&item.ended===ended,'owner and end returned');check(mapHailReports(r.data,point,{ended:'open'}).shown===0&&mapHailReports(r.data,point,{ended:'ended'}).shown===1,'end filter synchronized with map data');check(hailReportState(item).includes('autore'),'ended not labelled a safe zone');
+ check((await request('atlas/hail?city=Torino')).data.posts[0].ended===ended,'dossier uses same end state');
+ check((await request('hail/watch',null,null)).status===401,'watch zones are private');
+ const zone={slot:0,name:'Torino',latitude:45.070123,longitude:7.680789,radius:10,consent:true};
+ for(const b of [{...zone,slot:5},{...zone,slot:-1},{...zone,consent:false},{...zone,latitude:'45'},{...zone,latitude:86},{...zone,longitude:181},{...zone,radius:3}])check((await request('hail/watch',b)).status===400,'invalid private watch rejected');
+ check((await request('hail/watch',zone)).status===200,'watch saved');r=await request('hail/watch');check(r.data.places[0].latitude===45.07&&r.data.places[0].longitude===7.68,'private coordinates rounded');check(r.data.places[0].radius===10,'radius persists');check(!('user' in r.data.places[0]),'watch response excludes account key');check((await request('hail/watch',null,'B')).data.places.length===0,'different account cannot see zones');
+ for(let slot=1;slot<5;slot++)await request('hail/watch',{...zone,slot});check((await request('hail/watch')).data.places.length===5,'five stable slots supported');await request('hail/watch',{...zone,radius:25});check((await request('hail/watch')).data.places.length===5&&(await request('hail/watch')).data.places[0].radius===25,'editing slot never creates duplicate');
+ await request('hail/watch',{slot:0,remove:true},'B');check((await request('hail/watch')).data.places.length===5,'removal scoped to authenticated owner');await request('hail/watch',{slot:0,remove:true});check((await request('hail/watch')).data.places.length===4,'owner removes saved zone');
+ const url=sharedHailURL(origin,{name:'Città & Porto',latitude:43.123456,longitude:13.654321});check(!url.includes('43.123456')&&url.endsWith('#grandine-mappa'),'shared location rounded and correct route');const shared=sharedHailPlace(url);check(shared.name==='Città & Porto'&&shared.latitude===43.12&&shared.longitude===13.65,'shared zone round-trip without re-search');
+ for(const href of [origin+'/?hailCity=A&hailLat=&hailLon=2#grandine-mappa',origin+'/?hailCity=A&hailLat=999&hailLon=2#grandine-mappa',origin+'/?hailCity=A&hailLat=4&hailLon=2#home','invalid'])check(sharedHailPlace(href)===null,'invalid shared place rejected');
+ check(sharedHailURL(origin,{name:'A',latitude:NaN,longitude:2})===null,'invalid coordinates never shared');
+ check(mapHailReports({updated:now,posts:null},point).fresh===false,'malformed feed not treated as empty safe state');check(mapHailReports({...r.data,updated:now-90001},point).fresh===false,'stale feed explicit');
+ await request('delete',{id});check((await request('hail/end',{id,confirm:true})).status===404,'deleted report cannot be updated');
+ for(const file of ['hail-tools.js','hail-watch.js']){const response=await worker.fetch(new Request(origin+'/'+file),env);check(response.status===200,'new module included in production bundle')}
+ console.log(n+' hail community checks passed: metadata, atomic writes, voting, ending, private zones, sharing and failure states.');
+}finally{sqlite.close()}

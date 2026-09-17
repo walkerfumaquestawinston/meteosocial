@@ -1,0 +1,12 @@
+Continua lo sviluppo del mio MeteoSocial con il mio account già collegato.
+
+Sito esistente: https://scudo-meteo-community.walkerthehate.chatgpt.site
+Progetto Sites: appgprj_6aa1e8ab06f88191ab364344053e48d9
+
+Usa il plugin Sites e recupera la versione sorgente più recente dello stesso progetto. Se la cartella manca, clona il repository restituito dal connettore in una cartella vuota. Se ho aperto la copia ZIP, confrontala con l'ultima sorgente online e conserva qualsiasi modifica locale prima di riallinearla. Non ricostruire l'app dal sito pubblico e non creare un secondo sito.
+
+Leggi AGENTS.md, PROJECT_STATUS.md, RIPRENDI-QUI.md, PROJECT_VISION.md e le note di rilascio più recenti indicate nello stato del progetto. Segui le istruzioni di ripresa, prepara l'ambiente con tools/resume.mjs e comunica brevemente cosa è pronto. Mantieni lo stesso link, account, database e segreto IA già configurato su Sites. Non chiedermi di incollare chiavi e non trasferire segreti o dati degli utenti nella copia locale.
+
+Prima di ogni intervento recupera gli aggiornamenti; alla fine salva il codice online e aggiorna lo stato del progetto, pubblicando gli interventi al sito quando richiesto. Non scartare modifiche concorrenti. Distingui sempre le funzioni realmente attive dalle integrazioni ancora necessarie. Attendi poi la mia prossima modifica al prodotto.
+
+Ricorda che lavoro anche da un PC secondario: salva ogni aggiornamento nello stesso progetto online perché possa riprenderlo dal PC principale. Non dichiarare sincronizzate le cartelle dei PC o le bozze del browser senza un collegamento effettivamente configurato.

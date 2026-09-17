@@ -1,0 +1,15 @@
+{
+  "status": "MSLM v1 gzip container; Float32 vertices and Uint16 indices",
+  "fileBytes": 90995,
+  "sourceBytes": 1048130,
+  "sourceGzipBytes": 128853,
+  "binaryBytes": 165188,
+  "binaryGzipBytes": 90998,
+  "landTriangles": 10770,
+  "landTrianglesUnchanged": true,
+  "coastRings": 128,
+  "coastSegmentsBefore": 5014,
+  "coastSegmentsAfter": 1499,
+  "maxChordErrorDegrees": 0.49974870078755174,
+  "coastVerticesPercent": 29.896290386916633
+}

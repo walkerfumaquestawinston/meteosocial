@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import {interpolateTemperature,temperatureColor,windVector} from './dist/local-map-weather.js';
+import {visibleRadarTiles,hasVisibleAlpha,radarAreaState} from './dist/map-radar-check.js';
+import {reportTitle} from './dist/local-map.js';
+import fs from 'node:fs';
+import vm from 'node:vm';
+assert.equal(reportTitle({kind:'rain',level:4,phenomenon:''}),'Diluvio');
+assert.equal(reportTitle({kind:'rain',level:2}),'Pioviggina');
+assert.equal(reportTitle({kind:'hail',level:null,phenomenon:'Grandine'}),'Grandine');
+const grid=[{latitude:0,longitude:-1,temperature_2m:10},{latitude:0,longitude:1,temperature_2m:30}];
+assert.equal(interpolateTemperature(grid,0,0),20);
+assert.equal(interpolateTemperature([...grid,{latitude:0,longitude:0,temperature_2m:22}],0,0),22);
+assert.equal(interpolateTemperature([],0,0),null);
+assert.deepEqual(temperatureColor(-10),[53,105,238]);assert.deepEqual(temperatureColor(22),[247,215,82]);assert.deepEqual(temperatureColor(40),[233,64,58]);
+assert.ok(windVector(20,270).u>19.99);assert.ok(windVector(20,180).v>19.99);
+const tiles=visibleRadarTiles({west:13.8,east:13.95,south:42.90,north:43.02},11);assert.ok(tiles.length>0);assert.ok(tiles.every(t=>t.z===7&&t.clip[0]>=0&&t.clip[2]<=256));
+assert.deepEqual(visibleRadarTiles({west:-180,east:180,south:-90,north:90},4),[]);
+const pixels=new Uint8ClampedArray(256*256*4);pixels[(80*256+80)*4+3]=1;
+assert.equal(hasVisibleAlpha(pixels,[0,0,50,50]),false);assert.equal(hasVisibleAlpha(pixels,[0,0,100,100]),true);
+assert.equal(await radarAreaState([],{},11),'unknown');
+assert.equal(await radarAreaState([{time:0}],{},11),'unknown');
+// Service-worker install excludes legacy 3D and stores all static split dependencies.
+const handlers={},saved=[],deleted=[];let skip=0;
+const sandbox={importScripts(){},self:{addEventListener:(k,f)=>handlers[k]=f,clients:{claim:async()=>{}},skipWaiting:async()=>skip++},caches:{open:async()=>({put:async(url)=>saved.push(url)}),keys:async()=>['meteosocial-shell-v44','unrelated'],delete:async k=>deleted.push(k)},fetch:async()=>({ok:true,redirected:false}),URL,Response};
+vm.runInNewContext(fs.readFileSync('dist/sw.js','utf8'),sandbox);
+let job;handlers.install({waitUntil:p=>job=p});await job;
+assert.ok(saved.some(x=>/chunk-.*\.js/.test(x)));assert.ok(!saved.some(x=>/three|globe|land-mesh|schools|climate-view|google-3d|world-weather|hail/.test(x)));
+handlers.activate({waitUntil:p=>job=p});await job;assert.deepEqual(deleted,['meteosocial-shell-v44']);
+handlers.message({data:{type:'SKIP_WAITING'},waitUntil:p=>job=p});await job;assert.equal(skip,1);
+const report=JSON.parse(fs.readFileSync('tools/map-bundle-report.json'));assert.ok(!report.inputs.some(x=>/\/(globe|atlas|planet|google-3d|hail|schools|world-weather|climate-view)\.js$|three\.(module|core)|land-mesh/.test(x)));
+console.log('Refinement checks passed: exact report levels, interpolation/city anchor, palette, wind direction, radar coverage/crops, safe unknown, update activation, obsolete bundle/cache exclusion.');
+// Waiting-worker banner must not reload until an explicit user click.
+const updateEvents={},button={},banner={setAttribute(){},querySelector:()=>button};let appended=false,reloads=0,posted=null;
+const worker={postMessage:m=>posted=m};const registration={waiting:worker,addEventListener(){},update:async()=>{}};
+const updateSandbox={navigator:{serviceWorker:{controller:{},addEventListener:(n,f)=>updateEvents[n]=f,register:async()=>registration}},document:{readyState:'complete',getElementById:()=>appended?banner:null,createElement:()=>banner,body:{append(){appended=true}},addEventListener(){}},location:{reload:()=>reloads++},setTimeout:f=>f(),window:{addEventListener(){}}};
+vm.runInNewContext(fs.readFileSync('dist/app-updates.js','utf8').replace('export function','function')+'\ninstallUpdates();',updateSandbox);
+await Promise.resolve();await Promise.resolve();assert.equal(appended,true);updateEvents.controllerchange();assert.equal(reloads,0);button.onclick();assert.equal(posted.type,'SKIP_WAITING');updateEvents.controllerchange();assert.equal(reloads,1);
+console.log('Update banner: waiting worker offered, explicit activation, exactly one controlled reload passed.');

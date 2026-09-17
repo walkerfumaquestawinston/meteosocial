@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';import {mkdtempSync,rmSync} from 'node:fs';import {tmpdir} from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';
+import {createLocalEnvironment} from './tools/local-preview.mjs';import worker from './dist/server/index.js';
+const dir=mkdtempSync(path.join(tmpdir(),'event-notices-')),local=createLocalEnvironment(process.cwd(),dir),env=local.env,nativeNow=Date.now,nativeFetch=fetch;let now=Date.parse('2026-09-17T10:00:00Z');Date.now=()=>now;const sent=[];
+globalThis.fetch=async(url,options)=>{if(String(url).startsWith('https://fcm.googleapis.com/')){sent.push(options);return new Response(null,{status:201})}throw Error('Unexpected external network')};
+const hash=s=>createHash('sha256').update(s).digest('hex'),sql=async(s,...v)=>env.DB.prepare(s).bind(...v).run();
+async function call(p,b,who='owner'){const h={origin:'https://preview.invalid'};if(who){h['oai-authenticated-user-id']=who;h['oai-authenticated-user-email']='test@example.invalid'}if(b!==undefined)h['content-type']='application/json';const r=await worker.fetch(new Request('https://preview.invalid/api/'+p,{method:b===undefined?'GET':'POST',headers:h,body:b===undefined?undefined:JSON.stringify(b)}),env);return {status:r.status,body:await r.json()}}
+const times=[9,12,15,18,21].map(h=>'2026-09-17T'+String(h).padStart(2,'0')+':00');
+async function cache(temp=20,rain=0){await sql('INSERT OR REPLACE INTO globe_snapshots(name,payload,updated,attempted,lease) VALUES(?,?,?,?,0)','journey:4296:1388',JSON.stringify({data:{hourly:{time:times,temperature_2m:Array(5).fill(temp),precipitation:Array(5).fill(rain)}},at:now}),now,now)}
+async function create(){const r=await call('groups',{name:'Test private event',city:'San Benedetto del Tronto',latitude:42.96,longitude:13.88,day:'2026-09-17'});assert.equal(r.status,201);return r.body}
+try{
+ await cache();assert.equal((await call('groups/mine',undefined,'')).status,401);assert.equal((await call('answer-push/events',{enabled:true},'')).status,401);assert.equal((await call('answer-push/events',{enabled:true})).status,403);
+ const g=await create(),url='groups/'+g.id+'?token='+g.token;
+ assert.equal((await call('groups/mine')).body.groups[0].id,g.id);assert.equal((await call('groups/mine',undefined,'other')).body.groups.length,0);assert.equal((await call('groups/'+g.id)).status,200,'member reads without invitation token');assert.equal((await call('groups/'+g.id,undefined,'other')).status,404);assert.equal((await call('groups/mine')).body.groups[0].token,undefined);
+ await sql('INSERT INTO sky_reports(id,author,lat,lon,city,level,kind,created,expires) VALUES(?,?,?,?,?,?,?,?,?)','test-only',hash('owner'),4296,1388,'Test',0,'asciutto',now,now+7200000);
+ assert.equal((await call('answer-push/events',{enabled:true})).status,200);assert.equal((await call('answer-push/config')).body.eventsEnabled,true);
+ const keys=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);env.WEB_PUSH_PRIVATE_JWK=JSON.stringify(await crypto.subtle.exportKey('jwk',keys.privateKey));env.WEB_PUSH_PUBLIC_KEY=Buffer.from(await crypto.subtle.exportKey('raw',keys.publicKey)).toString('base64url');await sql('INSERT INTO answer_subscriptions VALUES(?,?,?,?)','test-device',hash('owner'),'https://fcm.googleapis.com/fcm/send/test-only',now);
+ await cache(null,null);await call(url,undefined,'');assert.equal(sent.length,0,'missing values do not trigger an alert');
+ await cache(25,0);await Promise.all([call(url,undefined,''),call(url,undefined,'')]);assert.equal(sent.length,1,'concurrent detection sends one event notice');assert.equal((await call('groups/mine')).body.groups[0].unread,1);assert.equal(sent[0].body,undefined,'no private invitation in push payload');
+ await call(url);assert.equal((await call('groups/mine')).body.groups[0].unread,0);await cache(30,0);await call(url,undefined,'');assert.equal(sent.length,1,'second forecast change does not produce another push');
+ await call('answer-push/disable',{});assert.ok(await env.DB.prepare('SELECT device FROM answer_subscriptions WHERE actor=?').bind(hash('owner')).first(),'event subscription survives disabling answer notifications');
+ await cache(20);const g2=await create();await call('groups/'+g2.id);await cache(25);await call('groups/'+g2.id+'?token='+g2.token,undefined,'');assert.equal(sent.length,2);
+ await cache(20);const g3=await create();await call('groups/'+g3.id);await cache(25);await call('groups/'+g3.id+'?token='+g3.token,undefined,'');assert.equal(sent.length,2,'shared strict two/day limit');
+ now=Date.parse('2026-09-17T21:00:00Z');await cache(20);const g4=await create();await call('groups/'+g4.id);await cache(25);await call('groups/'+g4.id+'?token='+g4.token,undefined,'');assert.equal(sent.length,2,'quiet hours');
+ await call('answer-push/events',{enabled:false});assert.equal((await call('answer-push/config')).body.eventsEnabled,false);
+ now+=3*86400000;assert.equal((await call('groups/mine')).body.groups.length,0);assert.equal((await env.DB.prepare('SELECT COUNT(*) n FROM event_notices').bind().first()).n,0);
+ console.log('PASS event alerts: private membership recovery, opt-in, null data, concurrency, once/event, seen state, shared daily cap, quiet hours, subscription independence, expiry.');
+}finally{Date.now=nativeNow;globalThis.fetch=nativeFetch;local.close();rmSync(dir,{recursive:true,force:true})}

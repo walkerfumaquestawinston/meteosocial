@@ -1,24 +1,7 @@
-# Passaggio a Claude
+# Sincronizzazione GitHub — 17 settembre 2026
 
-Repository: https://github.com/walkerfumaquestawinston/meteosocial
+Il repository GitHub walkerfumaquestawinston/meteosocial contiene ora la sorgente Sites bd822c5d88dc0b88a64caf180fb5dfb6a35b71d1. La versione pubblicata è 64, commit applicativo 5b336b97a12e7f8f0f80b713e8ef5154fd6ed381. Il commit sorgente successivo aggiunge le istruzioni per Claude senza cambiare il sito.
 
-## Come ripartire
-Rendi disponibile questo repository nella sessione Claude che userai, tramite la relativa integrazione GitHub oppure caricando i file necessari. La connessione GitHub di questa sessione non prova che Claude abbia già accesso.
+GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app single-file del 10 settembre è conservata nella cronologia Git, non è la base da sviluppare. Sites rimane il sistema di pubblicazione, con lo stesso URL. Nessun deploy automatico da GitHub e nessun trasferimento dei dati di produzione.
 
-Messaggio pronto da copiare:
-
-> Riprendi MeteoSocial dal repository walkerfumaquestawinston/meteosocial. Leggi CLAUDE.md, README.md e AI_BRIEF.md. Verifica il codice esistente e i suoi limiti prima di proporre modifiche. Mantieni aspetto, sei viste, IT/EN, compatibilità con Claude Artifacts e file HTML autonomo. Per iniziare esegui npm run check e dimmi quali funzionalità sono già reali, locali, dimostrative o dipendenti da Claude. Prima di sviluppare, concordiamo la prossima funzionalità. Per ogni modifica lavora in src/, ricostruisci index.html e verifica il risultato.
-
-## Preparazione del 17 settembre 2026
-- Aggiunte istruzioni CLAUDE.md e ricostruzione deterministica.
-- Verificata corrispondenza esatta tra HTML ricostruito e index.html preesistente.
-- Verificata sintassi di tutti i file JavaScript in src/, incluso data-extra.js.
-- Aggiunti controlli automatici per sincronizzazione, JSON iniziale, chiusure script e sei viste.
-- Aggiunto workflow GitHub Actions per push e pull request.
-- Nessuna modifica al comportamento o all'aspetto dell'app.
-
-## Verifiche
-I controlli locali sono stati eseguiti direttamente con Node.js; npm non era disponibile nell'ambiente di preparazione. Su GitHub, il workflow Check MeteoSocial esegue npm run check con Node.js 22. Consulta la scheda Actions per l'esito della versione corrente.
-
-## Limiti da conoscere
-Non sono stati collaudati il browser, le capability dentro Claude, l'accesso del tuo account Claude, né la pubblicazione negli store. Il meteo incluso è uno snapshot; dati extra non caricati. Backend multiutente, autenticazione, storage condiviso e app nativa restano lavori separati.
+Leggi CLAUDE.md e docs/COLLABORAZIONE-CLAUDE.md. Le istruzioni precedenti sul vecchio prototipo single-file, globo three.js r128 e src/ sono superate. Il progetto corrente usa mappa locale MapLibre e frontend in dist/. Non avviare 24.6 senza incarico esplicito.
