@@ -1,0 +1,14 @@
+{
+  "name": "meteosocial",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MeteoSocial single-file development kit",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/check.mjs"
+  }
+}

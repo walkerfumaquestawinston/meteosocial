@@ -15,7 +15,7 @@ Il meteo del mondo, raccontato da chi lo vive. App web single-file (HTML+CSS+JS)
 - `src/app-v5.js` — v5: globo nitido (mipmap, anisotropia, pixel ratio) con etichette città e Giro del mondo, layer mappa Grandine, social completo (profili utente, salvati, menzioni @, cuori sui commenti, modifica/nascondi/segnala, link al post `#post=id`, centro notifiche), IA con voce (dettatura + lettura) e traduzione dei post, intro cinematica.
 - `src/app-v6.js` — v6: selezione precisa delle città sul globo (città vicine → menu di scelta e zoom automatico), pannello livelli mappa con legende (Temperatura, Pioggia radar, Grandine con elenco città/orari, Segnalazioni, Satellite, Google Maps), "Segnala in un tocco", "Polso della community" con filtri per condizione, filtro "La mia città", guida in-app (❔), rifiniture grafiche (nav, chip, transizioni).
 
-Per ricostruire `index.html`: `<!doctype html>` + `styles-and-head.html` + `</head><body>` + `markup.html` + `<script src=three.js r128>` + in ordine `<script>textures.js</script>`, `data.js`, `app.js`, `app-social-3d-ai.js`, `app-v3.js`, `app-v4.js`, `app-v5.js`, `app-v6.js` (ogni file in un proprio `<script>`; i moduli successivi sovrascrivono le funzioni globali di quelli precedenti).
+Per ricostruire `index.html`: eseguire `npm run build` con Node.js 22 o successivo. Lo script `scripts/build.mjs` mantiene l'ordine originale e include intestazione, stato e chiusure HTML. I moduli successivi sovrascrivono alcune funzioni globali di quelli precedenti; non eliminarli come duplicati.
 
 ## Runtime Claude (window.claude.use)
 Funziona anche senza: ogni capability è opzionale (`null` → funzione nascosta).
@@ -29,3 +29,24 @@ Funziona anche senza: ogni capability è opzionale (`null` → funzione nascosta
 2. Community: Supabase/Firebase (tabelle `posts`, `reactions`, `comments`, storage per foto/video), login social, moderazione.
 3. IA: endpoint server che chiama l'API Claude con gli stessi prompt di `aiContext()` e `aiInto()`.
 4. App nativa: incapsulare con Capacitor (Android/iOS) + notifiche push per allerte.
+
+## Lavorare con Claude
+Leggi [CLAUDE.md](CLAUDE.md) per le istruzioni e [docs/CLAUDE_HANDOFF.md](docs/CLAUDE_HANDOFF.md) per il messaggio iniziale.
+
+```sh
+npm run check
+# Modifica i file in src/, poi:
+npm run build
+npm run check
+```
+
+Non occorre `npm install`: gli strumenti usano solo moduli integrati di Node.js. `npm test` esegue gli stessi controlli statici. Il workflow GitHub Actions li esegue su push e pull request. Non sostituiscono le prove nel browser e in Claude.
+
+Apri `index.html` nel browser per una prova locale. Le funzioni del runtime Claude dipendono dall'ambiente e dalle autorizzazioni disponibili; il collegamento a GitHub non le abilita automaticamente.
+
+File aggiuntivi:
+- `src/document-start.html`: doctype, lingua e meta della pagina.
+- `src/data-extra.js`: dataset aggiuntivo `WX2`, non caricato da `index.html` e volutamente escluso dalla ricostruzione.
+- `scripts/build.mjs` e `scripts/check.mjs`: ricostruzione e controlli senza dipendenze.
+
+Il repository è un prototipo: i dati meteo incorporati sono uno snapshot, il radar è stimato e le funzioni social possono essere locali o dipendenti da Claude. Le voci sul backend e sugli store sopra sono una roadmap, non funzionalità già implementate.
