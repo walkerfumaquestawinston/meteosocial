@@ -10,6 +10,10 @@ La PR #2 è stata integrata su richiesta esplicita del proprietario: `main` è p
 
 **Il sito Netlify è confermato funzionante dal proprietario.** Progetto `friendly-pothos-c169ad`, costruito da `main`. Da questo ambiente non è raggiungibile — la politica di rete della sessione consente solo GitHub e i registri dei pacchetti — quindi la conferma è del proprietario, non una mia misura. Resta vero il limite documentato: attraverso il proxy l'app è in sola lettura.
 
+**Le anteprime per pull request sono attive**, e cambiano il modo di lavorare: ogni PR riceve un proprio indirizzo (`https://deploy-preview-<numero>--friendly-pothos-c169ad.netlify.app`) costruito dal suo ramo. Un aggiornamento su un ramo quindi **si vede subito**, senza doverlo prima integrare in `main`: la regola di consegna in tempo reale è soddisfatta lavorando sul ramo, come dice CLAUDE.md.
+
+Netlify aggiunge tre controlli propri su ogni PR. Sulla PR #3 `Redirect rules` e `Header rules` risultano **success**: è una conferma indipendente, non mia, che il proxy `/api/*` e le intestazioni dichiarate in `netlify.toml` sono validi e accettati. Non dice nulla sulle scritture, che restano bloccate per i motivi documentati e non per la configurazione.
+
 ## Anteprima Netlify con API in proxy — 18 settembre 2026
 
 Su richiesta esplicita del proprietario. **La pubblicazione ufficiale resta su Sites**, allo stesso indirizzo: Netlify non la sostituisce e non tocca il database di produzione. Versione pubblicata invariata: 64.
