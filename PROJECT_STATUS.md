@@ -6,6 +6,16 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Regola di consegna e Netlify confermato — 18 settembre 2026
+
+Regola del proprietario: ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale. Niente resta in chat o in locale; commit e push appena il lavoro e verificato, con PROJECT_STATUS.md e docs/CLAUDE_HANDOFF.md aggiornati nello stesso push, e i limiti dichiarati. Il testo completo e in CLAUDE.md, sezione Collaborazione.
+
+PR #2 integrata su richiesta esplicita del proprietario: main da 00c851f a 615e3e3. Porta build riproducibile, suite eseguibile, le quattro correzioni di leggibilita e la configurazione Netlify. CI verde su Node 24. Build riproducibile verificata anche su main: dopo node build.mjs l'albero resta pulito. Il sito su Sites resta invariato alla versione 64.
+
+Sito Netlify confermato funzionante dal proprietario: progetto friendly-pothos-c169ad, costruito da main. Da questo ambiente non e raggiungibile, perche la politica di rete della sessione consente solo GitHub e i registri dei pacchetti: la conferma e del proprietario, non una misura mia. Resta valido il limite gia documentato, cioe che attraverso il proxy l'app e in sola lettura.
+
+Prossimo passo invariato: restano da decidere i due conflitti con le regole invariabili (i commenti verso altre persone esistono e sono raggiungibili; i post normali non scadono dopo 2 ore), la revisione della regola html body #main a, e la sorte dei sei test non pertinenti.
+
 ## Anteprima Netlify con API in proxy — 18 settembre 2026
 
 Su richiesta esplicita del proprietario. Aggiunti netlify.toml, tools/netlify-publish.mjs e docs/NETLIFY.md. La pubblicazione ufficiale resta su Sites allo stesso indirizzo: Netlify non la sostituisce, non la modifica e non tocca il database di produzione. Versione pubblicata invariata: 64.

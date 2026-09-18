@@ -2,6 +2,14 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Regola di consegna e Netlify confermato — 18 settembre 2026
+
+**Ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale.** Regola del proprietario: niente resta in chat o in locale, commit e push appena il lavoro è verificato, con PROJECT_STATUS.md e questo file aggiornati nello stesso push. Il testo completo è in CLAUDE.md, sezione «Collaborazione».
+
+La PR #2 è stata integrata su richiesta esplicita del proprietario: `main` è passato da `00c851f` a `615e3e3` e porta la build riproducibile, la suite eseguibile, le quattro correzioni di leggibilità e la configurazione Netlify. CI verde su Node 24. Il sito su Sites resta invariato alla versione 64: un push su GitHub non lo aggiorna.
+
+**Il sito Netlify è confermato funzionante dal proprietario.** Progetto `friendly-pothos-c169ad`, costruito da `main`. Da questo ambiente non è raggiungibile — la politica di rete della sessione consente solo GitHub e i registri dei pacchetti — quindi la conferma è del proprietario, non una mia misura. Resta vero il limite documentato: attraverso il proxy l'app è in sola lettura.
+
 ## Anteprima Netlify con API in proxy — 18 settembre 2026
 
 Su richiesta esplicita del proprietario. **La pubblicazione ufficiale resta su Sites**, allo stesso indirizzo: Netlify non la sostituisce e non tocca il database di produzione. Versione pubblicata invariata: 64.
