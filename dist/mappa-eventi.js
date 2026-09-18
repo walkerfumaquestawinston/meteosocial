@@ -50,13 +50,17 @@ export function createMappaEventi(ctx) {
   // Ogni livello sa da dove viene e come sta. "stato" e' uno di:
   // ok, giu (la fonte non risponde), vecchio (dato precedente conservato).
   const livelli = [
-    { id: 'comuni', icona: '🌡', nome: 'COMUNI', fonte: 'ISTAT', attivo: true, dati: [], stato: '', conteggio: 0 },
     { id: 'temperature', icona: '🌡', nome: 'TEMPERATURE', fonte: 'OPEN-METEO', attivo: true, dati: [], stato: '', conteggio: 0 },
+    { id: 'pioggia', icona: '☔', nome: 'PIOGGIA', fonte: 'OPEN-METEO', attivo: true, dati: [], stato: '', conteggio: 0 },
     { id: 'eventi', icona: '⚡', nome: 'EVENTI', fonte: 'NASA EONET', attivo: true, dati: [], stato: '', conteggio: 0 },
     { id: 'grandine', icona: '◇', nome: 'GRANDINE', fonte: 'PERSONE', attivo: true, dati: [], stato: '', conteggio: 0 },
+    { id: 'comuni', icona: '⌖', nome: 'COMUNI', fonte: 'ISTAT', attivo: true, dati: [], stato: '', conteggio: 0 },
   ];
   const trova = (id) => livelli.find(l => l.id === id);
   let totaleComuni = null, aggiornamenti = {};
+  // Meteo per comune, indicizzato per codice ISTAT: t = gradi, mm =
+  // precipitazione, vento = km/h. Vuoto finche' la fonte non risponde.
+  let meteoComuni = new Map(), meteoStato = '';
 
   try {
     const salvato = JSON.parse(localStorage.getItem(MAPPA_CHIAVE) || 'null');
@@ -82,7 +86,10 @@ export function createMappaEventi(ctx) {
           <div class="mappa-livelli" role="group" aria-label="Livelli della mappa">
             ${livelli.map(l => `<button type="button" class="mappa-pillola" data-livello="${l.id}" aria-pressed="${l.attivo}">${l.icona} ${l.nome} <span data-conteggio="${l.id}">—</span></button>`).join('')}
           </div>
-          <button type="button" class="mappa-elenco" id="mappa-elenco" aria-expanded="false">ELENCO</button>
+          <div class="mappa-azioni">
+            <button type="button" class="mappa-elenco" id="mappa-elenco" aria-expanded="false">ELENCO</button>
+            <button type="button" class="mappa-chiedi mappa-chiedi-vista" id="mappa-lente">CHIEDI A LENTE</button>
+          </div>
         </div>
       </div>
       <div class="mappa-lista" id="mappa-lista" hidden></div>
@@ -95,11 +102,23 @@ export function createMappaEventi(ctx) {
 
     // Fonte che non risponde: barrata e in colore d'allerta. Dato vecchio:
     // segnato. L'utente deve sapere cosa manca, non indovinarlo (4.3).
+    // Una fonte per riga, non una per livello: TEMPERATURE e PIOGGIA vengono
+    // dallo stesso Open-Meteo e ripeterlo due volte confonde. Se piu livelli
+    // la condividono vale lo stato peggiore, perche' e' quello che l'utente
+    // deve sapere.
     const fonti = $('#mappa-fonti');
-    if (fonti) fonti.innerHTML = livelli.map(l =>
-      l.stato === 'giu' ? `<s class="mappa-giu">${esc(l.fonte)}</s>`
-        : l.stato === 'vecchio' ? `<span class="mappa-vecchio">${esc(l.fonte)}*</span>`
-          : esc(l.fonte)).join(' · ');
+    if (fonti) {
+      const peso = { '': 0, vecchio: 1, giu: 2 };
+      const per = new Map();
+      for (const l of livelli) {
+        const attuale = per.get(l.fonte) ?? '';
+        if (peso[l.stato] > peso[attuale]) per.set(l.fonte, l.stato); else if (!per.has(l.fonte)) per.set(l.fonte, attuale);
+      }
+      fonti.innerHTML = [...per].map(([nome, stato]) =>
+        stato === 'giu' ? `<s class="mappa-giu">${esc(nome)}</s>`
+          : stato === 'vecchio' ? `<span class="mappa-vecchio">${esc(nome)}*</span>`
+            : esc(nome)).join(' · ');
+    }
 
     // NODI: elementi realmente caricati. Mai numeri inventati.
     const nodi = $('#mappa-nodi');
@@ -107,11 +126,13 @@ export function createMappaEventi(ctx) {
     const attivi = $('#mappa-eventi-attivi');
     if (attivi) attivi.textContent = mappaNumero(trova('eventi').conteggio + trova('grandine').conteggio);
 
+    // Si contano le fonti giu, non i livelli: due livelli sulla stessa fonte
+    // caduta sono un guasto solo, e dirne due sarebbe un numero gonfiato.
     const sistema = $('#mappa-sistema');
-    const giu = livelli.filter(l => l.attivo && l.stato === 'giu');
+    const giu = new Set(livelli.filter(l => l.attivo && l.stato === 'giu').map(l => l.fonte));
     if (sistema) {
-      sistema.textContent = giu.length ? `${giu.length} FONTI NON DISPONIBILI` : 'SISTEMA ATTIVO';
-      sistema.classList.toggle('mappa-giu', giu.length > 0);
+      sistema.textContent = giu.size ? (giu.size === 1 ? '1 FONTE NON DISPONIBILE' : `${giu.size} FONTI NON DISPONIBILI`) : 'SISTEMA ATTIVO';
+      sistema.classList.toggle('mappa-giu', giu.size > 0);
     }
     for (const l of livelli) {
       const c = document.querySelector(`[data-conteggio="${l.id}"]`);
@@ -130,6 +151,21 @@ export function createMappaEventi(ctx) {
       if (token !== sequenza) return;
       l.dati = d.dati || []; l.conteggio = d.mostrati || 0; l.stato = ''; totaleComuni = d.totale ?? null;
     } catch { if (token === sequenza) { l.dati = []; l.conteggio = 0; l.stato = 'giu'; } }
+  }
+
+  // Meteo dei comuni: una sola chiamata per tutti, il Worker lo tiene in cache
+  // quindici minuti. Serve sia a TEMPERATURE sia a PIOGGIA, quindi si carica
+  // se almeno uno dei due e acceso.
+  async function caricaMeteoComuni(token) {
+    if (!trova('temperature').attivo && !trova('pioggia').attivo) return;
+    try {
+      const d = await ctx.api('mappa/meteo');
+      if (token !== sequenza) return;
+      const m = new Map();
+      for (const r of d.dati || []) m.set(r[0], { t: r[1], mm: r[2], codice: r[3], vento: r[4] });
+      meteoComuni = m; meteoStato = d.stale ? 'vecchio' : '';
+      aggiornamenti.meteoComuni = d.updated;
+    } catch { if (token === sequenza) { meteoComuni = new Map(); meteoStato = 'giu'; } }
   }
 
   async function caricaTemperature(token) {
@@ -177,8 +213,26 @@ export function createMappaEventi(ctx) {
     if (!map || !vivo) return;
     const token = ++sequenza;
     // In parallelo ma indipendenti: una fonte che cade non ferma le altre.
-    await Promise.allSettled([caricaComuni(token), caricaTemperature(token), caricaEventi(token), caricaGrandine(token)]);
+    await Promise.allSettled([caricaComuni(token), caricaMeteoComuni(token), caricaTemperature(token), caricaEventi(token), caricaGrandine(token)]);
     if (token !== sequenza) return;
+
+    // TEMPERATURE e PIOGGIA vivono sugli stessi punti: citta del mondo piu
+    // comuni italiani con misura. I conteggi si calcolano dopo il caricamento,
+    // sui dati veri, invece di essere dichiarati a priori.
+    const citta = trova('temperature').dati;
+    const conMisura = trova('comuni').dati.filter(c => meteoComuni.has(c[0]));
+    const temp = trova('temperature');
+    temp.conteggio = citta.length + conMisura.length;
+    if (temp.stato !== 'giu' && meteoStato === 'giu' && !citta.length) temp.stato = 'giu';
+
+    const pioggia = trova('pioggia');
+    if (pioggia.attivo) {
+      const bagnate = citta.filter(c => Number(c.current.precipitation) > 0).length
+        + conMisura.filter(c => Number(meteoComuni.get(c[0]).mm) > 0).length;
+      pioggia.conteggio = bagnate;
+      pioggia.stato = (temp.stato === 'giu' && meteoStato === 'giu') ? 'giu' : (meteoStato === 'vecchio' ? 'vecchio' : '');
+    }
+
     disegna(); scriviStato(); scriviLista(); mostraVuoto();
   }
 
@@ -209,21 +263,30 @@ export function createMappaEventi(ctx) {
     for (const id of Object.keys(strati)) strati[id].clearLayers();
     const z = map.getZoom();
 
-    // Comuni: punti piccoli, senza misura propria finche' il meteo per comune
-    // non e collegato.
-    const comuni = trova('comuni');
+    const comuni = trova('comuni'), temp = trova('temperature'), pioggia = trova('pioggia');
+
+    // Comuni: il punto prende il colore dalla scala termica quando il meteo
+    // c'e', grigio quando non c'e'. Il grigio non e' un valore: e' l'assenza
+    // di valore, e si vede che e' diversa dagli altri.
     if (comuni.attivo) {
       const g = strato('comuni');
       for (const c of comuni.dati) {
-        const punto = L.circleMarker([c[3], c[4]], { radius: 3, weight: 1, color: '#0b1725', opacity: .5, fillColor: '#6f8296', fillOpacity: .8 });
+        const m = meteoComuni.get(c[0]);
+        const punto = L.circleMarker([c[3], c[4]], {
+          radius: m ? 5 : 3, weight: 1, color: '#07121f', opacity: m ? .7 : .5,
+          fillColor: m ? mappaColore(m.t) : '#6f8296', fillOpacity: m ? .95 : .75,
+        });
         punto.on('click', () => schedaComune(c));
         g.addLayer(punto);
       }
-      if (z >= 9) for (const c of comuni.dati.slice(0, 120)) etichetta(c[1], c[3], c[4], g);
+      // Da zoom 9 il nome; se c'e' la misura, nome e gradi insieme.
+      if (z >= 9) for (const c of comuni.dati.slice(0, 120)) {
+        const m = meteoComuni.get(c[0]);
+        etichetta(m ? `${c[1]} ${m.t}°` : c[1], c[3], c[4], g);
+      }
     }
 
-    // Temperature: il raggio non cambia, il colore si', dalla scala termica.
-    const temp = trova('temperature');
+    // Temperature: le citta del mondo. Il raggio non cambia, il colore si'.
     if (temp.attivo) {
       const g = strato('temperature');
       for (const c of temp.dati) {
@@ -233,6 +296,30 @@ export function createMappaEventi(ctx) {
         g.addLayer(punto);
       }
       if (z >= 4) for (const c of temp.dati) etichetta(`${Math.round(c.current.temperature_2m)}°`, c.latitude, c.longitude, g);
+    }
+
+    // Pioggia: solo dove sta piovendo davvero. Un anello azzurro che cresce
+    // con i millimetri, sopra il punto della temperatura. Zero millimetri non
+    // disegna niente: "non piove" non e' un dato da mostrare.
+    if (pioggia.attivo) {
+      const g = strato('pioggia');
+      const goccia = (lat, lng, mm, apri) => {
+        const raggio = Math.max(7, Math.min(22, 7 + mm * 3));
+        const anello = L.circleMarker([lat, lng], {
+          radius: raggio, weight: 2, color: '#4fb6f5', opacity: .9,
+          fillColor: '#4fb6f5', fillOpacity: Math.min(.4, .12 + mm * .05),
+        });
+        if (apri) anello.on('click', apri);
+        g.addLayer(anello);
+      };
+      for (const c of temp.dati) {
+        const mm = Number(c.current.precipitation);
+        if (Number.isFinite(mm) && mm > 0) goccia(c.latitude, c.longitude, mm, () => schedaCitta(c));
+      }
+      for (const c of comuni.dati) {
+        const m = meteoComuni.get(c[0]);
+        if (m && Number.isFinite(m.mm) && m.mm > 0) goccia(c[3], c[4], m.mm, () => schedaComune(c));
+      }
     }
 
     // Eventi naturali: cerchio piu grande in colore d'allerta.
@@ -290,13 +377,52 @@ export function createMappaEventi(ctx) {
 
   function schedaComune(c) {
     const ab = Number.isFinite(c[5]) ? `${mappaNumero(c[5])} AB.` : 'ABITANTI NON DISPONIBILI';
+    const m = meteoComuni.get(c[0]);
+    const meteo = m ? `
+      <dt>TEMPERATURA</dt><dd class="mappa-mono">${m.t}°</dd>
+      ${Number.isFinite(m.mm) ? `<dt>PIOGGIA</dt><dd class="mappa-mono">${m.mm} mm</dd>` : ''}
+      ${Number.isFinite(m.vento) ? `<dt>VENTO</dt><dd class="mappa-mono">${m.vento} km/h</dd>` : ''}` : '';
+    const nota = m
+      ? '<p>Dato di modello, non una misura presa da una stazione qui.</p>'
+      : `<p>Per questo comune il meteo non è disponibile: la raccolta copre i 500 comuni più popolosi. Non mettiamo un numero stimato al suo posto.</p>`;
     ctx.modal(c[1], `<div class="mappa-scheda">
       <p class="mappa-riga">${esc(c[2])} · ${ab}</p>
-      <dl><dt>CODICE ISTAT</dt><dd class="mappa-mono">${esc(c[0])}</dd>
+      <dl>${meteo}
+      <dt>CODICE ISTAT</dt><dd class="mappa-mono">${esc(c[0])}</dd>
       <dt>COORDINATE</dt><dd class="mappa-mono">${c[3].toFixed(4)}, ${c[4].toFixed(4)}</dd></dl>
-      <p>Il meteo per singolo comune non è ancora collegato: finché non lo è, qui non mettiamo un numero al suo posto.</p>
+      ${nota}
       ${bloccoLente(c[1], `Che tempo fa a ${c[1]}?`)}
-      <p class="mappa-fonte">FONTE  Elenco dei comuni ISTAT. Dato statico, non una misura.</p>
+      <p class="mappa-fonte">FONTE  Comuni ISTAT${m ? ` · meteo Open-Meteo${aggiornamenti.meteoComuni ? ', aggiornato alle ' + mappaOra(aggiornamenti.meteoComuni) : ''}` : ''}</p>
+    </div>`, null);
+    collegaLente();
+  }
+
+  // L'IA sulla mappa, non solo dentro le schede: si chiede a Lente cosa sta
+  // succedendo in quello che si sta guardando. Il riassunto e' costruito dai
+  // conteggi veri gia' caricati, mai da numeri stimati, e alla Lente arriva
+  // solo il nome della localita: niente coordinate, autori o media.
+  function riassuntoVista() {
+    const pezzi = [];
+    const temp = trova('temperature'), pioggia = trova('pioggia'), eventi = trova('eventi'), grandine = trova('grandine');
+    const gradi = [...trova('comuni').dati.map(c => meteoComuni.get(c[0])?.t), ...temp.dati.map(c => Math.round(c.current.temperature_2m))].filter(Number.isFinite);
+    if (gradi.length) pezzi.push(`${gradi.length} località con temperature fra ${Math.min(...gradi)} e ${Math.max(...gradi)} gradi`);
+    if (pioggia.attivo && pioggia.conteggio) pezzi.push(`${pioggia.conteggio} dove sta piovendo`);
+    if (eventi.attivo && eventi.conteggio) pezzi.push(`${eventi.conteggio} eventi naturali aperti nel catalogo NASA`);
+    if (grandine.attivo && grandine.conteggio) pezzi.push(`${grandine.conteggio} segnalazioni di grandine dalle persone`);
+    const giu = livelli.filter(l => l.attivo && l.stato === 'giu').map(l => l.fonte);
+    if (giu.length) pezzi.push(`fonti che non rispondono adesso: ${giu.join(', ')}`);
+    return pezzi;
+  }
+
+  async function chiediSullaVista() {
+    const citta = ctx.get()?.place?.name || 'la zona che sto guardando';
+    const pezzi = riassuntoVista();
+    const riassunto = pezzi.length ? pezzi.join('; ') : 'nessun dato caricato in questo momento';
+    ctx.modal('Chiedi a Lente', `<div class="mappa-scheda">
+      <p class="mappa-riga">COSA C'È SULLA MAPPA ORA</p>
+      <p>${esc(riassunto)}.</p>
+      <p class="mappa-fonte">Alla Lente arriva solo il nome della località e questa domanda. Mai coordinate precise, autori o foto.</p>
+      ${bloccoLente(citta, `Sulla mappa vedo: ${riassunto}. Cosa sta succedendo dalle parti di ${citta}, e cosa conviene aspettarsi nelle prossime ore?`)}
     </div>`, null);
     collegaLente();
   }
@@ -384,6 +510,8 @@ export function createMappaEventi(ctx) {
       salvaLivelli();
       if (l.attivo) carica(); else { l.dati = []; l.conteggio = 0; disegna(); scriviStato(); scriviLista(); mostraVuoto(); }
     };
+    const lente = $('#mappa-lente');
+    if (lente) lente.onclick = () => chiediSullaVista();
     const elenco = $('#mappa-elenco');
     if (elenco) elenco.onclick = () => {
       const lista = $('#mappa-lista'); if (!lista) return;

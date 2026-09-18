@@ -2,6 +2,18 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Mappa: meteo preciso per comune, pioggia e Lente sulla vista — 18 settembre 2026
+
+Richiesta del proprietario: dati meteo aggiornati e precisi (temperatura, pioggia, meteo) e l'IA molto più presente nella mappa.
+
+**Meteo per comune, endpoint nuovo.** `/api/mappa/meteo` raccoglie temperatura, pioggia, vento e codice meteo per i **500 comuni più popolosi**, in cinque chiamate a blocchi di 100, e li conserva quindici minuti nella stessa cache (`globe_snapshots`) che l'app usa già per il meteo mondiale. Il client non interroga mai Open-Meteo: con cento persone sulla mappa sarebbero centinaia di migliaia di chiamate all'ora.
+
+Perché 500 e non 7.894, scelta dichiarata e non svista: un giro completo sarebbe 79 chiamate e circa trenta secondi, troppo dentro la finestra di una richiesta. 500 sono cinque chiamate e un paio di secondi, e coprono per intero i livelli di zoom fino al 10, che filtrano per popolazione. Sui centri più piccoli il meteo non c'è e viene dichiarato assente, non stimato: il punto resta grigio e più piccolo, e la scheda lo dice.
+
+**Livello PIOGGIA.** Il dato c'era già nelle risposte di Open-Meteo e non veniva mostrato. Ora un anello azzurro che cresce con i millimetri compare solo dove sta piovendo davvero: zero millimetri non disegna niente, perché «non piove» non è un dato da mostrare.
+
+Dettagli completi in PROJECT_STATUS.md.
+
 ## Mappa mondiale: temperature, eventi NASA, grandine e Lente — 18 settembre 2026
 
 Quattro livelli su #mappa-eventi, tutti collegati a fonti reali: comuni ISTAT, 200 citta mondiali (Open-Meteo), eventi NASA EONET in tempo reale, grandine dalla community. **I servizi mondiali esistevano gia nel Worker** dal tempo del globo ritirato: non serviva costruirli ne serviva uno scheduler, perche globeSnapshot e gia la pipeline con cache di 15 minuti e dato precedente conservato.

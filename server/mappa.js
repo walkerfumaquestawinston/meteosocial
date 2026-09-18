@@ -72,6 +72,7 @@ function mappaRisposta(corpo, stato = 200, cache = 'public, max-age=300') {
 }
 
 async function mappaApi(req, env, url) {
+  if (url.pathname === '/api/mappa/meteo') return mappaMeteoApi(req, env, url);
   if (url.pathname !== '/api/mappa/comuni') return mappaRisposta({ error: 'Percorso non disponibile.' }, 404, 'no-store');
   if (req.method !== 'GET') return mappaRisposta({ error: 'Metodo non consentito.' }, 405, 'no-store');
 
@@ -114,4 +115,72 @@ async function mappaApi(req, env, url) {
     senzaAbitanti: MAPPA_COMUNI.length - MAPPA_COMUNI.filter(r => r[MAPPA_AB] !== null).length,
     fonte: 'ISTAT, tramite pacchetti derivati. Elenco statico, non una misura in tempo reale.',
   });
+}
+
+// ---- meteo per comune ------------------------------------------------------
+//
+// Il client non interroga mai Open-Meteo: con cento persone che aprono la mappa
+// sarebbero centinaia di migliaia di chiamate all'ora e il servizio gratuito ci
+// chiuderebbe la porta in un giorno. Qui il Worker chiede una volta sola per
+// tutti, in blocchi, e conserva il risultato quindici minuti nella stessa cache
+// che l'app usa gia' per il meteo mondiale.
+//
+// Quanti comuni: i 500 piu popolosi. Non sono tutti e 7.894, ed e' una scelta
+// dichiarata, non una svista. Un giro completo sarebbe 79 chiamate e circa
+// trenta secondi, troppo dentro la finestra di una richiesta; 500 sono cinque
+// chiamate e un paio di secondi, e coprono per intero i livelli di zoom fino
+// al 10, che filtrano per popolazione. Piu' in basso, sui centri piccoli, il
+// meteo non c'e' e viene dichiarato assente invece di essere stimato.
+const MAPPA_METEO_QUANTI = 500;
+const MAPPA_METEO_BLOCCO = 100;
+
+async function mappaMeteoDati(env) {
+  return globeSnapshot(env, 'mappa-comuni-v1', async () => {
+    const scelti = MAPPA_COMUNI.slice(0, MAPPA_METEO_QUANTI);
+    const blocchi = [];
+    for (let i = 0; i < scelti.length; i += MAPPA_METEO_BLOCCO) blocchi.push(scelti.slice(i, i + MAPPA_METEO_BLOCCO));
+    const gruppi = await Promise.all(blocchi.map(async (blocco) => {
+      const p = new URLSearchParams({
+        latitude: blocco.map(r => r[MAPPA_LAT]).join(','),
+        longitude: blocco.map(r => r[MAPPA_LNG]).join(','),
+        current: 'temperature_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,cloud_cover',
+        timezone: 'GMT',
+      });
+      let dati;
+      try { dati = await atmoFetch('https://api.open-meteo.com/v1/forecast?' + p, 6000000); }
+      catch { fail(503, 'Il meteo dei comuni non risponde. Resta disponibile l’ultimo dato già scaricato.'); }
+      const righe = Array.isArray(dati) ? dati : [dati];
+      return righe.map((r, i) => {
+        const c = r?.current;
+        // Senza temperatura leggibile non si scrive niente: meglio un comune
+        // senza misura che un comune con una misura inventata.
+        if (!c || !Number.isFinite(c.temperature_2m)) return null;
+        return [
+          blocco[i][MAPPA_ISTAT],
+          Math.round(c.temperature_2m),
+          Number.isFinite(c.precipitation) ? c.precipitation : null,
+          Number.isFinite(c.weather_code) ? c.weather_code : null,
+          Number.isFinite(c.wind_speed_10m) ? Math.round(c.wind_speed_10m) : null,
+        ];
+      }).filter(Boolean);
+    }));
+    const dati = gruppi.flat();
+    return {
+      campi: ['istat', 't', 'mm', 'codice', 'vento'],
+      dati,
+      chiesti: scelti.length,
+      updated: Date.now(),
+      source: 'Open-Meteo',
+      fonte: 'Open-Meteo. Dato di modello, non una misura osservata da una stazione.',
+    };
+  });
+}
+
+async function mappaMeteoApi(req, env, url) {
+  if (req.method !== 'GET') return mappaRisposta({ error: 'Metodo non consentito.' }, 405, 'no-store');
+  if (!env?.DB) return mappaRisposta({ error: 'La cache del meteo non e disponibile.' }, 503, 'no-store');
+  const dati = await mappaMeteoDati(env);
+  // Un dato conservato non si presenta come fresco: chi legge deve poter
+  // distinguere "adesso" da "l'ultimo che siamo riusciti a prendere".
+  return mappaRisposta(dati, 200, dati.stale ? 'no-store' : 'public, max-age=300');
 }

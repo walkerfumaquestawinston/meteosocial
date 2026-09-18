@@ -93,6 +93,10 @@
 }
 
 .mappa-azioni{ display: flex; gap: var(--s2); }
+/* I due pulsanti sotto le pillole dividono la riga: ELENCO per chi usa uno
+   screen reader, CHIEDI A LENTE per l'IA sulla vista corrente. */
+.mappa-azioni > *{ flex: 1; }
+.mappa-chiedi-vista{ border-color: var(--persone); background: var(--persone-soft); }
 
 .mappa-elenco{
   min-height: 44px;

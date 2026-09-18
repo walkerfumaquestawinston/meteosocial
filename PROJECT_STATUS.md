@@ -6,6 +6,24 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Mappa: meteo preciso per comune, pioggia e Lente sulla vista — 18 settembre 2026
+
+Richiesta del proprietario: dati meteo aggiornati e precisi (temperatura, pioggia, meteo) e l'IA molto più presente nella mappa.
+
+**Meteo per comune, endpoint nuovo.** `/api/mappa/meteo` raccoglie temperatura, pioggia, vento e codice meteo per i **500 comuni più popolosi**, in cinque chiamate a blocchi di 100, e li conserva quindici minuti nella stessa cache (`globe_snapshots`) che l'app usa già per il meteo mondiale. Il client non interroga mai Open-Meteo: con cento persone sulla mappa sarebbero centinaia di migliaia di chiamate all'ora.
+
+Perché 500 e non 7.894, scelta dichiarata e non svista: un giro completo sarebbe 79 chiamate e circa trenta secondi, troppo dentro la finestra di una richiesta. 500 sono cinque chiamate e un paio di secondi, e coprono per intero i livelli di zoom fino al 10, che filtrano per popolazione. Sui centri più piccoli il meteo non c'è e viene dichiarato assente, non stimato: il punto resta grigio e più piccolo, e la scheda lo dice.
+
+**Livello PIOGGIA.** Il dato c'era già nelle risposte di Open-Meteo e non veniva mostrato. Ora un anello azzurro che cresce con i millimetri compare solo dove sta piovendo davvero: zero millimetri non disegna niente, perché «non piove» non è un dato da mostrare.
+
+**Cinque livelli:** TEMPERATURE (200 città mondiali più i comuni con misura, colorati dalla scala termica), PIOGGIA, EVENTI (NASA EONET), GRANDINE (persone), COMUNI (7.894, elenco).
+
+**Lente sulla mappa, non solo nelle schede.** Un pulsante accanto a ELENCO costruisce un riassunto dai conteggi veri già caricati — quante località, fra quali temperature, dove piove, quanti eventi aperti, quali fonti non rispondono — e lo passa come domanda. Alla Lente arrivano solo il nome della località e la domanda: mai coordinate precise, autori o media, come prescrive `server/assistant.js`. La risposta compare dichiarata come generata.
+
+Due difetti corretti durante la verifica: `OPEN-METEO` compariva due volte nella barra di stato, perché TEMPERATURE e PIOGGIA condividono la stessa fonte; e il conteggio delle fonti cadute contava i livelli invece delle fonti, gonfiando il numero. Ora una fonte per riga, con lo stato peggiore fra i livelli che la usano.
+
+Verifiche: suite 45 superati, 0 falliti; browser reale a 375 px, cinque pillole, nessun errore JavaScript, fonti barrate corrette; build riproducibile. In questo ambiente Open-Meteo e NASA restano barrate perché la rete della sessione le blocca; l'endpoint nuovo è stato provato contro il database locale e risponde con l'errore onesto invece di inventare dati.
+
 ## Mappa mondiale: temperature, eventi NASA, grandine e Lente — 18 settembre 2026
 
 Richiesta del proprietario: una mappa come argosatlas.com/map, con temperatura, grandine ed eventi in tempo reale in tutto il mondo e con l'IA integrata.
