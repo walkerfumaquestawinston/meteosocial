@@ -6,6 +6,31 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Leggibilità: quattro difetti visibili corretti — 17 settembre 2026
+
+Verifica del documento di contesto fornito dal proprietario, poi correzione di quello che non andava. Dettagli completi, misure e metodo in docs/CONTESTO-PRODOTTO-VERIFICATO.md. Versione pubblicata invariata: 64; un push su GitHub non aggiorna il sito online.
+
+Il documento di contesto non era applicabile così com'era: descriveva uno stato anteriore alla sincronizzazione. Sei degli otto problemi che elenca sono già risolti, e il suo blocco dei token conteneva valori peggiori di quelli in repository (`--ink-3-l` a 2,33:1 contro 5,77:1 attuale). Non è stato applicato.
+
+Misurando nel browser sono emersi invece quattro difetti che il documento non conosceva, tutti corretti e rimisurati. **Sono modifiche visibili agli utenti**, non infrastruttura: ognuna è una riga o due di CSS e si annulla rimuovendo il blocco corrispondente.
+
+1. Vista Lente illeggibile: titolo a 1,35:1 e testi di servizio a 1,27:1. `.lente-page` usa colori da superficie chiara ma nessuna regola le dava uno sfondo chiaro. Corretto dandole la superficie per cui era disegnata; la direzione opposta è stata scartata dopo averla misurata, perché dentro quella pagina 12 superfici chiare ereditano il colore e si sarebbero rotte. Ora 12,67:1 e 13,47:1.
+2. Barra di navigazione: «Community» chiedeva 81 px in 72 e si sovrapponeva alle voci vicine. Corretto con `--t-label` e `--w-medium`, entrambi token già esistenti: nessun valore nuovo introdotto. Bersaglio 67 px, sopra i 44 richiesti.
+3. Pulsante «Apri la mappa» in home: testo dello stesso colore del proprio sfondo, invisibile. Causa: `html body #main a{color:var(--dato)}` batte per specificità dell'ID il colore scelto dal componente.
+4. Collegamento «Guida» su `#tendenze`: 2,25:1 su bianco, stessa radice. Portato a 6,61:1.
+
+Le correzioni 3 e 4 hanno la stessa causa: una regola generale con un ID che scavalca i colori dei componenti. Sono stati corretti i due casi dimostrati dalla misura; la regola generale non è stata toccata e andrebbe rivista.
+
+Esito sulle nove rotte a 375 px: testi che escono dal proprio riquadro da 13 a 0; testi sotto soglia di contrasto a 0 reali. I due ancora segnalati dalla misura non sono difetti: il link di salto è fuori schermo finché non riceve il fuoco e con il fuoco misura 6,61:1, e «Collegamento IA non disponibile» è esattamente in soglia.
+
+File: `dist/lente.css`, `dist/design-system.css`, `docs/CONTESTO-PRODOTTO-VERIFICATO.md` (nuovo); artefatti rigenerati.
+
+Verifiche: browser reale Chromium a 375×812, nove rotte, prima e dopo; suite completa 44 superati, 6 non pertinenti, 0 falliti; build riproducibile, albero pulito dopo `node build.mjs`. Playwright installato fuori dal repository: il lockfile non è stato toccato.
+
+Limiti. L'anteprima non raggiunge il servizio di cartografia da questo ambiente, quindi la mappa non si disegna e le misure riguardano le schermate, non la resa della mappa. Nessuna verifica su dispositivo reale. Restano aperti e non toccati: i due conflitti fra le regole invariabili e il codice consegnato (i commenti esistono e sono raggiungibili; i post normali non scadono dopo 2 ore), e la regola generale con l'ID.
+
+Prossimo passo: decidere sui due conflitti con le regole invariabili e se rivedere `html body #main a`.
+
 ## Build riproducibile e suite di test leggibile — 17 settembre 2026
 
 Partenza dal commit 00c851f916720f199484d04291c82971a9da297d, ramo claude/admiring-brown-065b6t. Nessuna modifica al comportamento dell'applicazione, alle funzioni, ai testi visibili, allo schema o alle migrazioni. Versione pubblicata invariata: 64. Un push su GitHub non aggiorna il sito online; la pubblicazione resta su Sites.

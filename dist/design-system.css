@@ -269,3 +269,24 @@ html body #main .daily-choices button[aria-pressed=true]{background:var(--person
 html body .profession-label{font-size:var(--t-label);font-weight:var(--w-normal);color:var(--ink-3);background:none;border:0;box-shadow:none;margin-inline-start:var(--s2)}
 .profession-profile label,.profession-profile select{display:block;width:100%;margin-block:var(--s2)}
 .profession-profile select{min-height:44px}
+/* Barra di navigazione a 375 px: cinque voci da 72 px, contenuto utile 64 px.
+   "Community" a 14 px ne chiede 73 e usciva dal proprio riquadro, toccando le
+   voci vicine. A --t-label (12 px, token gia esistente) ne chiede 63. Le icone
+   hanno dimensione propria e non cambiano; l'altezza del bersaglio resta 56 px. */
+body .shell>nav{padding-inline:2px}body .shell>nav>a{font-size:var(--t-label)!important;font-weight:var(--w-medium);padding-inline:0}
+/* .forecast-tabs e gia scorrevole in orizzontale (overflow:auto), ma i suoi
+   pulsanti potevano restringersi sotto la larghezza del proprio testo: le
+   etichette venivano tagliate di 2-5 px invece di far scorrere il gruppo.
+   Con flex-shrink:0 il testo resta intero e a scorrere e il gruppo, come
+   previsto dal contenitore. */
+.forecast-tabs button{flex-shrink:0}
+/* Il pulsante principale di #home ha sfondo var(--dato) e testo scelto scuro,
+   ma 'html body #main a{color:var(--dato)}' vince per la specificita dell'ID
+   e riportava il testo allo stesso colore dello sfondo: blu su blu, invisibile.
+   Qui si ripristina il colore previsto dal componente con specificita maggiore,
+   senza toccare la regola generale. */
+html body #main .atmo-home .atmo-actions a:first-child{color:#102239}
+/* .guide-link ha sfondo bianco e non dichiara un colore: ereditava var(--dato)
+   dalla stessa regola con ID, azzurro su bianco a 2,25:1. Riportato al colore
+   gia usato dall'app per i collegamenti su superficie chiara (#145ab7, 6,61:1). */
+html body #main a.guide-link{color:#145ab7}

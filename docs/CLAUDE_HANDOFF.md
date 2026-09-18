@@ -2,6 +2,16 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Leggibilità: quattro difetti visibili corretti — 17 settembre 2026
+
+Stesso ramo. **Qui ci sono modifiche visibili agli utenti**, a differenza della sezione sotto che era solo infrastruttura. Versione pubblicata invariata: 64.
+
+Il documento di contesto fornito dal proprietario descriveva uno stato anteriore alla sincronizzazione e non è stato applicato: sei degli otto problemi che elenca sono già risolti, e il suo blocco dei token era peggiorativo. La verifica completa, con metodo e misure, è in `docs/CONTESTO-PRODOTTO-VERIFICATO.md`.
+
+Misurando nel browser sono emersi quattro difetti reali, corretti: la vista Lente era illeggibile (1,27:1, ora 13,47:1), «Community» nella barra si sovrapponeva alle voci vicine, il pulsante «Apri la mappa» aveva testo dello stesso colore del suo sfondo, il collegamento «Guida» stava a 2,25:1 su bianco. Testi fuori dal proprio riquadro: da 13 a 0. Ogni correzione è un blocco CSS commentato in `dist/lente.css` o `dist/design-system.css` e si annulla rimuovendolo.
+
+Due cose restano aperte e non toccate, entrambe da decidere: i conflitti fra le regole invariabili del documento e il codice consegnato (i commenti verso altre persone esistono; i post normali non scadono dopo 2 ore), e la regola `html body #main a{color:var(--dato)}`, che con la specificità dell'ID scavalca i colori scelti dai componenti ed è la causa comune di due dei quattro difetti.
+
 ## Build riproducibile e suite di test leggibile — 17 settembre 2026
 
 Ramo `claude/admiring-brown-065b6t`, a partire da 00c851f916720f199484d04291c82971a9da297d. Solo infrastruttura: nessuna modifica al comportamento dell'applicazione, ai testi visibili, allo schema o alle migrazioni. Versione pubblicata invariata: 64.
