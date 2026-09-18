@@ -6,6 +6,24 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Anteprima Netlify con API in proxy — 18 settembre 2026
+
+Su richiesta esplicita del proprietario. Aggiunti netlify.toml, tools/netlify-publish.mjs e docs/NETLIFY.md. La pubblicazione ufficiale resta su Sites allo stesso indirizzo: Netlify non la sostituisce, non la modifica e non tocca il database di produzione. Versione pubblicata invariata: 64.
+
+Il proxy richiesto e dichiarato: /api/* verso https://scudo-meteo-community.walkerthehate.chatgpt.site/api/:splat con status 200, cioe riscrittura e non redirect.
+
+Limite misurato, non supposto, interrogando il Worker ricostruito: attraverso il proxy le letture funzionano (GET /api/posts, /api/atlas/hail, /api/me tutti 200) ma le scritture no (POST /api/posts risponde 401 senza intestazioni di identita, e 403 anche fornendole, per il controllo sull'origine). L'identita arriva dalle intestazioni che ChatGPT Sites aggiunge alle sessioni autenticate sul proprio dominio e un proxy non puo fabbricarle; il controllo sull'origine e una protezione che funziona come deve. Su Netlify l'app e quindi in sola lettura, ed e documentato in modo esplicito nei tre file.
+
+tools/netlify-publish.mjs assembla netlify-dist/ perche il sito su Sites non e una cartella statica ma un Worker che incorpora gli asset: manifest.json e icons/ stanno fuori da dist/ e pubblicando solo dist/ darebbero 404. Restano esclusi dist/server e dist/.openai. Verificato servendo la cartella: index.html, /app/main.js, /app/style.css, /sw.js, /manifest.json, /icons/icon-192.png e /assets/maplibre-gl.js rispondono 200, /server/index.js risponde 404, e nella cartella pubblicata non finisce nessuna chiave. netlify-dist/ e in .gitignore.
+
+Nessuna regola di cache lunga su /app/*: li solo i chunk hanno l'impronta nel nome, mentre main.js e style.css no, e marcarli immutable avrebbe consegnato per un anno la versione vecchia. Solo /sw.js ha no-cache.
+
+Verifiche: netlify.toml validato con un parser TOML e struttura riletta; cartella pubblicata servita e controllata percorso per percorso; suite completa 44 superati, 6 non pertinenti, 0 falliti; build riproducibile, albero pulito.
+
+Limiti: il sito Netlify non e stato creato ne collegato, servono le credenziali del proprietario. La build su Netlify non e mai stata eseguita davvero, quindi i tempi e l'esito del primo deploy non sono verificati. Nessun segreto inserito da nessuna parte.
+
+Prossimo passo: il collegamento a Netlify lo fa il proprietario seguendo docs/NETLIFY.md.
+
 ## Leggibilità: quattro difetti visibili corretti — 17 settembre 2026
 
 Verifica del documento di contesto fornito dal proprietario, poi correzione di quello che non andava. Dettagli completi, misure e metodo in docs/CONTESTO-PRODOTTO-VERIFICATO.md. Versione pubblicata invariata: 64; un push su GitHub non aggiorna il sito online.

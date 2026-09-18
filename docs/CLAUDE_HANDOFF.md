@@ -2,6 +2,16 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Anteprima Netlify con API in proxy — 18 settembre 2026
+
+Su richiesta esplicita del proprietario. **La pubblicazione ufficiale resta su Sites**, allo stesso indirizzo: Netlify non la sostituisce e non tocca il database di produzione. Versione pubblicata invariata: 64.
+
+`netlify.toml` dichiara il proxy `/api/*` verso `https://scudo-meteo-community.walkerthehate.chatgpt.site/api/:splat` con `status = 200` (riscrittura, non redirect). `tools/netlify-publish.mjs` assembla `netlify-dist/`, perché su Sites il sito non è una cartella statica ma un Worker che incorpora gli asset: `manifest.json` e `icons/` stanno fuori da `dist/` e pubblicando solo `dist/` darebbero 404.
+
+Limite misurato sul Worker, non supposto: attraverso il proxy le **letture funzionano** e le **scritture no** (401 senza le intestazioni di identità che Sites aggiunge alle sessioni autenticate, 403 anche fornendole per il controllo sull'origine). Su Netlify l'app è in sola lettura, ed è scritto in modo esplicito in tutti e tre i file.
+
+Il sito Netlify **non è stato creato né collegato**: servono le credenziali del proprietario. La procedura passo per passo è in `docs/NETLIFY.md`. Nessun segreto inserito da nessuna parte.
+
 ## Leggibilità: quattro difetti visibili corretti — 17 settembre 2026
 
 Stesso ramo. **Qui ci sono modifiche visibili agli utenti**, a differenza della sezione sotto che era solo infrastruttura. Versione pubblicata invariata: 64.

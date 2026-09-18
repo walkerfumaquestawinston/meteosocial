@@ -1,0 +1,52 @@
+# Netlify — anteprima statica di MeteoSocial con le API in proxy verso Sites.
+#
+# La pubblicazione ufficiale resta su Sites:
+# https://scudo-meteo-community.walkerthehate.chatgpt.site
+# Questo file NON la sostituisce e non la modifica.
+#
+# LIMITE IMPORTANTE, misurato sul Worker e non supposto: attraverso il proxy le
+# LETTURE funzionano, le SCRITTURE no.
+#   GET  /api/posts            → 200
+#   GET  /api/atlas/hail       → 200
+#   GET  /api/me               → 200
+#   POST /api/posts            → 401 senza intestazioni di identità
+#   POST /api/posts            → 403 anche con identità, per il controllo origine
+# L'identità arriva dalle intestazioni oai-authenticated-user-id e
+# oai-authenticated-user-email, che ChatGPT Sites aggiunge alle sessioni
+# autenticate sul proprio dominio: un proxy non può fabbricarle. In più il
+# Worker rifiuta ogni scrittura la cui intestazione Origin non coincide con il
+# proprio dominio, e da Netlify non coincide mai.
+# Conseguenza: su Netlify l'app è in sola lettura. Si vedono i contenuti
+# pubblici, non si pubblica, non si conferma e non si accede al proprio profilo.
+
+[build]
+  # La build è riproducibile: due esecuzioni danno output identico.
+  command = "node build.mjs && node tools/netlify-publish.mjs"
+  publish = "netlify-dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Il proxy richiesto. status = 200 significa riscrittura, non redirect: il
+# browser continua a vedere il dominio Netlify e non c'è un salto visibile.
+# :splat riporta tutto quello che sta dopo /api/, querystring compresa.
+# force = true fa vincere la regola anche se un file statico occupasse lo
+# stesso percorso.
+[[redirects]]
+  from = "/api/*"
+  to = "https://scudo-meteo-community.walkerthehate.chatgpt.site/api/:splat"
+  status = 200
+  force = true
+
+# Il service worker non deve restare in cache: altrimenti un aggiornamento
+# pubblicato non raggiunge chi ha già aperto il sito.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Nessuna regola di cache lunga su /app/*: in quella cartella solo i chunk
+# hanno l'impronta nel nome (chunk-*.js, leaflet-*.js, …), mentre main.js e
+# style.css no. Marcarli immutable per un anno significherebbe consegnare per
+# un anno la versione vecchia a chi ha già aperto il sito. Per il resto vale
+# la gestione predefinita di Netlify, basata su ETag e rivalidazione.

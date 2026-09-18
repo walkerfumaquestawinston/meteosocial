@@ -10,3 +10,5 @@ dev.mjs
 *.sqlite-wal
 *.tar.gz
 *.zip
+netlify-dist/
+.netlify/
