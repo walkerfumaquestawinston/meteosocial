@@ -6,6 +6,67 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Anteprima Netlify con API in proxy — 18 settembre 2026
+
+Su richiesta esplicita del proprietario. Aggiunti netlify.toml, tools/netlify-publish.mjs e docs/NETLIFY.md. La pubblicazione ufficiale resta su Sites allo stesso indirizzo: Netlify non la sostituisce, non la modifica e non tocca il database di produzione. Versione pubblicata invariata: 64.
+
+Il proxy richiesto e dichiarato: /api/* verso https://scudo-meteo-community.walkerthehate.chatgpt.site/api/:splat con status 200, cioe riscrittura e non redirect.
+
+Limite misurato, non supposto, interrogando il Worker ricostruito: attraverso il proxy le letture funzionano (GET /api/posts, /api/atlas/hail, /api/me tutti 200) ma le scritture no (POST /api/posts risponde 401 senza intestazioni di identita, e 403 anche fornendole, per il controllo sull'origine). L'identita arriva dalle intestazioni che ChatGPT Sites aggiunge alle sessioni autenticate sul proprio dominio e un proxy non puo fabbricarle; il controllo sull'origine e una protezione che funziona come deve. Su Netlify l'app e quindi in sola lettura, ed e documentato in modo esplicito nei tre file.
+
+tools/netlify-publish.mjs assembla netlify-dist/ perche il sito su Sites non e una cartella statica ma un Worker che incorpora gli asset: manifest.json e icons/ stanno fuori da dist/ e pubblicando solo dist/ darebbero 404. Restano esclusi dist/server e dist/.openai. Verificato servendo la cartella: index.html, /app/main.js, /app/style.css, /sw.js, /manifest.json, /icons/icon-192.png e /assets/maplibre-gl.js rispondono 200, /server/index.js risponde 404, e nella cartella pubblicata non finisce nessuna chiave. netlify-dist/ e in .gitignore.
+
+Nessuna regola di cache lunga su /app/*: li solo i chunk hanno l'impronta nel nome, mentre main.js e style.css no, e marcarli immutable avrebbe consegnato per un anno la versione vecchia. Solo /sw.js ha no-cache.
+
+Verifiche: netlify.toml validato con un parser TOML e struttura riletta; cartella pubblicata servita e controllata percorso per percorso; suite completa 44 superati, 6 non pertinenti, 0 falliti; build riproducibile, albero pulito.
+
+Limiti: il sito Netlify non e stato creato ne collegato, servono le credenziali del proprietario. La build su Netlify non e mai stata eseguita davvero, quindi i tempi e l'esito del primo deploy non sono verificati. Nessun segreto inserito da nessuna parte.
+
+Prossimo passo: il collegamento a Netlify lo fa il proprietario seguendo docs/NETLIFY.md.
+
+## Leggibilità: quattro difetti visibili corretti — 17 settembre 2026
+
+Verifica del documento di contesto fornito dal proprietario, poi correzione di quello che non andava. Dettagli completi, misure e metodo in docs/CONTESTO-PRODOTTO-VERIFICATO.md. Versione pubblicata invariata: 64; un push su GitHub non aggiorna il sito online.
+
+Il documento di contesto non era applicabile così com'era: descriveva uno stato anteriore alla sincronizzazione. Sei degli otto problemi che elenca sono già risolti, e il suo blocco dei token conteneva valori peggiori di quelli in repository (`--ink-3-l` a 2,33:1 contro 5,77:1 attuale). Non è stato applicato.
+
+Misurando nel browser sono emersi invece quattro difetti che il documento non conosceva, tutti corretti e rimisurati. **Sono modifiche visibili agli utenti**, non infrastruttura: ognuna è una riga o due di CSS e si annulla rimuovendo il blocco corrispondente.
+
+1. Vista Lente illeggibile: titolo a 1,35:1 e testi di servizio a 1,27:1. `.lente-page` usa colori da superficie chiara ma nessuna regola le dava uno sfondo chiaro. Corretto dandole la superficie per cui era disegnata; la direzione opposta è stata scartata dopo averla misurata, perché dentro quella pagina 12 superfici chiare ereditano il colore e si sarebbero rotte. Ora 12,67:1 e 13,47:1.
+2. Barra di navigazione: «Community» chiedeva 81 px in 72 e si sovrapponeva alle voci vicine. Corretto con `--t-label` e `--w-medium`, entrambi token già esistenti: nessun valore nuovo introdotto. Bersaglio 67 px, sopra i 44 richiesti.
+3. Pulsante «Apri la mappa» in home: testo dello stesso colore del proprio sfondo, invisibile. Causa: `html body #main a{color:var(--dato)}` batte per specificità dell'ID il colore scelto dal componente.
+4. Collegamento «Guida» su `#tendenze`: 2,25:1 su bianco, stessa radice. Portato a 6,61:1.
+
+Le correzioni 3 e 4 hanno la stessa causa: una regola generale con un ID che scavalca i colori dei componenti. Sono stati corretti i due casi dimostrati dalla misura; la regola generale non è stata toccata e andrebbe rivista.
+
+Esito sulle nove rotte a 375 px: testi che escono dal proprio riquadro da 13 a 0; testi sotto soglia di contrasto a 0 reali. I due ancora segnalati dalla misura non sono difetti: il link di salto è fuori schermo finché non riceve il fuoco e con il fuoco misura 6,61:1, e «Collegamento IA non disponibile» è esattamente in soglia.
+
+File: `dist/lente.css`, `dist/design-system.css`, `docs/CONTESTO-PRODOTTO-VERIFICATO.md` (nuovo); artefatti rigenerati.
+
+Verifiche: browser reale Chromium a 375×812, nove rotte, prima e dopo; suite completa 44 superati, 6 non pertinenti, 0 falliti; build riproducibile, albero pulito dopo `node build.mjs`. Playwright installato fuori dal repository: il lockfile non è stato toccato.
+
+Limiti. L'anteprima non raggiunge il servizio di cartografia da questo ambiente, quindi la mappa non si disegna e le misure riguardano le schermate, non la resa della mappa. Nessuna verifica su dispositivo reale. Restano aperti e non toccati: i due conflitti fra le regole invariabili e il codice consegnato (i commenti esistono e sono raggiungibili; i post normali non scadono dopo 2 ore), e la regola generale con l'ID.
+
+Prossimo passo: decidere sui due conflitti con le regole invariabili e se rivedere `html body #main a`.
+
+## Build riproducibile e suite di test leggibile — 17 settembre 2026
+
+Partenza dal commit 00c851f916720f199484d04291c82971a9da297d, ramo claude/admiring-brown-065b6t. Nessuna modifica al comportamento dell'applicazione, alle funzioni, ai testi visibili, allo schema o alle migrazioni. Versione pubblicata invariata: 64. Un push su GitHub non aggiorna il sito online; la pubblicazione resta su Sites.
+
+**Build riproducibile.** Mancava `.gitattributes`: il checkout convertiva i fine riga in modo diverso su Windows e su Linux. Gli artefatti vengono scritti sempre con LF da esbuild e da build.mjs, ma erano salvati con CRLF, quindi ogni `node build.mjs` su Linux riscriveva dieci file, 278 righe di diff e alcuni MB, con zero differenze di contenuto. Verificato decodificando i 95 asset incorporati nel Worker: 78 differivano solo per i fine riga, 17 erano identici, nessuno per contenuto. Aggiunto `.gitattributes` con `* -text`, che disattiva ogni conversione e rende il checkout identico byte per byte su ogni sistema; artefatti rigenerati e salvati con LF. I sorgenti già salvati con CRLF restano CRLF: nessuna rinormalizzazione di massa, nessun file sorgente toccato, nessun conflitto con lavoro in corso.
+
+**Suite di test.** Lanciando i test come documentato, 10 su 50 fallivano, nessuno per una regressione del prodotto. Tre cause distinte: tre test usano `vm.SourceTextModule` e richiedono `--experimental-vm-modules`, flag non documentato; `test-portable` confrontava le migrazioni con un numero scritto a mano (9) mentre sono 24; `test-card-export` non forniva `reportLabel` al proprio banco di prova, così `saveCard` finiva nel suo catch e il test attribuiva all'esportazione un errore della propria impalcatura. I due test sono corretti: il numero di migrazioni viene ora dal giornale Drizzle e `reportLabel` dal modulo, con due asserzioni sul testo disegnato nella card. Gli altri sei interrogano moduli ritirati dal bundle.
+
+Aggiunti `tools/retired-modules.mjs`, che rende l'elenco dei moduli ritirati fonte unica condivisa da build e test invece di vivere solo dentro build.mjs, e `tools/run-tests.mjs` (`npm test`), che esegue tutto con i flag corretti e separa superati, non pertinenti e falliti. Un test che cita un modulo ritirato entra fra i non pertinenti solo se fallisce: se passa resta fra i superati, così la classificazione non può nascondere una regressione su codice ancora consegnato.
+
+File: `.gitattributes` (nuovo), `tools/retired-modules.mjs` (nuovo), `tools/run-tests.mjs` (nuovo), `build.mjs` (usa l'elenco condiviso), `package.json` (script `test`), `test-portable.mjs`, `test-card-export.mjs`; artefatti rigenerati `dist/app/`, `dist/assets/maplibre-gl.js`, `dist/assets/MAPLIBRE-LICENSE.txt`, `dist/server/index.js`, `tools/map-bundle-report.json`.
+
+Verifiche: due build consecutive con hash identico; dopo `node build.mjs` l'albero di lavoro resta pulito; il refactor di build.mjs produce output identico byte per byte; `node tools/resume.mjs --check` superato; suite completa 44 superati, 6 non pertinenti dichiarati, 0 falliti.
+
+Limiti e problemi aperti. L'ambiente di questa sessione ha Node 22.22.2, non Node 24: `node:sqlite` funziona ma è segnalato sperimentale, quindi la suite non è stata provata su Node 24. Non è stata aperta l'anteprima nel browser e non è stata verificata alcuna resa grafica. I sei test non pertinenti restano rossi e vanno riletti: la classificazione dell'esecutore è euristica, un test può citare un modulo ritirato e fallire per un altro motivo, come `test-startup`, che cita il globo anche per verificare che non venga importato. Vanno aggiornati o ritirati, non lasciati rossi per sempre: decisione del coordinatore. Nota separata, non corretta qui perché è testo visibile agli utenti: `saveCard` in `dist/sky-community.js` dice ancora «Il globo sta ancora caricando» e «Riprova dal globo», mentre `ctx.world` è la mappa locale MapLibre; il comportamento è corretto, solo le due frasi sono rimaste al globo ritirato. B2 resta bloccato dalla fonte osservativa locale e dalla pianificazione: qui non è stato toccato e nessun voto è mostrato.
+
+Prossimo passo: decidere con Codex il destino dei sei test non pertinenti e se correggere le due frasi sul globo. La 24.6 non è stata avviata e resta da assegnare esplicitamente.
+
 ## Preparazione collaborazione Claude
 
 Aggiunti CLAUDE.md e docs/COLLABORAZIONE-CLAUDE.md. Sito invariato alla versione 64. Trasferimento GitHub ancora da fare: plugin installato ma comandi non esposti nella sessione. Nessun repository GitHub creato o sincronizzato, nessun collegamento Claude effettuato. Proseguire dalla verifica dell’account GitHub e dell’eventuale repository esistente; non chiedere di reinstallare il plugin già confermato.

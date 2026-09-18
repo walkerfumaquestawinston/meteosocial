@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
+    "test": "node tools/run-tests.mjs",
     "db:generate": "drizzle-kit generate",
     "dev": "vite --config vite.preview.config.mjs"
   },

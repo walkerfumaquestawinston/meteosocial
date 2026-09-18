@@ -1,5 +1,39 @@
 # Sincronizzazione GitHub — 17 settembre 2026
 
+Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
+
+## Anteprima Netlify con API in proxy — 18 settembre 2026
+
+Su richiesta esplicita del proprietario. **La pubblicazione ufficiale resta su Sites**, allo stesso indirizzo: Netlify non la sostituisce e non tocca il database di produzione. Versione pubblicata invariata: 64.
+
+`netlify.toml` dichiara il proxy `/api/*` verso `https://scudo-meteo-community.walkerthehate.chatgpt.site/api/:splat` con `status = 200` (riscrittura, non redirect). `tools/netlify-publish.mjs` assembla `netlify-dist/`, perché su Sites il sito non è una cartella statica ma un Worker che incorpora gli asset: `manifest.json` e `icons/` stanno fuori da `dist/` e pubblicando solo `dist/` darebbero 404.
+
+Limite misurato sul Worker, non supposto: attraverso il proxy le **letture funzionano** e le **scritture no** (401 senza le intestazioni di identità che Sites aggiunge alle sessioni autenticate, 403 anche fornendole per il controllo sull'origine). Su Netlify l'app è in sola lettura, ed è scritto in modo esplicito in tutti e tre i file.
+
+Il sito Netlify **non è stato creato né collegato**: servono le credenziali del proprietario. La procedura passo per passo è in `docs/NETLIFY.md`. Nessun segreto inserito da nessuna parte.
+
+## Leggibilità: quattro difetti visibili corretti — 17 settembre 2026
+
+Stesso ramo. **Qui ci sono modifiche visibili agli utenti**, a differenza della sezione sotto che era solo infrastruttura. Versione pubblicata invariata: 64.
+
+Il documento di contesto fornito dal proprietario descriveva uno stato anteriore alla sincronizzazione e non è stato applicato: sei degli otto problemi che elenca sono già risolti, e il suo blocco dei token era peggiorativo. La verifica completa, con metodo e misure, è in `docs/CONTESTO-PRODOTTO-VERIFICATO.md`.
+
+Misurando nel browser sono emersi quattro difetti reali, corretti: la vista Lente era illeggibile (1,27:1, ora 13,47:1), «Community» nella barra si sovrapponeva alle voci vicine, il pulsante «Apri la mappa» aveva testo dello stesso colore del suo sfondo, il collegamento «Guida» stava a 2,25:1 su bianco. Testi fuori dal proprio riquadro: da 13 a 0. Ogni correzione è un blocco CSS commentato in `dist/lente.css` o `dist/design-system.css` e si annulla rimuovendolo.
+
+Due cose restano aperte e non toccate, entrambe da decidere: i conflitti fra le regole invariabili del documento e il codice consegnato (i commenti verso altre persone esistono; i post normali non scadono dopo 2 ore), e la regola `html body #main a{color:var(--dato)}`, che con la specificità dell'ID scavalca i colori scelti dai componenti ed è la causa comune di due dei quattro difetti.
+
+## Build riproducibile e suite di test leggibile — 17 settembre 2026
+
+Ramo `claude/admiring-brown-065b6t`, a partire da 00c851f916720f199484d04291c82971a9da297d. Solo infrastruttura: nessuna modifica al comportamento dell'applicazione, ai testi visibili, allo schema o alle migrazioni. Versione pubblicata invariata: 64.
+
+Prima di questo intervento `node build.mjs` su Linux riscriveva dieci artefatti senza cambiare una riga di codice, perché mancava `.gitattributes` e il checkout convertiva i fine riga in modo diverso a seconda del sistema. Il diff fantasma rendeva impossibile distinguere una modifica reale dal rumore e bloccava lo scambio delle proposte su GitHub. Ora `* -text` disattiva ogni conversione, gli artefatti sono salvati con LF e dopo la build l'albero di lavoro resta pulito. I sorgenti già salvati con CRLF restano CRLF: nessuna rinormalizzazione di massa e nessun file sorgente toccato, quindi niente conflitti con lavoro in corso.
+
+La suite aveva 10 test rossi su 50, nessuno per una regressione. `npm test` (`tools/run-tests.mjs`) esegue tutto con `--experimental-vm-modules` e separa superati, non pertinenti e falliti: 44 superati, 6 non pertinenti dichiarati, 0 falliti. I moduli ritirati hanno ora una fonte unica in `tools/retired-modules.mjs`, condivisa da build e test.
+
+Per riprendere: `pnpm install --frozen-lockfile`, poi `node build.mjs` e `npm test`. Se la build lascia file modificati, è una modifica reale, non più rumore. Dettagli, limiti e problemi aperti nella sezione corrispondente di PROJECT_STATUS.md, compresi i sei test da rileggere e le due frasi sul globo rimaste in `dist/sky-community.js`.
+
+## Sincronizzazione iniziale — 17 settembre 2026
+
 Il repository GitHub walkerfumaquestawinston/meteosocial contiene ora la sorgente Sites bd822c5d88dc0b88a64caf180fb5dfb6a35b71d1. La versione pubblicata è 64, commit applicativo 5b336b97a12e7f8f0f80b713e8ef5154fd6ed381. Il commit sorgente successivo aggiunge le istruzioni per Claude senza cambiare il sito.
 
 GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app single-file del 10 settembre è conservata nella cronologia Git, non è la base da sviluppare. Sites rimane il sistema di pubblicazione, con lo stesso URL. Nessun deploy automatico da GitHub e nessun trasferimento dei dati di produzione.

@@ -15,3 +15,15 @@ dialog.lente-sheet{padding:0;border:1px solid #d7e4f1;border-radius:var(--r-card
 
 .lente-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.lente-answer-copy strong{font-weight:var(--w-bold);color:#163b67}
 @media(max-width:370px){.atlas-light header{gap:8px;padding:10px 12px}.atlas-light header .brand{font-size:var(--t-body);gap:7px;min-height:44px}.atlas-light header .brand>span:first-child{width:32px;height:32px}.atlas-light header .account{padding:8px 4px;font-size:var(--t-small);min-height:44px}.atlas-light nav>a{font-size:var(--t-small);padding-left:2px;padding-right:2px;min-width:0}.lente-reset{white-space:normal;text-align:right;max-width:116px;line-height:1.4}}
+/* La pagina Lente e composta da superfici chiare: riquadri bianchi, barra
+   modalita #eaf0f7, bordi #dbe5f1. Il colore del testo (#182b43) e disegnato
+   per quelle superfici, ma alla pagina non era mai stato dato uno sfondo
+   chiaro, quindi il testo cadeva sul gradiente scuro del cielo. Titolo a
+   1,35:1 e testo di servizio a 1,27:1: illeggibili. Con la superficie per cui
+   erano pensati tornano a 12,67:1 e 13,47:1. */
+.lente-page{background:#f6f8fb;border-radius:var(--r-card);padding:var(--s4)}
+/* Barra modalita: quattro voci su una riga sola a 375 px tagliavano l'ultima
+   etichetta. Con flex-wrap le voci vanno a capo invece di uscire dal riquadro:
+   restano tutte visibili e leggibili, senza scorrimento nascosto. */
+.lente-modebar{flex-wrap:wrap}
+.lente-modebar button{flex:1 1 auto;min-width:0;padding-inline:8px}

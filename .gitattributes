@@ -1,0 +1,24 @@
+# Fine riga: Git non converte mai nulla, in nessuna direzione.
+#
+# Senza questa regola il checkout su Windows e quello su Linux producono byte
+# diversi per gli stessi file. Gli artefatti di build (dist/app, dist/server,
+# dist/assets, tools/map-bundle-report.json) vengono scritti sempre con LF da
+# esbuild e da build.mjs: se il checkout li consegna con CRLF, ogni
+# `node build.mjs` riscrive decine di file senza cambiare una sola riga di
+# codice. Il diff che ne risulta rende impossibile distinguere una modifica
+# reale dal rumore, e blocca lo scambio delle proposte fra Claude e Codex.
+#
+# `-text` disattiva la conversione: quello che è nel repository arriva identico
+# su ogni sistema operativo. I sorgenti già salvati con CRLF restano CRLF e non
+# vengono riscritti: questa regola non rinormalizza nulla e non tocca il lavoro
+# in corso. Una normalizzazione completa a LF resta una scelta separata, da
+# concordare perché toccherebbe in un colpo solo tutti i file sorgente.
+* -text
+
+# File binari: nessun tentativo di diff o merge testuale.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.woff2 binary
+*.bin binary
