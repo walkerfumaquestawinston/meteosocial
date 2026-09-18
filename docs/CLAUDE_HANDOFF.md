@@ -2,6 +2,20 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Grandine: segnalare, scegliere la distanza, essere avvisati prima — 18 settembre 2026
+
+Richiesta del proprietario: che la gente possa segnalare, possa mettere la distanza preferita, e che quando succede venga avvisata prima.
+
+**Cosa esisteva già, verificato prima di costruire.** Le segnalazioni con la dimensione dei chicchi funzionano e sono consegnate (`quick-report.js`, `hail-tools.js`, tabella `hail_details` con `observed` e `size`). La tabella `hail_watches` ha già un campo `radius`, cioè la distanza preferita, e l'API `/api/hail/watch` la legge. Mancavano due cose: l'interfaccia per la distanza era ritirata dal bundle, e la logica dell'avviso non era consegnata.
+
+**`server/grandine-avviso.js`, funzione pura con le tre condizioni della specifica 3.3.** Non basta che la grandine sia vicina: deve venire verso di te. Almeno due segnalazioni concordi entro 3 km l'una dall'altra; tempo stimato fra 3 e 40 minuti; non più di un avviso all'ora per persona. La direzione conta: il vento meteorologico dice da dove viene, quindi la nube si muove nella direzione opposta, e la componente verso chi guarda deve superare 0,5.
+
+`test-grandine-avviso.mjs`, **30 controlli**: il caso che deve funzionare, e poi ogni condizione violata una per volta — una sola segnalazione, due segnalazioni lontane fra loro, troppo vicina, troppo lontana, vento debole, vento contrario, vento di traverso, avviso già mandato, posizione mancante, vento illeggibile, segnalazioni vecchie o dal futuro, dimensione non dichiarata. La funzione è pura e l'orologio entra dai parametri, quindi il risultato non dipende da quando gira il test.
+
+**`/api/mappa/grandine-avviso`** mette insieme le segnalazioni delle ultime due ore con zona dichiarata, il vento del comune più vicino preso dalla cache del meteo (nessuna chiamata esterna in più) e quelle regole. Non manda notifiche: risponde *se ci sarebbe da avvisare*. Quando non c'è un avviso dice **perché**, che è più utile del silenzio. Non tiene memoria di chi è stato avvisato: l'ultimo avviso lo ricorda il browser, così la regola dell'ora vale senza schedare nessuno.
+
+Dettagli, limiti e la decisione non presa su H6: PROJECT_STATUS.md.
+
 ## Mappa: meteo preciso per comune, pioggia e Lente sulla vista — 18 settembre 2026
 
 Richiesta del proprietario: dati meteo aggiornati e precisi (temperatura, pioggia, meteo) e l'IA molto più presente nella mappa.

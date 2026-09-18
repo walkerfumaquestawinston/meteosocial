@@ -62,6 +62,17 @@ export function createMappaEventi(ctx) {
   // precipitazione, vento = km/h. Vuoto finche' la fonte non risponde.
   let meteoComuni = new Map(), meteoStato = '';
 
+  // Distanza entro cui si vuole essere avvisati della grandine. La specifica
+  // 3.2 usa 15 km come riferimento; qui la sceglie la persona.
+  const AVVISO_CHIAVE = 'meteosocial:mappa-eventi:raggio-avviso';
+  const AVVISO_ULTIMO = 'meteosocial:mappa-eventi:ultimo-avviso';
+  const AVVISO_DISTANZE = [5, 15, 30, 50];
+  let raggioAvviso = 15, avviso = null, avvisoMotivo = '';
+  try {
+    const salvato = Number(localStorage.getItem(AVVISO_CHIAVE));
+    if (AVVISO_DISTANZE.includes(salvato)) raggioAvviso = salvato;
+  } catch { /* preferenza illeggibile: resta il predefinito */ }
+
   try {
     const salvato = JSON.parse(localStorage.getItem(MAPPA_CHIAVE) || 'null');
     if (Array.isArray(salvato)) for (const l of livelli) l.attivo = salvato.includes(l.id);
@@ -80,6 +91,7 @@ export function createMappaEventi(ctx) {
         <p class="mappa-riga">FONTI <span id="mappa-fonti">—</span></p>
         <p class="mappa-riga">NODI <span id="mappa-nodi">—</span> · EVENTI ATTIVI <span id="mappa-eventi-attivi">—</span></p>
       </div>
+      <div class="mappa-avviso" id="mappa-avviso" role="status" hidden></div>
       <div class="mappa-quadro">
         <div class="mappa-tela" id="mappa-tela" role="application" aria-label="Mappa degli eventi atmosferici"></div>
         <div class="mappa-controlli">
@@ -90,6 +102,10 @@ export function createMappaEventi(ctx) {
             <button type="button" class="mappa-elenco" id="mappa-elenco" aria-expanded="false">ELENCO</button>
             <button type="button" class="mappa-chiedi mappa-chiedi-vista" id="mappa-lente">CHIEDI A LENTE</button>
           </div>
+          <a class="mappa-segnala" href="#segnala">◇ SEGNALA GRANDINE</a>
+          <label class="mappa-raggio"><span>AVVISAMI ENTRO</span>
+            <select id="mappa-raggio">${AVVISO_DISTANZE.map(k => `<option value="${k}"${k === raggioAvviso ? ' selected' : ''}>${k} km</option>`).join('')}</select>
+          </label>
         </div>
       </div>
       <div class="mappa-lista" id="mappa-lista" hidden></div>
@@ -209,11 +225,47 @@ export function createMappaEventi(ctx) {
     } catch { if (token === sequenza) { l.dati = []; l.conteggio = 0; l.stato = 'giu'; } }
   }
 
+  // Avviso grandine: si chiede al server se ci sarebbe da avvisare, con la
+  // distanza scelta dalla persona. Il server non tiene memoria di chi e' stato
+  // avvisato, quindi l'ultimo avviso mostrato lo ricorda il browser: cosi' la
+  // regola "un avviso all'ora" vale davvero senza schedare nessuno.
+  async function caricaAvviso(token) {
+    const p = ctx.get()?.place;
+    if (!trova('grandine').attivo || !p || !Number.isFinite(p.latitude) || !Number.isFinite(p.longitude)) {
+      avviso = null; avvisoMotivo = ''; return;
+    }
+    let ultimo = 0;
+    try { ultimo = Number(localStorage.getItem(AVVISO_ULTIMO)) || 0; } catch { /* ignorato */ }
+    try {
+      const d = await ctx.api(`mappa/grandine-avviso?lat=${p.latitude.toFixed(4)}&lon=${p.longitude.toFixed(4)}&raggio=${raggioAvviso}&ultimo=${ultimo}`);
+      if (token !== sequenza) return;
+      avviso = d.avviso || null; avvisoMotivo = d.motivo || '';
+      if (avviso) { try { localStorage.setItem(AVVISO_ULTIMO, String(Date.now())); } catch { /* ignorato */ } }
+    } catch (e) { if (token === sequenza) { avviso = null; avvisoMotivo = e?.message || 'Avviso non disponibile adesso.'; } }
+  }
+
+  function scriviAvviso() {
+    const slot = $('#mappa-avviso'); if (!slot) return;
+    if (avviso) {
+      slot.hidden = false;
+      slot.className = 'mappa-avviso mappa-avviso-attivo';
+      slot.innerHTML = `<p class="mappa-riga">AVVISO GRANDINE</p>
+        <p><strong>${esc(avviso.titolo)}</strong> ${esc(avviso.testo)}</p>
+        <p class="mappa-fonte">${esc(avviso.avvertenza)}</p>`;
+      return;
+    }
+    // Nessun avviso non e' silenzio: si dice perche', e con quale distanza.
+    slot.hidden = false;
+    slot.className = 'mappa-avviso';
+    slot.innerHTML = `<p class="mappa-riga">AVVISO GRANDINE · ENTRO ${raggioAvviso} KM</p>
+      <p>${esc(avvisoMotivo || 'Nessuna grandine in arrivo.')}</p>`;
+  }
+
   async function carica() {
     if (!map || !vivo) return;
     const token = ++sequenza;
     // In parallelo ma indipendenti: una fonte che cade non ferma le altre.
-    await Promise.allSettled([caricaComuni(token), caricaMeteoComuni(token), caricaTemperature(token), caricaEventi(token), caricaGrandine(token)]);
+    await Promise.allSettled([caricaComuni(token), caricaMeteoComuni(token), caricaTemperature(token), caricaEventi(token), caricaGrandine(token), caricaAvviso(token)]);
     if (token !== sequenza) return;
 
     // TEMPERATURE e PIOGGIA vivono sugli stessi punti: citta del mondo piu
@@ -233,7 +285,7 @@ export function createMappaEventi(ctx) {
       pioggia.stato = (temp.stato === 'giu' && meteoStato === 'giu') ? 'giu' : (meteoStato === 'vecchio' ? 'vecchio' : '');
     }
 
-    disegna(); scriviStato(); scriviLista(); mostraVuoto();
+    disegna(); scriviStato(); scriviAvviso(); scriviLista(); mostraVuoto();
   }
 
   // ---- disegno -------------------------------------------------------------
@@ -512,6 +564,14 @@ export function createMappaEventi(ctx) {
     };
     const lente = $('#mappa-lente');
     if (lente) lente.onclick = () => chiediSullaVista();
+    const raggio = $('#mappa-raggio');
+    if (raggio) raggio.onchange = () => {
+      const scelto = Number(raggio.value);
+      if (!AVVISO_DISTANZE.includes(scelto)) return;
+      raggioAvviso = scelto;
+      try { localStorage.setItem(AVVISO_CHIAVE, String(scelto)); } catch { /* ignorato */ }
+      carica();
+    };
     const elenco = $('#mappa-elenco');
     if (elenco) elenco.onclick = () => {
       const lista = $('#mappa-lista'); if (!lista) return;

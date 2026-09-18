@@ -10,6 +10,7 @@
 //   [istat, nome, prov, regione, lat, lng, abitanti]
 // abitanti puo' essere null: 387 comuni non ce l'hanno, e null non e' zero.
 
+const MAPPA_PER_ISTAT = new Map(MAPPA_COMUNI.map(r => [r[0], r]));
 const MAPPA_ISTAT = 0, MAPPA_NOME = 1, MAPPA_PROV = 2, MAPPA_REGIONE = 3, MAPPA_LAT = 4, MAPPA_LNG = 5, MAPPA_AB = 6;
 
 // Quanti nodi mostrare a ogni zoom (specifica 5.2). L'elenco e' gia' ordinato
@@ -73,6 +74,7 @@ function mappaRisposta(corpo, stato = 200, cache = 'public, max-age=300') {
 
 async function mappaApi(req, env, url) {
   if (url.pathname === '/api/mappa/meteo') return mappaMeteoApi(req, env, url);
+  if (url.pathname === '/api/mappa/grandine-avviso') return mappaAvvisoApi(req, env, url);
   if (url.pathname !== '/api/mappa/comuni') return mappaRisposta({ error: 'Percorso non disponibile.' }, 404, 'no-store');
   if (req.method !== 'GET') return mappaRisposta({ error: 'Metodo non consentito.' }, 405, 'no-store');
 
@@ -143,7 +145,7 @@ async function mappaMeteoDati(env) {
       const p = new URLSearchParams({
         latitude: blocco.map(r => r[MAPPA_LAT]).join(','),
         longitude: blocco.map(r => r[MAPPA_LNG]).join(','),
-        current: 'temperature_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,cloud_cover',
+        current: 'temperature_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,cloud_cover',
         timezone: 'GMT',
       });
       let dati;
@@ -161,12 +163,15 @@ async function mappaMeteoDati(env) {
           Number.isFinite(c.precipitation) ? c.precipitation : null,
           Number.isFinite(c.weather_code) ? c.weather_code : null,
           Number.isFinite(c.wind_speed_10m) ? Math.round(c.wind_speed_10m) : null,
+          // Direzione da cui viene il vento: serve all'avviso grandine per
+          // capire se la nube sta venendo verso chi guarda.
+          Number.isFinite(c.wind_direction_10m) ? Math.round(c.wind_direction_10m) : null,
         ];
       }).filter(Boolean);
     }));
     const dati = gruppi.flat();
     return {
-      campi: ['istat', 't', 'mm', 'codice', 'vento'],
+      campi: ['istat', 't', 'mm', 'codice', 'vento', 'direzione'],
       dati,
       chiesti: scelti.length,
       updated: Date.now(),
@@ -174,6 +179,82 @@ async function mappaMeteoDati(env) {
       fonte: 'Open-Meteo. Dato di modello, non una misura osservata da una stazione.',
     };
   });
+}
+
+// ---- avviso grandine -------------------------------------------------------
+//
+// Mette insieme tre cose che gia' esistono: le segnalazioni di grandine delle
+// persone, il vento del comune piu' vicino (dalla cache del meteo, senza una
+// nuova chiamata esterna) e le regole della specifica 3.3, che vivono in
+// server/grandine-avviso.js come funzione pura e provata.
+//
+// Non manda notifiche: risponde se ci sarebbe da avvisare. Chi chiama decide
+// se mostrarlo nella vista o inoltrarlo come notifica, e quella e' una scelta
+// separata, perche' una notifica sbagliata sulla grandine si paga cara.
+
+const AVVISO_FINESTRA_MS = 7200000;
+
+function mappaVentoVicino(meteo, lat, lon) {
+  // Il vento del comune piu' vicino fra quelli che ce l'hanno. Approssimazione
+  // dichiarata: non e' il vento misurato sul punto esatto.
+  let migliore = null, minima = Infinity;
+  for (const r of meteo.dati || []) {
+    const c = MAPPA_PER_ISTAT.get(r[0]);
+    if (!c || !Number.isFinite(r[4]) || !Number.isFinite(r[5])) continue;
+    const d = (c[MAPPA_LAT] - lat) ** 2 + (c[MAPPA_LNG] - lon) ** 2;
+    if (d < minima) { minima = d; migliore = { velocitaKmh: r[4], direzioneGradi: r[5], comune: c[MAPPA_NOME] }; }
+  }
+  return migliore;
+}
+
+async function mappaAvvisoApi(req, env, url) {
+  if (req.method !== 'GET') return mappaRisposta({ error: 'Metodo non consentito.' }, 405, 'no-store');
+  const lat = Number(url.searchParams.get('lat')), lon = Number(url.searchParams.get('lon'));
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180)
+    return mappaRisposta({ error: 'Servono latitudine e longitudine valide.' }, 400, 'no-store');
+  const raggioGrezzo = Number(url.searchParams.get('raggio'));
+  const raggioKm = Number.isFinite(raggioGrezzo) ? Math.max(1, Math.min(50, raggioGrezzo)) : undefined;
+  if (!env?.DB) return mappaRisposta({ avviso: null, motivo: 'Archivio non disponibile.' }, 503, 'no-store');
+
+  const adesso = Date.now();
+  // Solo segnalazioni di grandine con una zona dichiarata, delle ultime due
+  // ore, non cancellate. Le coordinate sono salvate moltiplicate per cento.
+  const righe = (await q(env,
+    "SELECT p.map_lat, p.map_lon, p.city, p.created, d.size, d.observed FROM posts p LEFT JOIN hail_details d ON d.post=p.id " +
+    "WHERE p.kind='Grandine' AND p.deleted=0 AND p.map_lat IS NOT NULL AND p.map_lon IS NOT NULL AND p.created>?",
+    adesso - AVVISO_FINESTRA_MS).all()).results || [];
+
+  const segnalazioni = righe.map(r => ({
+    lat: r.map_lat / 100,
+    lon: r.map_lon / 100,
+    quando: Number.isFinite(r.observed) ? r.observed : r.created,
+    dimensione: r.size || null,
+    luogo: r.city || null,
+  }));
+
+  let vento = null, meteo = null;
+  try { meteo = await mappaMeteoDati(env); vento = mappaVentoVicino(meteo, lat, lon); }
+  catch { /* senza vento non si stima: lo si dice sotto, non si inventa */ }
+
+  const avviso = vento ? valutaAvvisoGrandine({
+    me: { lat, lon }, segnalazioni, vento, raggioKm, adesso,
+    // L'ultimo avviso lo conosce il client, che sa quando l'ha mostrato: qui
+    // non si tiene uno stato per persona, cosi' l'endpoint resta senza memoria.
+    ultimoAvviso: Number(url.searchParams.get('ultimo')) || null,
+  }) : null;
+
+  return mappaRisposta({
+    avviso,
+    // Perche' non c'e' un avviso: e' piu' utile di un silenzio.
+    motivo: avviso ? null
+      : !vento ? 'Il vento non e disponibile adesso, quindi non stimiamo nulla.'
+        : !segnalazioni.length ? 'Nessuna segnalazione di grandine nelle ultime due ore.'
+          : 'Nessuna grandine sta venendo verso di te con questi dati.',
+    segnalazioniConsiderate: segnalazioni.length,
+    vento: vento ? { velocitaKmh: vento.velocitaKmh, direzioneGradi: vento.direzioneGradi, daComune: vento.comune } : null,
+    regole: AVVISO_GRANDINE_REGOLE,
+    fonte: 'Segnalazioni della community piu vento Open-Meteo. Stima, non un allerta ufficiale.',
+  }, 200, 'no-store');
 }
 
 async function mappaMeteoApi(req, env, url) {

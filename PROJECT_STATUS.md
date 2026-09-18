@@ -6,6 +6,28 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Grandine: segnalare, scegliere la distanza, essere avvisati prima — 18 settembre 2026
+
+Richiesta del proprietario: che la gente possa segnalare, possa mettere la distanza preferita, e che quando succede venga avvisata prima.
+
+**Cosa esisteva già, verificato prima di costruire.** Le segnalazioni con la dimensione dei chicchi funzionano e sono consegnate (`quick-report.js`, `hail-tools.js`, tabella `hail_details` con `observed` e `size`). La tabella `hail_watches` ha già un campo `radius`, cioè la distanza preferita, e l'API `/api/hail/watch` la legge. Mancavano due cose: l'interfaccia per la distanza era ritirata dal bundle, e la logica dell'avviso non era consegnata.
+
+**`server/grandine-avviso.js`, funzione pura con le tre condizioni della specifica 3.3.** Non basta che la grandine sia vicina: deve venire verso di te. Almeno due segnalazioni concordi entro 3 km l'una dall'altra; tempo stimato fra 3 e 40 minuti; non più di un avviso all'ora per persona. La direzione conta: il vento meteorologico dice da dove viene, quindi la nube si muove nella direzione opposta, e la componente verso chi guarda deve superare 0,5.
+
+`test-grandine-avviso.mjs`, **30 controlli**: il caso che deve funzionare, e poi ogni condizione violata una per volta — una sola segnalazione, due segnalazioni lontane fra loro, troppo vicina, troppo lontana, vento debole, vento contrario, vento di traverso, avviso già mandato, posizione mancante, vento illeggibile, segnalazioni vecchie o dal futuro, dimensione non dichiarata. La funzione è pura e l'orologio entra dai parametri, quindi il risultato non dipende da quando gira il test.
+
+**`/api/mappa/grandine-avviso`** mette insieme le segnalazioni delle ultime due ore con zona dichiarata, il vento del comune più vicino preso dalla cache del meteo (nessuna chiamata esterna in più) e quelle regole. Non manda notifiche: risponde *se ci sarebbe da avvisare*. Quando non c'è un avviso dice **perché**, che è più utile del silenzio. Non tiene memoria di chi è stato avvisato: l'ultimo avviso lo ricorda il browser, così la regola dell'ora vale senza schedare nessuno.
+
+**Sulla mappa:** un riquadro di avviso sopra la mappa, un selettore della distanza (5, 15, 30, 50 km) che viene ricordato, e un pulsante SEGNALA GRANDINE che porta al percorso di segnalazione già esistente. Verificato nel browser: cambiando la distanza la richiesta cambia e la scelta resta salvata; il pulsante porta a una pagina di segnalazione reale.
+
+**Una scelta non presa, e dichiarata.** Esiste già `dist/arrival-estimate.js` (H6) con la stessa formula ma due condizioni in più: cento persone attive in zona e una validazione sul campo. È una cautela del progetto, più stretta di questa specifica, ed è ritirata dal bundle. **Non l'ho riattivata né modificata.** Qui sono implementate le condizioni che la specifica chiede; se si vuole tenere anche quella cautela è una decisione del coordinatore, e va presa sapendo che con pochi utenti l'avviso non partirebbe mai.
+
+**Le notifiche vere non sono collegate.** L'avviso oggi si vede aprendo la mappa. Inoltrarlo come notifica push è un passo separato, e va fatto sapendo che la specifica lo tratta come l'unica eccezione al tetto di due notifiche al giorno e l'unico che può arrivare fra le 22 e le 7: è esattamente il tipo di scelta che non prendo da solo.
+
+Un difetto di impaginazione trovato e corretto: con il riquadro dell'avviso la mappa finiva sotto la barra di navigazione e i controlli sparivano. Altezza ridotta e posizione **misurata** nel browser, non stimata a occhio: controlli a 676 px contro un bordo della mappa a 684 e una barra che comincia a 736.
+
+Verifiche: suite completa 46 superati, 0 falliti; browser reale a 375 px senza errori JavaScript. In questo ambiente l'avviso risponde «il vento non è disponibile», perché la rete della sessione blocca Open-Meteo: è il comportamento onesto, non un guasto.
+
 ## Mappa: meteo preciso per comune, pioggia e Lente sulla vista — 18 settembre 2026
 
 Richiesta del proprietario: dati meteo aggiornati e precisi (temperatura, pioggia, meteo) e l'IA molto più presente nella mappa.

@@ -4,6 +4,8 @@
    bordi di un pixel, profondita' data dal backdrop-filter e non dalle ombre. */
 
 .mappa{
+  /* Spazio per la barra di navigazione piu la zona sicura del dispositivo. */
+  padding-bottom: calc(var(--s3) + 76px + env(safe-area-inset-bottom));
   --map-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, monospace;
   --map-r: 4px;
   --map-r-pill: 6px;
@@ -54,7 +56,10 @@
 .mappa-giu{ color: var(--allerta); }
 
 .mappa-tela{
-  height: min(62vh, 560px);
+  /* Altezza calcolata, non a occhio: la sezione deve stare fra la barra di
+     stato, il riquadro dell avviso e la barra di navigazione. Con 62vh la
+     mappa finiva sotto la navigazione e i controlli sparivano. */
+  height: min(44vh, 420px);
   border: 1px solid var(--map-bordo);
   border-radius: var(--map-r);
   overflow: hidden;
@@ -219,3 +224,61 @@
 }
 .mappa-chiedi[disabled]{ opacity: .6; }
 #mappa-risposta p{ color: var(--ink-2); font-size: var(--t-small); }
+
+/* Avviso grandine: normalmente e una riga sobria che dice perche non ci sono
+   avvisi. Quando ce ne e uno davvero, diventa il primo elemento che si vede. */
+.mappa-avviso{
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: var(--map-hud);
+  padding: var(--s2) var(--s3);
+  color: var(--ink-2);
+  font-size: var(--t-small);
+  display: grid;
+  gap: var(--s1);
+}
+.mappa-avviso p{ margin: 0; }
+.mappa-avviso-attivo{
+  border-color: var(--persone);
+  background: var(--persone-soft);
+  color: var(--ink);
+}
+
+/* La distanza di avviso: una scelta della persona, non un valore nascosto. */
+.mappa-raggio{
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+  color: var(--ink-3);
+}
+.mappa-raggio select{
+  min-height: 44px;
+  flex: 1;
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: var(--map-hud);
+  color: var(--ink);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  padding: 0 var(--s2);
+}
+
+/* Segnalare si fa dalla mappa, non solo da un altro schermo: il percorso di
+   segnalazione esiste gia nell app, qui si aggiunge solo la porta. */
+.mappa-segnala{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px solid var(--persone);
+  border-radius: var(--map-r);
+  background: var(--persone-soft);
+  color: var(--ink);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+  text-decoration: none;
+}
