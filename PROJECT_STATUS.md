@@ -6,6 +6,125 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Grandine: segnalare, scegliere la distanza, essere avvisati prima — 18 settembre 2026
+
+Richiesta del proprietario: che la gente possa segnalare, possa mettere la distanza preferita, e che quando succede venga avvisata prima.
+
+**Cosa esisteva già, verificato prima di costruire.** Le segnalazioni con la dimensione dei chicchi funzionano e sono consegnate (`quick-report.js`, `hail-tools.js`, tabella `hail_details` con `observed` e `size`). La tabella `hail_watches` ha già un campo `radius`, cioè la distanza preferita, e l'API `/api/hail/watch` la legge. Mancavano due cose: l'interfaccia per la distanza era ritirata dal bundle, e la logica dell'avviso non era consegnata.
+
+**`server/grandine-avviso.js`, funzione pura con le tre condizioni della specifica 3.3.** Non basta che la grandine sia vicina: deve venire verso di te. Almeno due segnalazioni concordi entro 3 km l'una dall'altra; tempo stimato fra 3 e 40 minuti; non più di un avviso all'ora per persona. La direzione conta: il vento meteorologico dice da dove viene, quindi la nube si muove nella direzione opposta, e la componente verso chi guarda deve superare 0,5.
+
+`test-grandine-avviso.mjs`, **30 controlli**: il caso che deve funzionare, e poi ogni condizione violata una per volta — una sola segnalazione, due segnalazioni lontane fra loro, troppo vicina, troppo lontana, vento debole, vento contrario, vento di traverso, avviso già mandato, posizione mancante, vento illeggibile, segnalazioni vecchie o dal futuro, dimensione non dichiarata. La funzione è pura e l'orologio entra dai parametri, quindi il risultato non dipende da quando gira il test.
+
+**`/api/mappa/grandine-avviso`** mette insieme le segnalazioni delle ultime due ore con zona dichiarata, il vento del comune più vicino preso dalla cache del meteo (nessuna chiamata esterna in più) e quelle regole. Non manda notifiche: risponde *se ci sarebbe da avvisare*. Quando non c'è un avviso dice **perché**, che è più utile del silenzio. Non tiene memoria di chi è stato avvisato: l'ultimo avviso lo ricorda il browser, così la regola dell'ora vale senza schedare nessuno.
+
+**Sulla mappa:** un riquadro di avviso sopra la mappa, un selettore della distanza (5, 15, 30, 50 km) che viene ricordato, e un pulsante SEGNALA GRANDINE che porta al percorso di segnalazione già esistente. Verificato nel browser: cambiando la distanza la richiesta cambia e la scelta resta salvata; il pulsante porta a una pagina di segnalazione reale.
+
+**Una scelta non presa, e dichiarata.** Esiste già `dist/arrival-estimate.js` (H6) con la stessa formula ma due condizioni in più: cento persone attive in zona e una validazione sul campo. È una cautela del progetto, più stretta di questa specifica, ed è ritirata dal bundle. **Non l'ho riattivata né modificata.** Qui sono implementate le condizioni che la specifica chiede; se si vuole tenere anche quella cautela è una decisione del coordinatore, e va presa sapendo che con pochi utenti l'avviso non partirebbe mai.
+
+**Le notifiche vere non sono collegate.** L'avviso oggi si vede aprendo la mappa. Inoltrarlo come notifica push è un passo separato, e va fatto sapendo che la specifica lo tratta come l'unica eccezione al tetto di due notifiche al giorno e l'unico che può arrivare fra le 22 e le 7: è esattamente il tipo di scelta che non prendo da solo.
+
+Un difetto di impaginazione trovato e corretto: con il riquadro dell'avviso la mappa finiva sotto la barra di navigazione e i controlli sparivano. Altezza ridotta e posizione **misurata** nel browser, non stimata a occhio: controlli a 676 px contro un bordo della mappa a 684 e una barra che comincia a 736.
+
+Verifiche: suite completa 46 superati, 0 falliti; browser reale a 375 px senza errori JavaScript. In questo ambiente l'avviso risponde «il vento non è disponibile», perché la rete della sessione blocca Open-Meteo: è il comportamento onesto, non un guasto.
+
+## Mappa: meteo preciso per comune, pioggia e Lente sulla vista — 18 settembre 2026
+
+Richiesta del proprietario: dati meteo aggiornati e precisi (temperatura, pioggia, meteo) e l'IA molto più presente nella mappa.
+
+**Meteo per comune, endpoint nuovo.** `/api/mappa/meteo` raccoglie temperatura, pioggia, vento e codice meteo per i **500 comuni più popolosi**, in cinque chiamate a blocchi di 100, e li conserva quindici minuti nella stessa cache (`globe_snapshots`) che l'app usa già per il meteo mondiale. Il client non interroga mai Open-Meteo: con cento persone sulla mappa sarebbero centinaia di migliaia di chiamate all'ora.
+
+Perché 500 e non 7.894, scelta dichiarata e non svista: un giro completo sarebbe 79 chiamate e circa trenta secondi, troppo dentro la finestra di una richiesta. 500 sono cinque chiamate e un paio di secondi, e coprono per intero i livelli di zoom fino al 10, che filtrano per popolazione. Sui centri più piccoli il meteo non c'è e viene dichiarato assente, non stimato: il punto resta grigio e più piccolo, e la scheda lo dice.
+
+**Livello PIOGGIA.** Il dato c'era già nelle risposte di Open-Meteo e non veniva mostrato. Ora un anello azzurro che cresce con i millimetri compare solo dove sta piovendo davvero: zero millimetri non disegna niente, perché «non piove» non è un dato da mostrare.
+
+**Cinque livelli:** TEMPERATURE (200 città mondiali più i comuni con misura, colorati dalla scala termica), PIOGGIA, EVENTI (NASA EONET), GRANDINE (persone), COMUNI (7.894, elenco).
+
+**Lente sulla mappa, non solo nelle schede.** Un pulsante accanto a ELENCO costruisce un riassunto dai conteggi veri già caricati — quante località, fra quali temperature, dove piove, quanti eventi aperti, quali fonti non rispondono — e lo passa come domanda. Alla Lente arrivano solo il nome della località e la domanda: mai coordinate precise, autori o media, come prescrive `server/assistant.js`. La risposta compare dichiarata come generata.
+
+Due difetti corretti durante la verifica: `OPEN-METEO` compariva due volte nella barra di stato, perché TEMPERATURE e PIOGGIA condividono la stessa fonte; e il conteggio delle fonti cadute contava i livelli invece delle fonti, gonfiando il numero. Ora una fonte per riga, con lo stato peggiore fra i livelli che la usano.
+
+Verifiche: suite 45 superati, 0 falliti; browser reale a 375 px, cinque pillole, nessun errore JavaScript, fonti barrate corrette; build riproducibile. In questo ambiente Open-Meteo e NASA restano barrate perché la rete della sessione le blocca; l'endpoint nuovo è stato provato contro il database locale e risponde con l'errore onesto invece di inventare dati.
+
+## Mappa mondiale: temperature, eventi NASA, grandine e Lente — 18 settembre 2026
+
+Richiesta del proprietario: una mappa come argosatlas.com/map, con temperatura, grandine ed eventi in tempo reale in tutto il mondo e con l'IA integrata.
+
+**Premessa dichiarata:** argosatlas.com non e raggiungibile da questo ambiente, quindi il riferimento visivo resta la descrizione che ne fa la specifica, non il sito osservato.
+
+**Scoperta che ha cambiato il lavoro.** I servizi mondiali esistevano gia nel Worker, inutilizzati dopo il ritiro del globo: /api/atlas/world (200 citta in 159 paesi, Open-Meteo), /api/atlas/events (NASA EONET, eventi aperti in tempo reale) e /api/atlas/hail (grandine dalla community). Non serviva costruirli ne serviva uno scheduler: globeSnapshot in server/world-weather.js e gia la pipeline che la specifica chiedeva, con blocchi da 50 citta, cache di 15 minuti nel database e dato precedente conservato quando la fonte non risponde.
+
+**Quattro livelli collegati**, ognuno con la propria fonte dichiarata:
+COMUNI 7.894 italiani, elenco statico; TEMPERATURE 200 citta mondiali con misura vera e colore dalla scala termica; EVENTI incendi, tempeste, alluvioni e vulcani da NASA EONET; GRANDINE segnalazioni delle persone, con il raggio che cresce con la dimensione dei chicchi e non con le conferme.
+
+Ogni livello carica per conto proprio: se una fonte cade le altre restano in piedi. La barra di stato barra in rosso le fonti che non rispondono e segna con un asterisco quelle che servono il dato precedente. Verificato dal vivo: in questo ambiente Open-Meteo e NASA risultano barrate perche la rete della sessione le blocca, mentre ISTAT e le persone funzionano. In produzione rispondono, perche quegli endpoint sono gia in uso.
+
+**IA integrata:** da ogni scheda si puo chiedere a Lente. Alla Lente vanno solo il nome della localita e la domanda, mai coordinate precise, autori o media, come prescrivono le regole scritte in server/assistant.js. La risposta compare dichiarata come generata, mai confusa con una previsione ufficiale.
+
+**Limite sulla densita.** ARGOS mostra 177.700 nodi. Qui il massimo raggiungibile con i dati disponibili e 7.894 comuni italiani piu 200 citta mondiali piu fino a 300 eventi: densita di classe ARGOS sull'Italia, non sul mondo. Per arrivarci davvero servirebbe un elenco mondiale di localita con coordinate, che al momento non c'e.
+
+Verifiche: suite completa 45 superati, 0 falliti; browser reale a 375 px senza errori JavaScript, con le quattro pillole, i conteggi veri e le fonti barrate corrette. Lo sfondo cartografico non e stato visto, perche anche le mattonelle sono bloccate da qui.
+
+## Mappa eventi atmosferici — API dei comuni e prima vista — 18 settembre 2026
+
+Secondo blocco della specifica PROMPT-MAPPA. Il proprietario ha confermato due volte di procedere pur senza risposta ai bloccanti, quindi le decisioni aperte sono state prese qui e sono dichiarate.
+
+**Tre decisioni prese, tutte reversibili.**
+
+1. **Leaflet come chiede la specifica, ma in un modulo nuovo su una rotta nuova, `#mappa-eventi`.** La Mappa MapLibre pubblicata nella versione 64 non è stata toccata. Così si confrontano le due sull'anteprima e si decide quale diventa `#mappa`: cambiarla è una riga. Sostituire subito avrebbe buttato funzionalità già pubblicate senza averle viste a confronto.
+2. **Lo scheduler non serve per questo blocco.** L'elenco dei comuni è statico e viaggia dentro il Worker, quindi l'endpoint non chiama nulla all'esterno e non ha limiti di frequenza da rispettare. I livelli che dipendono da fonti esterne restano fuori.
+3. **Sette pillole su otto non vengono mostrate.** Pioggia, temporali, grandine, neve, vento, allerte e persone richiedono fonti non ancora collegate: una pillola che non accende niente è un numero inventato travestito. Si mostreranno quando avranno dati veri.
+
+**Scostamento dichiarato** dalla specifica 5.2: ai livelli 6 e 7 chiede i capoluoghi di regione e di provincia, ma le fonti disponibili non hanno un campo «capoluogo» e ricavarlo dalla popolazione sbaglierebbe, perché L'Aquila è capoluogo d'Abruzzo mentre Pescara è più popolosa. Si usano i più popolosi, criterio vero e dichiarato nella risposta, con gli stessi ordini di grandezza.
+
+**Server:** `server/mappa.js` con `GET /api/mappa/comuni`, filtro per riquadro e per zoom, formato compatto, tetto di 1200 righe con troncamento dichiarato, `Cache-Control: public, max-age=300`. I comuni entrano nel Worker come letterale compatto (481 KB invece di 1.044 in forma di oggetti); il Worker passa da 4,5 a 5,0 MB, da 1,60 a 1,77 MB compresso.
+
+**Vista:** `dist/mappa-eventi.js` e `dist/mappa-eventi.css`. Leaflet con `preferCanvas` e renderer canvas, `circleMarker` per i dati di massa, import dinamico che carica Leaflet solo entrando nella sezione, debounce di 400 ms su `moveend` e `zoomend`, stop con `document.hidden`, `map.remove()` all'uscita. Barra di stato monospaziata con orologio al secondo, fonte barrata in rosso quando non risponde, conteggi veri. Pillole con stato in `localStorage`, invito a riaccendere quando si spegne tutto, pulsante ELENCO per l'uso con screen reader, attribuzioni sempre visibili.
+
+**Verifiche nel browser reale a 375 px:** Leaflet **non** viene scaricato prima di aprire la Mappa, che era il rischio più concreto; canvas presente; l'API viene chiamata con riquadro e zoom; uscendo dalla sezione il contenitore sparisce e nessun timer resta acceso; dodici etichette disegnate e nessuna che esce dal riquadro; controlli galleggianti dentro la mappa.
+
+Tre difetti trovati e corretti durante la verifica: le etichette uscivano dal riquadro perché il `transform` di Leaflet vince su quello del foglio di stile; i controlli finivano sotto la barra di navigazione; i nomi lunghi al centro sparivano invece di centrarsi sotto il punto.
+
+**Test:** `test-mappa.mjs`, 36 controlli superati su livelli di zoom, soglie reali, riquadro, troncamento dichiarato, abitanti null, fonte, cache e metodi. Suite completa 45 superati, 6 non pertinenti, 0 falliti. Due difetti dell'API trovati dal test prima della consegna: il percorso di successo usava l'helper condiviso `json()`, che impone `no-store` e ignora le intestazioni; e senza parametro `zoom` si finiva al livello più basso, perché `Number(null)` vale zero ed è finito.
+
+**Limiti.** Da questo ambiente non si raggiungono né le mattonelle della mappa né le fonti meteo, quindi lo sfondo cartografico non è stato visto: i punti e la geografia sono verificati, la resa con le mattonelle no. Nessuna verifica su dispositivo reale. Sull'anteprima Netlify la nuova API risponderà solo quando il Worker sarà pubblicato su Sites, perché il proxy punta al backend della versione 64: fino ad allora la barra di stato mostrerà la fonte barrata, che è il comportamento previsto dalla specifica e non un guasto.
+
+Restano bloccati i livelli che richiedono uno scheduler e l'accesso alle fonti: temperature per comune, pioggia, temporali, neve, vento, allerte. Grandine e persone dipendono invece dalle API della community, già esistenti, e sono il blocco successivo più abbordabile.
+
+## Mappa eventi atmosferici — blocco 1.2: tabella dei comuni — 18 settembre 2026
+
+Primo blocco della specifica PROMPT-MAPPA fornita dal proprietario. La specifica dice di partire da 1.2 e poi fermarsi: fatto questo, ci si ferma.
+
+Generato dati/comuni.json: 7.894 comuni, 1.045 KB, ordinato per abitanti decrescente come richiesto, cosi i livelli di zoom diventano un taglio in testa all'array. Campi: istat, nome, prov, regione, lat, lng, abitanti, altitudine. Codici ISTAT unici, 20 regioni, 110 province, nessuna coordinata fuori dai confini italiani. Sei capoluoghi confrontati con coordinate note: tutti entro 0,15 gradi.
+
+Aggiunto tools/genera-comuni.mjs, che rigenera il file in modo verificabile invece di lasciarlo come blocco opaco.
+
+PROVENIENZA, diversa da quella chiesta. La specifica dice di scaricare da ISTAT, ma da questo ambiente istat.it non e raggiungibile: la politica di rete consente solo GitHub e i registri dei pacchetti. I dati vengono da due pacchetti npm, entrambi MIT e derivati da ISTAT: italian-cap-comuni-province 1.1.1 per codice, nome, provincia, regione e coordinate; comuni-json 1.0.0 per la popolazione. Sono copie di terzi con una data propria, non la fonte ufficiale: vanno riverificate contro ISTAT quando l'accesso lo consente. I due pacchetti non sono entrati nelle dipendenze del progetto e il lockfile non e stato toccato.
+
+Dati mancanti, dichiarati e non inventati. 387 comuni su 7.894 senza popolazione, per disallineamento fra le annate dei due dataset: abitanti resta null, non zero, e quei comuni finiscono in fondo all'ordinamento. Altitudine assente per tutti e 7.894: nessuna delle due fonti la riporta, quindi resta null. Conseguenza pratica: i 387 senza popolazione non compaiono ai livelli di zoom che filtrano per abitanti, e diventano visibili solo da zoom 11.
+
+Il file non e ancora servito: collegarlo alle API e il blocco 1.3-1.4, e la specifica dice di fermarsi prima.
+
+BLOCCANTI per i blocchi successivi, da risolvere prima di proseguire.
+1. Lo scheduler non esiste. Tutta la pipeline della parte 1.1 si regge su processi cron sul server, ogni 2, 10 e 15 minuti. Su Sites non risulta alcun cron applicativo configurabile, ed e la stessa ragione per cui B2 e bloccato da giorni. Senza scheduler i punti 1.3, 1.5 e 1.6 non possono funzionare.
+2. Da questo ambiente non sono raggiungibili istat.it, api.open-meteo.com e le altre fonti: i recuperi dati non si possono ne costruire ne provare qui.
+3. Conflitto di tecnologia. La specifica vieta MapLibre e impone Leaflet, ma la Mappa attuale e costruita con MapLibre ed e la direzione dichiarata in CLAUDE.md. Rifarla in Leaflet significherebbe buttare funzionalita gia pubblicate nella versione 64. Serve una decisione esplicita del proprietario.
+4. Fulmini: la specifica chiede di verificare prima la licenza della fonte e di dirlo. Da qui non si raggiunge nessuna fonte, quindi non e verificabile.
+
+Prossimo passo: la decisione su MapLibre contro Leaflet e sullo scheduler. Senza quelle due risposte il blocco successivo non ha basi.
+
+## Regola di consegna e Netlify confermato — 18 settembre 2026
+
+Regola del proprietario: ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale. Niente resta in chat o in locale; commit e push appena il lavoro e verificato, con PROJECT_STATUS.md e docs/CLAUDE_HANDOFF.md aggiornati nello stesso push, e i limiti dichiarati. Il testo completo e in CLAUDE.md, sezione Collaborazione.
+
+PR #2 integrata su richiesta esplicita del proprietario: main da 00c851f a 615e3e3. Porta build riproducibile, suite eseguibile, le quattro correzioni di leggibilita e la configurazione Netlify. CI verde su Node 24. Build riproducibile verificata anche su main: dopo node build.mjs l'albero resta pulito. Il sito su Sites resta invariato alla versione 64.
+
+Sito Netlify confermato funzionante dal proprietario: progetto friendly-pothos-c169ad, costruito da main. Da questo ambiente non e raggiungibile, perche la politica di rete della sessione consente solo GitHub e i registri dei pacchetti: la conferma e del proprietario, non una misura mia. Resta valido il limite gia documentato, cioe che attraverso il proxy l'app e in sola lettura.
+
+Anteprime per pull request attive: ogni PR riceve un proprio indirizzo deploy-preview-<numero>--friendly-pothos-c169ad.netlify.app costruito dal suo ramo. Un aggiornamento su un ramo quindi si vede subito, senza doverlo prima integrare in main: la regola di consegna in tempo reale e soddisfatta lavorando sul ramo, come prescrive CLAUDE.md. Netlify aggiunge tre controlli propri su ogni PR: sulla PR #3 Redirect rules e Header rules risultano success, conferma indipendente che il proxy /api/* e le intestazioni di netlify.toml sono validi e accettati. Non dice nulla sulle scritture, che restano bloccate per i motivi documentati e non per la configurazione.
+
+Prossimo passo invariato: restano da decidere i due conflitti con le regole invariabili (i commenti verso altre persone esistono e sono raggiungibili; i post normali non scadono dopo 2 ore), la revisione della regola html body #main a, e la sorte dei sei test non pertinenti.
+
 ## Anteprima Netlify con API in proxy — 18 settembre 2026
 
 Su richiesta esplicita del proprietario. Aggiunti netlify.toml, tools/netlify-publish.mjs e docs/NETLIFY.md. La pubblicazione ufficiale resta su Sites allo stesso indirizzo: Netlify non la sostituisce, non la modifica e non tocca il database di produzione. Versione pubblicata invariata: 64.

@@ -1,5 +1,25 @@
 # Collegare il repository a Netlify
 
+## Stato: collegato e funzionante (18 settembre 2026)
+
+Il collegamento è stato fatto dal proprietario. Progetto Netlify: **`friendly-pothos-c169ad`**. Il proprietario ha confermato che il sito si apre.
+
+**Le anteprime per pull request sono attive.** Ogni PR riceve un proprio indirizzo, per esempio `https://deploy-preview-3--friendly-pothos-c169ad.netlify.app`, costruito dal ramo della PR. Conta molto per il modo di lavorare: un aggiornamento su un ramo **si vede subito**, senza doverlo prima integrare in `main`. Il sito principale continua a essere costruito da `main`.
+
+Netlify aggiunge anche tre controlli propri su ogni PR, che si leggono direttamente su GitHub:
+
+| controllo | cosa verifica | esito sulla PR #3 |
+|---|---|---|
+| `Redirect rules` | che le regole di redirect siano valide e accettate | **success** |
+| `Header rules` | che le intestazioni dichiarate siano valide | **success** |
+| `Pages changed` | elenco delle pagine toccate | neutral |
+
+`Redirect rules: success` è una conferma indipendente che il proxy `/api/*` dichiarato qui sotto è sintatticamente valido e accettato da Netlify. Non dice però che le scritture funzionino: quelle restano bloccate per i motivi spiegati più sotto, che non dipendono dalla configurazione.
+
+Le sezioni che seguono restano come riferimento per rifare il collegamento o per capire cosa è stato configurato.
+
+---
+
 Anteprima statica di MeteoSocial su Netlify, con le API in proxy verso il backend Sites.
 
 **La pubblicazione ufficiale resta su Sites**, allo stesso indirizzo di sempre: https://scudo-meteo-community.walkerthehate.chatgpt.site. Netlify non la sostituisce, non la modifica e non tocca il database di produzione. Un deploy su Netlify e un aggiornamento del sito Sites restano due cose separate.
