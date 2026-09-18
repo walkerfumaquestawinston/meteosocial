@@ -2,6 +2,18 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Mappa eventi atmosferici — blocco 1.2 — 18 settembre 2026
+
+Primo blocco della specifica PROMPT-MAPPA. Generato `dati/comuni.json`: **7.894 comuni, 1.045 KB**, ordinato per abitanti decrescente. Rigenerabile con `tools/genera-comuni.mjs`.
+
+**Provenienza diversa da quella chiesta:** la specifica dice ISTAT, ma da qui `istat.it` non è raggiungibile. I dati vengono da due pacchetti npm MIT derivati da ISTAT (`italian-cap-comuni-province@1.1.1` per le coordinate, `comuni-json@1.0.0` per la popolazione). Sono copie di terzi: vanno riverificate contro la fonte ufficiale. Il lockfile del progetto non è stato toccato.
+
+**Mancanze dichiarate:** 387 comuni senza popolazione (`abitanti: null`, non zero) e altitudine assente per tutti (nessuna fonte). I 387 restano invisibili ai livelli di zoom che filtrano per abitanti fino a zoom 11.
+
+**Quattro bloccanti prima di proseguire**, dettagliati in PROJECT_STATUS.md: non esiste uno scheduler su Sites e tutta la pipeline della parte 1.1 si regge su cron; da questo ambiente le fonti esterne non sono raggiungibili; la specifica vieta MapLibre e impone Leaflet mentre la Mappa attuale è MapLibre e pubblicata nella versione 64; la licenza della fonte fulmini non è verificabile da qui.
+
+Il file non è ancora servito: collegarlo alle API è il blocco 1.3-1.4, e la specifica dice di fermarsi prima.
+
 ## Regola di consegna e Netlify confermato — 18 settembre 2026
 
 **Ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale.** Regola del proprietario: niente resta in chat o in locale, commit e push appena il lavoro è verificato, con PROJECT_STATUS.md e questo file aggiornati nello stesso push. Il testo completo è in CLAUDE.md, sezione «Collaborazione».

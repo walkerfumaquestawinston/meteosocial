@@ -6,6 +6,28 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Mappa eventi atmosferici — blocco 1.2: tabella dei comuni — 18 settembre 2026
+
+Primo blocco della specifica PROMPT-MAPPA fornita dal proprietario. La specifica dice di partire da 1.2 e poi fermarsi: fatto questo, ci si ferma.
+
+Generato dati/comuni.json: 7.894 comuni, 1.045 KB, ordinato per abitanti decrescente come richiesto, cosi i livelli di zoom diventano un taglio in testa all'array. Campi: istat, nome, prov, regione, lat, lng, abitanti, altitudine. Codici ISTAT unici, 20 regioni, 110 province, nessuna coordinata fuori dai confini italiani. Sei capoluoghi confrontati con coordinate note: tutti entro 0,15 gradi.
+
+Aggiunto tools/genera-comuni.mjs, che rigenera il file in modo verificabile invece di lasciarlo come blocco opaco.
+
+PROVENIENZA, diversa da quella chiesta. La specifica dice di scaricare da ISTAT, ma da questo ambiente istat.it non e raggiungibile: la politica di rete consente solo GitHub e i registri dei pacchetti. I dati vengono da due pacchetti npm, entrambi MIT e derivati da ISTAT: italian-cap-comuni-province 1.1.1 per codice, nome, provincia, regione e coordinate; comuni-json 1.0.0 per la popolazione. Sono copie di terzi con una data propria, non la fonte ufficiale: vanno riverificate contro ISTAT quando l'accesso lo consente. I due pacchetti non sono entrati nelle dipendenze del progetto e il lockfile non e stato toccato.
+
+Dati mancanti, dichiarati e non inventati. 387 comuni su 7.894 senza popolazione, per disallineamento fra le annate dei due dataset: abitanti resta null, non zero, e quei comuni finiscono in fondo all'ordinamento. Altitudine assente per tutti e 7.894: nessuna delle due fonti la riporta, quindi resta null. Conseguenza pratica: i 387 senza popolazione non compaiono ai livelli di zoom che filtrano per abitanti, e diventano visibili solo da zoom 11.
+
+Il file non e ancora servito: collegarlo alle API e il blocco 1.3-1.4, e la specifica dice di fermarsi prima.
+
+BLOCCANTI per i blocchi successivi, da risolvere prima di proseguire.
+1. Lo scheduler non esiste. Tutta la pipeline della parte 1.1 si regge su processi cron sul server, ogni 2, 10 e 15 minuti. Su Sites non risulta alcun cron applicativo configurabile, ed e la stessa ragione per cui B2 e bloccato da giorni. Senza scheduler i punti 1.3, 1.5 e 1.6 non possono funzionare.
+2. Da questo ambiente non sono raggiungibili istat.it, api.open-meteo.com e le altre fonti: i recuperi dati non si possono ne costruire ne provare qui.
+3. Conflitto di tecnologia. La specifica vieta MapLibre e impone Leaflet, ma la Mappa attuale e costruita con MapLibre ed e la direzione dichiarata in CLAUDE.md. Rifarla in Leaflet significherebbe buttare funzionalita gia pubblicate nella versione 64. Serve una decisione esplicita del proprietario.
+4. Fulmini: la specifica chiede di verificare prima la licenza della fonte e di dirlo. Da qui non si raggiunge nessuna fonte, quindi non e verificabile.
+
+Prossimo passo: la decisione su MapLibre contro Leaflet e sullo scheduler. Senza quelle due risposte il blocco successivo non ha basi.
+
 ## Regola di consegna e Netlify confermato — 18 settembre 2026
 
 Regola del proprietario: ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale. Niente resta in chat o in locale; commit e push appena il lavoro e verificato, con PROJECT_STATUS.md e docs/CLAUDE_HANDOFF.md aggiornati nello stesso push, e i limiti dichiarati. Il testo completo e in CLAUDE.md, sezione Collaborazione.
