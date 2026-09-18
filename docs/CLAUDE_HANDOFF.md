@@ -2,6 +2,14 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Mappa mondiale: temperature, eventi NASA, grandine e Lente — 18 settembre 2026
+
+Quattro livelli su #mappa-eventi, tutti collegati a fonti reali: comuni ISTAT, 200 citta mondiali (Open-Meteo), eventi NASA EONET in tempo reale, grandine dalla community. **I servizi mondiali esistevano gia nel Worker** dal tempo del globo ritirato: non serviva costruirli ne serviva uno scheduler, perche globeSnapshot e gia la pipeline con cache di 15 minuti e dato precedente conservato.
+
+Ogni livello carica separato: una fonte che cade non ferma le altre, e la barra di stato la barra in rosso. Da ogni scheda si puo chiedere a Lente, con il solo nome della localita nel payload.
+
+Limite: ARGOS ha 177.700 nodi, qui il massimo e 7.894 comuni + 200 citta + 300 eventi. Densita di classe ARGOS sull'Italia, non sul mondo.
+
 ## Mappa eventi atmosferici — API e prima vista — 18 settembre 2026
 
 Secondo blocco. **Rotta nuova `#mappa-eventi`, in Leaflet come chiede la specifica. La Mappa MapLibre della versione 64 non è stata toccata**: si confrontano sull'anteprima e si decide quale diventa `#mappa`, che è una riga.

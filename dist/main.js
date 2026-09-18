@@ -58,7 +58,7 @@ const growth=createGrowth({get:()=>({place}),api,modal,toast,choose});
 const discovery=createDiscovery({get:()=>({place,weather}),api,showZone:point=>sky.showZone(point)});
 const localWeather=createLocalWeather({get:()=>({place,route:route()}),api});
 const moderation=createModeration({api,toast});
-const mappaEventi=createMappaEventi({get:()=>({route:route()}),api,modal,esc});
+const mappaEventi=createMappaEventi({get:()=>({route:route(),place}),api,modal,esc});
 const sky=createSkyCommunity({get:()=>({place,weather,me,route:route()}),world:living,api,modal,toast,login,changeCity:()=>{location.hash='mappa'}});
 const route=()=>{const r=resolveFeatureRoute(location.hash.slice(1).split('?')[0]||'mappa');return ['mondo','globo','google3d','globo-meteo','radar','mappa'].includes(r)?'mappa':r};
 const onboarding=createOnboarding({get:()=>({place}),dayPlan:atmosphere.dayPlan,modal,choose,goToCity:()=>{location.hash='mappa'},goToGlobe:()=>{location.hash='mondo'}});

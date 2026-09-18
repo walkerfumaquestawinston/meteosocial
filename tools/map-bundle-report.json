@@ -54,7 +54,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 380163,
+    "dist/app/main.js": 386057,
     "dist/app/sky-postcard-5SOHYOIV.js": 5122,
     "dist/app/chunk-THW4MYDM.js": 13559,
     "dist/app/local-map-weather-4KESHFXW.js": 12069,

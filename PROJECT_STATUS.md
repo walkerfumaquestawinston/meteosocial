@@ -6,6 +6,25 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Mappa mondiale: temperature, eventi NASA, grandine e Lente — 18 settembre 2026
+
+Richiesta del proprietario: una mappa come argosatlas.com/map, con temperatura, grandine ed eventi in tempo reale in tutto il mondo e con l'IA integrata.
+
+**Premessa dichiarata:** argosatlas.com non e raggiungibile da questo ambiente, quindi il riferimento visivo resta la descrizione che ne fa la specifica, non il sito osservato.
+
+**Scoperta che ha cambiato il lavoro.** I servizi mondiali esistevano gia nel Worker, inutilizzati dopo il ritiro del globo: /api/atlas/world (200 citta in 159 paesi, Open-Meteo), /api/atlas/events (NASA EONET, eventi aperti in tempo reale) e /api/atlas/hail (grandine dalla community). Non serviva costruirli ne serviva uno scheduler: globeSnapshot in server/world-weather.js e gia la pipeline che la specifica chiedeva, con blocchi da 50 citta, cache di 15 minuti nel database e dato precedente conservato quando la fonte non risponde.
+
+**Quattro livelli collegati**, ognuno con la propria fonte dichiarata:
+COMUNI 7.894 italiani, elenco statico; TEMPERATURE 200 citta mondiali con misura vera e colore dalla scala termica; EVENTI incendi, tempeste, alluvioni e vulcani da NASA EONET; GRANDINE segnalazioni delle persone, con il raggio che cresce con la dimensione dei chicchi e non con le conferme.
+
+Ogni livello carica per conto proprio: se una fonte cade le altre restano in piedi. La barra di stato barra in rosso le fonti che non rispondono e segna con un asterisco quelle che servono il dato precedente. Verificato dal vivo: in questo ambiente Open-Meteo e NASA risultano barrate perche la rete della sessione le blocca, mentre ISTAT e le persone funzionano. In produzione rispondono, perche quegli endpoint sono gia in uso.
+
+**IA integrata:** da ogni scheda si puo chiedere a Lente. Alla Lente vanno solo il nome della localita e la domanda, mai coordinate precise, autori o media, come prescrivono le regole scritte in server/assistant.js. La risposta compare dichiarata come generata, mai confusa con una previsione ufficiale.
+
+**Limite sulla densita.** ARGOS mostra 177.700 nodi. Qui il massimo raggiungibile con i dati disponibili e 7.894 comuni italiani piu 200 citta mondiali piu fino a 300 eventi: densita di classe ARGOS sull'Italia, non sul mondo. Per arrivarci davvero servirebbe un elenco mondiale di localita con coordinate, che al momento non c'e.
+
+Verifiche: suite completa 45 superati, 0 falliti; browser reale a 375 px senza errori JavaScript, con le quattro pillole, i conteggi veri e le fonti barrate corrette. Lo sfondo cartografico non e stato visto, perche anche le mattonelle sono bloccate da qui.
+
 ## Mappa eventi atmosferici — API dei comuni e prima vista — 18 settembre 2026
 
 Secondo blocco della specifica PROMPT-MAPPA. Il proprietario ha confermato due volte di procedere pur senza risposta ai bloccanti, quindi le decisioni aperte sono state prese qui e sono dichiarate.

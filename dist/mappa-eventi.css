@@ -194,3 +194,24 @@
 @media (max-width: 380px){
   .mappa-riga, .mappa-pillola, .mappa-elenco{ font-size: 12px; }
 }
+
+/* Fonte che risponde ma con il dato precedente: segnata, non barrata. Non e'
+   un guasto, ma non e' nemmeno il dato di adesso, e va detto. */
+.mappa-vecchio{ color: var(--persone); }
+
+/* L'IA dentro la scheda: la domanda parte da li, e la risposta compare sotto
+   dichiarata come generata, mai confusa con una previsione ufficiale. */
+.mappa-lente{ margin: var(--s3) 0 var(--s2); }
+.mappa-chiedi{
+  min-height: 44px;
+  padding: var(--s2) var(--s4);
+  border: 1px solid var(--dato);
+  border-radius: var(--map-r, 4px);
+  background: var(--dato-soft);
+  color: var(--ink);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+}
+.mappa-chiedi[disabled]{ opacity: .6; }
+#mappa-risposta p{ color: var(--ink-2); font-size: var(--t-small); }
