@@ -2,6 +2,16 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## Mappa eventi atmosferici — API e prima vista — 18 settembre 2026
+
+Secondo blocco. **Rotta nuova `#mappa-eventi`, in Leaflet come chiede la specifica. La Mappa MapLibre della versione 64 non è stata toccata**: si confrontano sull'anteprima e si decide quale diventa `#mappa`, che è una riga.
+
+`server/mappa.js` serve `GET /api/mappa/comuni` filtrando per riquadro e zoom; i comuni viaggiano dentro il Worker come letterale compatto, quindi nessuna fonte esterna e nessuno scheduler per questo blocco. `dist/mappa-eventi.js` disegna con Leaflet su canvas e **carica Leaflet solo entrando nella sezione**: verificato nel browser che prima non venga scaricato.
+
+Sette pillole su otto non si mostrano: senza fonte collegata sarebbero interruttori che non accendono niente. Restano bloccati i livelli che richiedono scheduler e rete.
+
+`test-mappa.mjs`: 36 controlli. Suite 45 superati, 0 falliti. Sull'anteprima Netlify l'API risponderà solo dopo la pubblicazione del Worker su Sites: fino ad allora la barra di stato mostra la fonte barrata, che è il comportamento previsto.
+
 ## Mappa eventi atmosferici — blocco 1.2 — 18 settembre 2026
 
 Primo blocco della specifica PROMPT-MAPPA. Generato `dati/comuni.json`: **7.894 comuni, 1.045 KB**, ordinato per abitanti decrescente. Rigenerabile con `tools/genera-comuni.mjs`.

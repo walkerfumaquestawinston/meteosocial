@@ -6,6 +6,32 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## Mappa eventi atmosferici — API dei comuni e prima vista — 18 settembre 2026
+
+Secondo blocco della specifica PROMPT-MAPPA. Il proprietario ha confermato due volte di procedere pur senza risposta ai bloccanti, quindi le decisioni aperte sono state prese qui e sono dichiarate.
+
+**Tre decisioni prese, tutte reversibili.**
+
+1. **Leaflet come chiede la specifica, ma in un modulo nuovo su una rotta nuova, `#mappa-eventi`.** La Mappa MapLibre pubblicata nella versione 64 non è stata toccata. Così si confrontano le due sull'anteprima e si decide quale diventa `#mappa`: cambiarla è una riga. Sostituire subito avrebbe buttato funzionalità già pubblicate senza averle viste a confronto.
+2. **Lo scheduler non serve per questo blocco.** L'elenco dei comuni è statico e viaggia dentro il Worker, quindi l'endpoint non chiama nulla all'esterno e non ha limiti di frequenza da rispettare. I livelli che dipendono da fonti esterne restano fuori.
+3. **Sette pillole su otto non vengono mostrate.** Pioggia, temporali, grandine, neve, vento, allerte e persone richiedono fonti non ancora collegate: una pillola che non accende niente è un numero inventato travestito. Si mostreranno quando avranno dati veri.
+
+**Scostamento dichiarato** dalla specifica 5.2: ai livelli 6 e 7 chiede i capoluoghi di regione e di provincia, ma le fonti disponibili non hanno un campo «capoluogo» e ricavarlo dalla popolazione sbaglierebbe, perché L'Aquila è capoluogo d'Abruzzo mentre Pescara è più popolosa. Si usano i più popolosi, criterio vero e dichiarato nella risposta, con gli stessi ordini di grandezza.
+
+**Server:** `server/mappa.js` con `GET /api/mappa/comuni`, filtro per riquadro e per zoom, formato compatto, tetto di 1200 righe con troncamento dichiarato, `Cache-Control: public, max-age=300`. I comuni entrano nel Worker come letterale compatto (481 KB invece di 1.044 in forma di oggetti); il Worker passa da 4,5 a 5,0 MB, da 1,60 a 1,77 MB compresso.
+
+**Vista:** `dist/mappa-eventi.js` e `dist/mappa-eventi.css`. Leaflet con `preferCanvas` e renderer canvas, `circleMarker` per i dati di massa, import dinamico che carica Leaflet solo entrando nella sezione, debounce di 400 ms su `moveend` e `zoomend`, stop con `document.hidden`, `map.remove()` all'uscita. Barra di stato monospaziata con orologio al secondo, fonte barrata in rosso quando non risponde, conteggi veri. Pillole con stato in `localStorage`, invito a riaccendere quando si spegne tutto, pulsante ELENCO per l'uso con screen reader, attribuzioni sempre visibili.
+
+**Verifiche nel browser reale a 375 px:** Leaflet **non** viene scaricato prima di aprire la Mappa, che era il rischio più concreto; canvas presente; l'API viene chiamata con riquadro e zoom; uscendo dalla sezione il contenitore sparisce e nessun timer resta acceso; dodici etichette disegnate e nessuna che esce dal riquadro; controlli galleggianti dentro la mappa.
+
+Tre difetti trovati e corretti durante la verifica: le etichette uscivano dal riquadro perché il `transform` di Leaflet vince su quello del foglio di stile; i controlli finivano sotto la barra di navigazione; i nomi lunghi al centro sparivano invece di centrarsi sotto il punto.
+
+**Test:** `test-mappa.mjs`, 36 controlli superati su livelli di zoom, soglie reali, riquadro, troncamento dichiarato, abitanti null, fonte, cache e metodi. Suite completa 45 superati, 6 non pertinenti, 0 falliti. Due difetti dell'API trovati dal test prima della consegna: il percorso di successo usava l'helper condiviso `json()`, che impone `no-store` e ignora le intestazioni; e senza parametro `zoom` si finiva al livello più basso, perché `Number(null)` vale zero ed è finito.
+
+**Limiti.** Da questo ambiente non si raggiungono né le mattonelle della mappa né le fonti meteo, quindi lo sfondo cartografico non è stato visto: i punti e la geografia sono verificati, la resa con le mattonelle no. Nessuna verifica su dispositivo reale. Sull'anteprima Netlify la nuova API risponderà solo quando il Worker sarà pubblicato su Sites, perché il proxy punta al backend della versione 64: fino ad allora la barra di stato mostrerà la fonte barrata, che è il comportamento previsto dalla specifica e non un guasto.
+
+Restano bloccati i livelli che richiedono uno scheduler e l'accesso alle fonti: temperature per comune, pioggia, temporali, neve, vento, allerte. Grandine e persone dipendono invece dalle API della community, già esistenti, e sono il blocco successivo più abbordabile.
+
 ## Mappa eventi atmosferici — blocco 1.2: tabella dei comuni — 18 settembre 2026
 
 Primo blocco della specifica PROMPT-MAPPA fornita dal proprietario. La specifica dice di partire da 1.2 e poi fermarsi: fatto questo, ci si ferma.
