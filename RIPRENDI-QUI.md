@@ -1,5 +1,14 @@
 # MeteoSocial — riprendi da qui
 
+## 22 settembre 2026 — Osservatorio grandine, sorgente in preparazione
+
+Revisione locale del pannello grandine: finestre 15/30/60/120 minuti, esclusione opzionale dei fenomeni cessati, ordinamento per distanza o recenza, selezione condivisa tra mappa/conteggio/elenco, stato di aggiornamento e apertura del radar pioggia. Le richieste per coordinate appartenenti alla stessa cella di 0,01 gradi vengono riutilizzate; il centro esatto dei filtri viene comunque aggiornato.
+
+Controlli: 18 verifiche pure in test-hail-desk.mjs e sintassi dei moduli modificati; prova browser su harness isolato con tre osservazioni fittizie: finestra 15 minuti, esclusione cessate, corrispondenza marker/elenco, callback radar. Harness fuori dal prodotto. Non verificato il layout completo dell'app o dispositivi fisici.
+
+NON PUBBLICATA: compilazione completa impedita da spawn EPERM di esbuild nell'ambiente Windows corrente. Ultima versione pubblica resta 73. Prima di pubblicare completare installazione, build, test-map-field, test-hail-desk, suite CI e verifica della mappa completa. Non sostituire il sito con la pagina di prova. Nessuna nuova fonte radar grandine, probabilità o previsione d'impatto implementata. Dettagli in docs/HAIL-OBSERVATORY.md.
+
+
 ## 21 settembre 2026 — Cielo, revisione del design
 
 Pubblicata su Sites versione 73 il 21 settembre 2026 alle 14:31 UTC: https://scudo-meteo-community.walkerthehate.chatgpt.site/. Runtime Sites 57be5b203b1cc088d4f28a36ba4c249bdec5bd83, albero c4909fc8be2bfce939bae8241dd25f9d4e64bad9. GitHub PR #14 integrata in main (d718ba54443c4e4f4b469e52eea73a58eabfbc87), Check MeteoSocial 35612426493 e anteprima Netlify superati. Nuova identità inchiostro/lime, community con feed in primo piano, Home e Lente con illustrazione originale, previsioni e navigazione coordinate. Build e 15 suite superate; browser desktop/390 px, commenti, navigazione e testo grande. Nessuna prova su telefoni fisici. Queste note successive non modificano il runtime. Vedere docs/CIELO-DESIGN.md per riferimenti, scelte e limiti.

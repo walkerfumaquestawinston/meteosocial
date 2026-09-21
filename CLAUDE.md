@@ -1,8 +1,19 @@
 # MeteoSocial — istruzioni per Claude
 
+## 22 settembre 2026 — Passaggio a Claude: osservatorio grandine
+
+Revisione consegnata nel ramo GitHub `codex/grandine-claude-20260922`, da continuare prima dell'integrazione. Base GitHub verificata: `5be5026df25faabcca7cbd2479fb96916520c9fd`, albero identico alla base Sites locale `e74cf310242672f59677a37a3a31ad0a739339f8`.
+
+Leggere `docs/HAIL-OBSERVATORY.md`. Implementati filtri temporali 15/30/60/120 minuti, cessate escludibili, ordinamento distanza/recenza, selezione comune a marker/conteggio/elenco, freschezza e radar pioggia. Riutilizzo delle richieste nella medesima cella pubblica di 0,01 gradi.
+
+Verificati 18 casi in `test-hail-desk.mjs`, sintassi dei moduli e interazioni in un harness browser locale. La build completa non è riuscita: Windows restituisce `spawn EPERM` da esbuild. Nessuna pubblicazione; Sites pubblico resta alla versione 73.
+
+Prossimi passi per Claude: installare dal lockfile con Node 24/pnpm 11.19.0, eseguire build e CI (incluso test-hail-desk), verificare la mappa completa a 390 px e desktop, controllare aggiornamento dei pannelli già aperti e stati di errore, completare eventuali correzioni nello stesso ramo o in un ramo derivato. Non presentare i controlli dell'harness come verifica completa dell'app. Radar grandine dedicato, probabilità, traiettorie e notifiche a app chiusa non sono implementati da questa revisione.
+
+
 Leggi prima AGENTS.md, PROJECT_STATUS.md, RIPRENDI-QUI.md e PROJECT_VISION.md. In ciascuno i paragrafi più recenti prevalgono sulla cronologia. Le istruzioni esplicite di Walker prevalgono su questi documenti.
 
-## Punto di partenza
+## Punto di partenza storico — superato dallo stato del 22 settembre
 
 Ultima pubblicazione verificata su Sites: **versione 64**, fasi 24.1 e 24.2 completate. Il blocco 24.6 non è stato avviato: implementarlo solo se assegnato esplicitamente. Non avviare tutte le fasi in autonomia.
 
