@@ -2,7 +2,7 @@
 
 ## 21 settembre 2026 — Cielo, revisione del design
 
-Implementazione e verifica locale completate; pubblicazione del nuovo design in preparazione. La versione pubblica verificata precedente è 72. Nuova identità inchiostro/lime, community con feed in primo piano, Home e Lente con illustrazione originale, previsioni e navigazione coordinate. Build e 15 suite superate, revisione desktop/390 px e testo grande. Vedere docs/CIELO-DESIGN.md per riferimenti, scelte e limiti.
+Pubblicata su Sites versione 73 il 21 settembre 2026 alle 14:31 UTC: https://scudo-meteo-community.walkerthehate.chatgpt.site/. Runtime Sites 57be5b203b1cc088d4f28a36ba4c249bdec5bd83, albero c4909fc8be2bfce939bae8241dd25f9d4e64bad9. GitHub PR #14 integrata in main (d718ba54443c4e4f4b469e52eea73a58eabfbc87), Check MeteoSocial 35612426493 e anteprima Netlify superati. Nuova identità inchiostro/lime, community con feed in primo piano, Home e Lente con illustrazione originale, previsioni e navigazione coordinate. Build e 15 suite superate; browser desktop/390 px, commenti, navigazione e testo grande. Nessuna prova su telefoni fisici. Queste note successive non modificano il runtime. Vedere docs/CIELO-DESIGN.md per riferimenti, scelte e limiti.
 
 
 Versione 72 pubblicata e PR #13 integrata — Ripari e fulmini: leggere il primo blocco di PROJECT_STATUS.md e docs/HAIL-SHELTERS-LIGHTNING.md per stato, verifica e limiti. Le note versione 71 sotto sono storiche.
