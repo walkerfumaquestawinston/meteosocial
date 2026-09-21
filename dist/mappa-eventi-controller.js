@@ -2,6 +2,9 @@ import {normalizzaEventiNasa,abbinaMeteoCitta,mappaColore} from './mappa-eventi.
 import {isStorm,hailLabel,precipitationLabel,validPlace,insideViewport,weatherPoints,visibleSummary,mapAIRequest,windReading} from './map-weather-core.js';
 import {createAtlasRadar} from './map-radar.js';
 import {atlasLand} from './map-land.js';
+import {cityCatalog,arrangeCityLabels,weatherAge} from './map-city-labels.js';
+import {CITTA_MONDO} from './citta-mondo.js';
+import {CITIES} from './places.js';
 
 const MODES = [
   {id:'temperature',icon:'◉',name:'Temperatura',hint:'Modello · °C',color:'#ffbb70'},
@@ -20,6 +23,7 @@ export function createMappaEventi(ctx) {
   let L,map,markers,selectionMarker,timer,refreshTimer,alive=false,revision=0,panelRevision=0,searchRevision=0;
   let mode='temperature',showEvents=false,selected=null,world=[],towns=[],readings=new Map(),events=[],hail=[];
   let weatherState='loading',townState='loading',hailState='loading',eventState='idle',updated=null,selectedAt=0,townRequest=0;
+  let cityLabels,labelsFrame=0,showCityNames=true,overviewOpen=false;
   const cache=new Map(); let focusedBeforePanel=null,radar=null,radarState={enabled:false,frames:[],status:'idle'},aiHistory=[],aiPlaceKey='';
   try {const saved=localStorage.getItem('meteosocial:weather-map:mode');if(MODES.some(x=>x.id===saved))mode=saved;} catch {}
 
@@ -30,9 +34,9 @@ export function createMappaEventi(ctx) {
       <form id="mappa-cerca" class="mappa-cerca" role="search"><span aria-hidden="true">⌕</span><label class="sr-only" for="mappa-cerca-testo">Cerca città nel mondo</label><input id="mappa-cerca-testo" type="search" placeholder="Cerca una città, esplora il suo cielo…" maxlength="100" autocomplete="off"><button type="submit" aria-label="Cerca città">→</button></form>
       <div class="mappa-contatori" role="group" aria-label="Fenomeno da esplorare">${MODES.map(m=>`<button class="mappa-pillola" data-livello="${m.id}" aria-pressed="${mode===m.id}" style="--layer:${m.color}"><span class="mappa-pillola-icona" aria-hidden="true">${m.icon}</span><span><strong>${m.name}</strong><small>${m.hint}</small></span><b data-conteggio="${m.id}">—</b></button>`).join('')}</div>
       <div class="mappa-stato"><span class="mappa-dot" aria-hidden="true"></span><span id="mappa-stato-testo" role="status">Carico i dati meteo…</span><button id="mappa-guida">Guida ↗</button></div>
-      <div class="mappa-subtools"><button id="mappa-radar-toggle" aria-pressed="false"><span aria-hidden="true">◉</span> Radar pioggia <b>OFF</b></button><span id="mappa-radar-badge">Ultime 2 ore</span></div>
+      <div class="mappa-subtools"><button id="mappa-radar-toggle" aria-pressed="false"><span aria-hidden="true">◉</span> Radar pioggia <b>OFF</b></button><span id="mappa-radar-badge">Ultime 2 ore</span><button id="mappa-city-names" aria-pressed="true" title="Mostra o nascondi i nomi delle città">Aa <span>Città</span></button></div>
     </div>
-    <div class="mappa-pulse" id="mappa-pulse" aria-label="Confronto nella zona visibile"></div>
+    <div class="mappa-pulse is-compact" id="mappa-pulse" aria-label="Confronto nella zona visibile"></div>
     <aside class="mappa-pannello" id="mappa-pannello" hidden aria-labelledby="mappa-pannello-titolo"><div class="mappa-pannello-testa"><h2 id="mappa-pannello-titolo" tabindex="-1"></h2><button id="mappa-pannello-chiudi" aria-label="Chiudi dettagli">×</button></div><div id="mappa-pannello-corpo"></div></aside>
     <div class="mappa-strumenti" role="group" aria-label="Strumenti mappa">
       <button id="mappa-posizione" title="La mia posizione" aria-label="La mia posizione">⌖</button>
@@ -42,6 +46,7 @@ export function createMappaEventi(ctx) {
       <button id="mappa-aggiorna" title="Aggiorna dati" aria-label="Aggiorna dati">↻</button>
       <div class="mappa-zoom"><button id="mappa-zoom-in" aria-label="Aumenta zoom">+</button><button id="mappa-zoom-out" aria-label="Riduci zoom">−</button></div>
     </div>
+    <button class="mappa-reading" id="mappa-selected" hidden></button>
     <div class="mappa-basso">
       <div id="mappa-radar-timeline" class="mappa-radar-timeline" hidden><div class="mappa-radar-heading"><strong>RADAR PIOGGIA</strong><span id="mappa-radar-note" role="status"></span><a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer ↗</a></div><div class="mappa-radar-track"><button id="mappa-radar-play" aria-label="Riproduci radar">▶</button><time id="mappa-radar-time">—</time><label class="sr-only" for="mappa-radar-range">Orario del radar</label><input id="mappa-radar-range" type="range" min="0" max="0" value="0" disabled><span>Ultimo</span><button id="mappa-radar-retry" aria-label="Aggiorna radar">↻</button></div><p>Immagini recenti, non previsioni. Copertura variabile: una zona vuota non esclude pioggia.</p></div>
       <div class="mappa-legenda" id="mappa-legenda"></div>
@@ -61,7 +66,7 @@ export function createMappaEventi(ctx) {
     $('.mappa')?.classList.toggle('has-radar',state.enabled);$('#mappa-radar-timeline').hidden=!state.enabled;
     const note=state.status==='loading'?'Caricamento…':state.status==='error'?'Fonte non disponibile. Riprova.':state.status==='partial'?'Alcune immagini non disponibili':state.status==='tiles'?'Carico la vista…':state.age>25?`Ultimo quadro di ${state.age} min fa`:'Sequenza recente';
     $('#mappa-radar-note').textContent=note;$('#mappa-radar-badge').textContent=state.enabled?note:'Ultime 2 ore';
-    const range=$('#mappa-radar-range');range.max=Math.max(0,state.frames.length-1);range.value=state.index||0;range.disabled=state.frames.length<2;
+    const range=$('#mappa-radar-range');range.max=Math.max(0,state.frames.length-1);range.value=state.index||0;range.disabled=state.frames.length<2;scheduleLabels();
     const time=state.time?clock(state.time*1000):'—';$('#mappa-radar-time').textContent=time;range.setAttribute('aria-valuetext',time+' · orario del quadro radar');
     $('#mappa-radar-play').textContent=state.playing?'Ⅱ':'▶';$('#mappa-radar-play').setAttribute('aria-label',state.playing?'Pausa radar':'Riproduci radar');$('#mappa-radar-play').disabled=state.frames.length<2;
   }
@@ -118,45 +123,75 @@ export function createMappaEventi(ctx) {
   }
   async function load(){if(!alive||!map)return;const token=revision;await Promise.allSettled([loadWeather(token),loadTowns(token),loadHail(token),loadEvents(token)]);}
 
+  function scheduleLabels(){cancelAnimationFrame(labelsFrame);labelsFrame=requestAnimationFrame(()=>{if(alive)drawCityLabels();});}
+  function labelText(p){
+    const k=p.current;if(!k)return '';
+    if(mode==='temperature')return Number.isFinite(k.temperature_2m)?number(k.temperature_2m)+'°':'';
+    if(mode==='vento')return windReading(k)?number(k.wind_speed_10m)+' km/h':'';
+    if(mode==='pioggia')return Number.isFinite(k.precipitation)?String(k.precipitation)+' mm':'';
+    if(mode==='fulmini')return isStorm(k.weather_code)?'Temporale · modello':'';
+    return '';
+  }
+  function drawCityLabels(){
+    if(!alive||!map||!cityLabels)return;cityLabels.clearLayers();if(!showCityNames)return;
+    const root=$('#mappa-tela').getBoundingClientRect(),reserved=[];
+    for(const selector of ['.mappa-alto','.mappa-pulse','.mappa-pannello','.mappa-strumenti','.mappa-radar-timeline','.mappa-legenda','.mappa-ai-dock','.mappa-attribuzioni','.mappa-reading','.leaflet-control-scale']){
+      const el=$(selector);if(!el||el.hidden||!el.getClientRects().length)continue;
+      const r=el.getBoundingClientRect();reserved.push({left:r.left-root.left,right:r.right-root.left,top:r.top-root.top,bottom:r.bottom-root.top});
+    }
+    const catalog=cityCatalog(allPoints(),[...CITIES.map(c=>({...c,localized:true})),...CITTA_MONDO],towns,selected);
+    const candidates=catalog.filter(p=>insideViewport(p,bounds())).map((p,i)=>{
+      const lng=p.longitude+360*Math.round((map.getCenter().lng-p.longitude)/360),xy=map.latLngToContainerPoint([p.latitude,lng]),text=labelText(p);
+      return {...p,lng,x:xy.x,y:xy.y,text,width:Math.min(190,Math.max(78,p.name.length*7.3+24,text.length*6.8+24)),priority:p.selected?100000:Math.max(0,500-i)};
+    });
+    const placed=arrangeCityLabels(candidates,{width:root.width,height:root.height},reserved);
+    for(const p of placed){
+      const age=weatherAge(p.current),stale=p.current&&(age.stale||(!p.selected&&weatherState==='stale'));
+      const tone=mode==='temperature'&&p.current?mappaColore(p.current.temperature_2m):MODES.find(m=>m.id===mode).color;
+      const icon=L.divIcon({className:'mappa-place-label'+(p.selected?' is-selected':'')+(stale?' is-old':''),html:'<span class="mappa-place-name">'+esc(p.name)+'</span><span class="mappa-place-value" style="--reading:'+tone+'">'+esc(p.text)+(stale&&p.text?'<small aria-label="Dato precedente"> ◷</small>':'')+'</span>',iconSize:[p.width,p.height],iconAnchor:[-p.dx,-p.dy]});
+      const marker=L.marker([p.latitude,p.lng],{icon,title:p.name+(p.text?' · '+p.text:'')+(stale?' · dato '+age.label:''),alt:p.name+(p.text?', '+p.text:'')+', apri dettagli',bubblingMouseEvents:false,riseOnHover:true});
+      marker.on('click',()=>selectPlace(p,false));cityLabels.addLayer(marker);
+      cityLabels.addLayer(L.circleMarker([p.latitude,p.lng],{radius:p.selected?4:2,weight:1,color:'#bedbe5',fillColor:'#edfaff',fillOpacity:.85,interactive:false}));
+    }
+  }
   function draw(){
     if(!alive||!map||!markers)return;markers.clearLayers();
-    const s=summary(),zoom=map.getZoom(),labels=[];
+    const s=summary();
     const marker=(p,color,radius,open,fill=.9)=>{const m=L.circleMarker([p.latitude,p.longitude],{bubblingMouseEvents:false,radius,color:'#06171f',weight:1.5,fillColor:color,fillOpacity:fill});m.on('click',open);m.bindTooltip(esc(p.name||p.city||'Segnalazione'),{direction:'top'});markers.addLayer(m);};
-    if(mode!=='grandine') for(const p of s.points){
-      const k=p.current;let color=mappaColore(k.temperature_2m),radius=7;
-      if(mode==='pioggia'){if(!(k.precipitation>0))continue;color='#6ac5ff';radius=Math.min(18,7+k.precipitation*2);}
-      if(mode==='fulmini'){if(!isStorm(k.weather_code))continue;color='#d8b1ff';radius=12;}
+    if(mode!=='grandine')for(const p of s.points){
+      const k=p.current;let color=mappaColore(k.temperature_2m),radius=4;
+      if(mode==='pioggia'){if(!(k.precipitation>0))continue;color='#6ac5ff';radius=Math.min(16,6+k.precipitation*2);}
+      if(mode==='fulmini'){if(!isStorm(k.weather_code))continue;color='#d8b1ff';radius=10;}
       if(mode==='vento'){
         const w=windReading(k);if(!w)continue;
-        const xy=map.latLngToContainerPoint([p.latitude,p.longitude]);if(labels.some(q=>Math.abs(q.x-xy.x)<90&&Math.abs(q.y-xy.y)<55))continue;labels.push({x:xy.x,y:xy.y,size:90});
-        const icon=L.divIcon({className:'mappa-wind-pin',html:`<span class="mappa-wind-arrow" style="--wind:${w.color};--bearing:${w.toward??0}deg">${w.toward===null||w.speed===0?'·':'↑'}</span><b>${number(w.speed)}<small> km/h</small></b><span>${esc(p.name)}</span>`,iconSize:[100,65],iconAnchor:[50,32]});
-        const pin=L.marker([p.latitude,p.longitude],{icon,alt:`${p.name}, vento ${number(w.speed)} km/h${w.from!==null?', da '+w.compass:''}`,bubblingMouseEvents:false});pin.on('click',()=>selectPlace(p,false));markers.addLayer(pin);continue;
+        const icon=L.divIcon({className:'mappa-wind-vector',html:'<span style="--wind:'+w.color+';--bearing:'+(w.toward??0)+'deg">'+(w.toward===null||w.speed===0?'·':'↑')+'</span>',iconSize:[28,28],iconAnchor:[14,14]});
+        const pin=L.marker([p.latitude,p.longitude],{icon,title:p.name,alt:p.name+', vento '+number(w.speed)+' km/h',bubblingMouseEvents:false});pin.on('click',()=>selectPlace(p,false));markers.addLayer(pin);continue;
       }
       marker(p,color,radius,()=>selectPlace(p,false));
-      if(mode==='temperature'){
-        markers.addLayer(L.circleMarker([p.latitude,p.longitude],{radius:radius+8,weight:0,fillColor:color,fillOpacity:.09,interactive:false}));
-        const xy=map.latLngToContainerPoint([p.latitude,p.longitude]);
-        const size=zoom>=5?Math.min(180,p.name.length*7+50):60;
-        if(!labels.some(q=>Math.abs(q.x-xy.x)<(size+q.size)/2&&Math.abs(q.y-xy.y)<36)){
-          labels.push({x:xy.x,y:xy.y,size});
-          markers.addLayer(L.marker([p.latitude,p.longitude],{keyboard:false,interactive:false,icon:L.divIcon({className:'mappa-city-label',html:`<span style="--temp:${color}">${zoom>=5?esc(p.name)+' ':''}<b>${number(k.temperature_2m)}°</b></span>`,iconSize:null})}));
-        }
-      }
       if(mode==='fulmini')markers.addLayer(L.marker([p.latitude,p.longitude],{interactive:false,keyboard:false,icon:L.divIcon({className:'mappa-bolt',html:'ϟ',iconSize:[20,28],iconAnchor:[10,14]})}));
     }
     if(mode==='grandine')for(const p of visibleReports())marker(p,'#ff9567',12,()=>hailPanel(p),.65);
     if(showEvents)for(const e of events.filter(p=>insideViewport(p,bounds())))marker(e,'#ff6577',9,()=>eventPanel(e));
     const counts={temperature:s.points.length,pioggia:s.rain.length,grandine:visibleReports().length,vento:s.points.filter(p=>windReading(p.current)).length,fulmini:s.storms.length};
-    for(const m of MODES){const c=$(`[data-conteggio="${m.id}"]`);if(c)c.textContent=(m.id==='grandine'?hailState==='error':!s.points.length&&weatherState==='error')?'—':counts[m.id];}
-    const state=weatherState==='loading'?'Carico i dati meteo…':weatherState==='error'?'Meteo mondiale non disponibile':weatherState==='stale'?'Dati precedenti · aggiornamento non riuscito':weatherState==='partial'?'Copertura parziale · Open-Meteo':`Open-Meteo · aggiornato ${clock(updated)}${weatherState==='direct'?' · fonte diretta':''}`;
-    notify(mode==='grandine'?(hailState==='error'?'Segnalazioni non disponibili':'Segnalazioni community · ultime 2 ore'):state+(townState==='error'?' · dati comunali assenti':''));
-    renderPulse(s);renderLegend();renderSuggestions();
+    for(const m of MODES){const c=$('[data-conteggio="'+m.id+'"]');if(c)c.textContent=(m.id==='grandine'?hailState==='error':!s.points.length&&weatherState==='error')?'—':counts[m.id];}
+    const date=updated?new Date(updated).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'orario non disponibile';
+    const state=weatherState==='loading'?'Carico i dati meteo…':weatherState==='error'?'Meteo non disponibile · città esplorabili':weatherState==='stale'?'Dati precedenti del '+date:weatherState==='partial'?'Copertura parziale · Open-Meteo':'Open-Meteo · aggiornato '+clock(updated)+(weatherState==='direct'?' · fonte diretta':'');
+    $('.mappa')?.classList.toggle('has-stale-weather',weatherState==='stale'||weatherState==='error');
+    notify(mode==='grandine'?(hailState==='error'?'Segnalazioni non disponibili':'Segnalazioni community · ultime 2 ore'):state+(townState==='error'?' · comuni senza meteo':''));
+    renderPulse(s);renderLegend();renderSuggestions();renderSelected();scheduleLabels();
+  }
+  function renderSelected(){
+    const el=$('#mappa-selected');if(!el)return;el.hidden=!selected;if(!selected)return;
+    el.innerHTML='<span aria-hidden="true">⌖</span><span><small>LA TUA LOCALITÀ</small><b>'+esc(selected.name)+'</b></span><strong>'+esc(labelText(selected))+'</strong><span aria-hidden="true">↗</span>';
+    el.onclick=()=>selectPlace(selected,true);
   }
   function renderPulse(s){
     const slot=$('#mappa-pulse');if(!slot)return;
     const m=MODES.find(x=>x.id===mode),winds=s.points.filter(p=>windReading(p.current)).sort((a,b)=>b.current.wind_speed_10m-a.current.wind_speed_10m),count=mode==='grandine'?visibleReports().length:mode==='pioggia'?s.rain.length:mode==='fulmini'?s.storms.length:mode==='vento'?winds.length:s.points.length;
     const detail=mode==='temperature'?'Il contrasto tra le città che stai guardando.':mode==='pioggia'?'Punti di previsione e immagini radar, nella stessa vista.':mode==='grandine'?'Osservazioni delle persone nelle ultime 2 ore.':mode==='vento'?'Le frecce mostrano dove soffia il vento al suolo.':'Temporali previsti dal modello meteorologico.';
-    slot.innerHTML=`<div class="mappa-eyebrow">NELLA VISTA <span>01 / ESPLORA</span></div><div class="mappa-layer-title"><h2>${m.name}</h2><span style="color:${m.color}" aria-hidden="true">${m.icon}</span></div><p>${detail}</p><div class="mappa-sample"><b>${count}</b><span>${mode==='grandine'?'segnalazioni':'località con dati'}<small>nel campione visibile</small></span></div>${mode==='temperature'&&s.cold?`<div class="mappa-contrasto"><button data-extreme="cold"><small>PIÙ FRESCO</small><b>${number(s.cold.current.temperature_2m)}°</b><span>${esc(s.cold.name)}</span></button><button data-extreme="hot"><small>PIÙ CALDO</small><b>${number(s.hot.current.temperature_2m)}°</b><span>${esc(s.hot.name)}</span></button></div>`:mode==='vento'&&winds.length?`<button class="mappa-wind-maximum" id="mappa-max-wind"><span>VENTO PIÙ FORTE NELLA VISTA</span><b>${number(winds[0].current.wind_speed_10m)} <small>km/h</small></b><span>${esc(winds[0].name)} ↗</span></button>`:''}<div class="mappa-sidebar-actions"><button class="mappa-compare" id="mappa-overview-list">${mode==='temperature'&&s.points.length>1?'Confronta le temperature':'Esplora le località'} ↗</button><button id="mappa-overview-ai">✦ Chiedi a Lente</button></div><div class="mappa-source-note"><span>FONTE</span><p>${mode==='grandine'?'Community · segnalazioni non verificate. Nessun punto non significa assenza di rischio.':mode==='fulmini'?'Open-Meteo · previsione, non rilevamento delle singole scariche.':'Open-Meteo · dati di modello. Gli estremi riguardano questo campione, non record climatici.'}</p></div>`;
+    slot.classList.toggle('is-compact',!overviewOpen);
+    slot.innerHTML=`<button id="mappa-overview-toggle" class="mappa-overview-toggle" aria-expanded="${overviewOpen}"><span>${m.icon} ${m.name}</span><span>${overviewOpen?'Chiudi −':'Riepilogo +'}</span></button><div class="mappa-overview-body" ${overviewOpen?'':'hidden'}><div class="mappa-eyebrow">NELLA VISTA <span>ESPLORA</span></div><div class="mappa-layer-title"><h2>${m.name}</h2><span style="color:${m.color}" aria-hidden="true">${m.icon}</span></div><p>${detail}</p><div class="mappa-sample"><b>${count}</b><span>${mode==='grandine'?'segnalazioni':'località con dati'}<small>nel campione visibile</small></span></div>${mode==='temperature'&&s.cold?`<div class="mappa-contrasto"><button data-extreme="cold"><small>PIÙ FRESCO</small><b>${number(s.cold.current.temperature_2m)}°</b><span>${esc(s.cold.name)}</span></button><button data-extreme="hot"><small>PIÙ CALDO</small><b>${number(s.hot.current.temperature_2m)}°</b><span>${esc(s.hot.name)}</span></button></div>`:mode==='vento'&&winds.length?`<button class="mappa-wind-maximum" id="mappa-max-wind"><span>VENTO PIÙ FORTE NELLA VISTA</span><b>${number(winds[0].current.wind_speed_10m)} <small>km/h</small></b><span>${esc(winds[0].name)} ↗</span></button>`:''}<div class="mappa-sidebar-actions"><button class="mappa-compare" id="mappa-overview-list">${mode==='temperature'&&s.points.length>1?'Confronta le temperature':'Esplora le località'} ↗</button><button id="mappa-overview-ai">✦ Chiedi a Lente</button></div><div class="mappa-source-note"><span>FONTE</span><p>${mode==='grandine'?'Community · segnalazioni non verificate. Nessun punto non significa assenza di rischio.':mode==='fulmini'?'Open-Meteo · previsione, non rilevamento delle singole scariche.':'Open-Meteo · dati di modello. Gli estremi riguardano questo campione, non record climatici.'}</p></div></div>`;
+    $('#mappa-overview-toggle').onclick=()=>{overviewOpen=!overviewOpen;renderPulse(summary());scheduleLabels();};
     slot.querySelectorAll('[data-extreme]').forEach(b=>b.onclick=()=>selectPlace(s[b.dataset.extreme],true));
     $('#mappa-overview-list').onclick=()=>mode==='temperature'&&s.points.length>1?comparePanel(s):listPanel();
     $('#mappa-overview-ai').onclick=()=>askAI('Riassumi le condizioni della località selezionata e spiega cosa significa il livello '+m.name+'.');
@@ -169,11 +204,11 @@ export function createMappaEventi(ctx) {
   function panel(title,html,focus=true){
     const p=$('#mappa-pannello');if(!p)return;panelRevision++;
     if(p.hidden)focusedBeforePanel=document.activeElement;
-    $('#mappa-pannello-titolo').textContent=title;$('#mappa-pannello-corpo').innerHTML=html;p.hidden=false;$('.mappa').classList.add('has-panel');radar?.pause();
+    $('#mappa-pannello-titolo').textContent=title;$('#mappa-pannello-corpo').innerHTML=html;p.hidden=false;$('.mappa').classList.add('has-panel');radar?.pause();scheduleLabels();
     $('#mappa-pannello-chiudi').onclick=closePanel;
     if(focus)$('#mappa-pannello-titolo').focus({preventScroll:true});
   }
-  function closePanel(){const p=$('#mappa-pannello');if(p)p.hidden=true;$('.mappa')?.classList.remove('has-panel');panelRevision++;if(focusedBeforePanel?.isConnected)focusedBeforePanel.focus({preventScroll:true});}
+  function closePanel(){const p=$('#mappa-pannello');if(p)p.hidden=true;$('.mappa')?.classList.remove('has-panel');panelRevision++;scheduleLabels();if(focusedBeforePanel?.isConnected)focusedBeforePanel.focus({preventScroll:true});}
   const sourceTime=k=>k?.time?`${String(k.time).replace('T',' ')} UTC`:'orario del modello non disponibile';
   async function selectPlace(p,move=true){
     if(!validPlace(p)||!alive)return;selected={...p};selectedAt++;const token=selectedAt,life=revision;
@@ -182,18 +217,19 @@ export function createMappaEventi(ctx) {
     selectionMarker=L.circleMarker([p.latitude,p.longitude],{radius:17,color:'#fff',weight:2,fillOpacity:0,interactive:false}).addTo(map);
     $('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${p.name}…`;
     locationPanel(selected);draw();const panelToken=panelRevision;
-    if(!p.current)try{
+    if(!p.current||weatherAge(p.current).stale)try{
       const d=await cached('point:'+p.latitude.toFixed(3)+':'+p.longitude.toFixed(3),async()=>{
         const q=new URLSearchParams({latitude:p.latitude,longitude:p.longitude,current:CURRENT,timezone:'GMT',forecast_days:'1'});
         const r=await fetch('https://api.open-meteo.com/v1/forecast?'+q,{signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();return r.json();
       });
       if(!alive||life!==revision||token!==selectedAt)return;
       selected={...p,current:d.current};if(panelToken===panelRevision)locationPanel(selected,false);draw();
-    }catch{if(alive&&life===revision&&token===selectedAt){selected={...p,unavailable:true};if(panelToken===panelRevision)locationPanel(selected,false);}}
+    }catch{if(alive&&life===revision&&token===selectedAt){selected={...p,unavailable:true,refreshFailed:!!p.current};if(panelToken===panelRevision)locationPanel(selected,false);}}
   }
   function locationPanel(p,focus=true){
-    const k=p.current;
-    panel(p.name,`<p class="mappa-eyebrow">${esc([p.province||p.admin1,p.country||p.country_code].filter(Boolean).join(' · ')||'LOCALITÀ SELEZIONATA')}</p><div class="mappa-location-hero"><strong>${k?number(k.temperature_2m)+'°':'—'}</strong><span aria-hidden="true">${k?weatherIcon(k.weather_code):'◎'}</span></div><p>${k?'Temperatura da modello · Open-Meteo':p.unavailable?'Il meteo di questa località non risponde. Riprova più tardi.':'Carico il meteo di questa località…'}</p>${k?`<div class="mappa-metrics"><div><small>PRECIPITAZIONI</small><b>${Number.isFinite(k.precipitation)?esc(String(k.precipitation)):'—'}</b><small>${precipitationLabel(k.interval)}</small></div><div><small>VENTO</small><b>${number(k.wind_speed_10m)}</b><small>km/h${windReading(k)?.from!==null&&windReading(k)?' · da '+windReading(k).compass:''}</small></div></div><p class="mappa-fonte">Dato valido: ${esc(sourceTime(k))}. ${isStorm(k.weather_code)?'Temporale da modello, non rilevamento di fulmini.':''}</p>`:''}<div class="mappa-actions"><button id="mappa-local-ai" class="mappa-primary">✦ Spiegamelo con Lente</button><button id="mappa-local-weather">Previsioni complete ↗</button><button id="mappa-local-community">Community di ${esc(p.name)} ↗</button><button id="mappa-local-radar">Radar e dettaglio ↗</button></div>`,focus);
+    const k=p.current,age=weatherAge(k);
+    panel(p.name,`<p class="mappa-eyebrow">${esc([p.province||p.admin1,p.country||p.country_code].filter(Boolean).join(' · ')||'LOCALITÀ SELEZIONATA')}</p><div class="mappa-location-hero"><strong>${k?number(k.temperature_2m)+'°':'—'}</strong><span aria-hidden="true">${k?weatherIcon(k.weather_code):'◎'}</span></div><p>${k?(age.stale?'Dato precedente · '+age.label+' · non attuale':'Temperatura da modello · Open-Meteo'):p.unavailable?'Il meteo di questa località non risponde. Riprova più tardi.':'Carico il meteo di questa località…'}</p>${k?`<div class="mappa-metrics"><div><small>PRECIPITAZIONI</small><b>${Number.isFinite(k.precipitation)?esc(String(k.precipitation)):'—'}</b><small>${precipitationLabel(k.interval)}</small></div><div><small>VENTO</small><b>${number(k.wind_speed_10m)}</b><small>km/h${windReading(k)?.from!==null&&windReading(k)?' · da '+windReading(k).compass:''}</small></div></div><p class="mappa-fonte">Dato valido: ${esc(sourceTime(k))}. ${isStorm(k.weather_code)?'Temporale da modello, non rilevamento di fulmini.':''}</p>`:''}<div class="mappa-actions"><button id="mappa-local-zoom">Centra e ingrandisci ↗</button><button id="mappa-local-ai" class="mappa-primary">✦ Spiegamelo con Lente</button><button id="mappa-local-weather">Previsioni complete ↗</button><button id="mappa-local-community">Community di ${esc(p.name)} ↗</button><button id="mappa-local-radar">Radar e dettaglio ↗</button></div>`,focus);
+    $('#mappa-local-zoom').onclick=()=>{closePanel();map.setView([p.latitude,p.longitude],Math.max(9,map.getZoom()),{animate:!matchMedia('(prefers-reduced-motion: reduce)').matches});};
     $('#mappa-local-ai').onclick=()=>askAI(`Spiega il meteo di ${p.name} e cosa sappiamo del livello ${MODES.find(m=>m.id===mode).name}.`);
     $('#mappa-local-weather').onclick=()=>ctx.openPlace?.(p,'home');
     $('#mappa-local-community').onclick=()=>ctx.openPlace?.(p,'community');
@@ -215,7 +251,7 @@ export function createMappaEventi(ctx) {
     if($('#mappa-list-compare'))$('#mappa-list-compare').onclick=()=>comparePanel(s);
     $('#mappa-pannello-corpo').querySelectorAll('[data-point]').forEach(b=>b.onclick=()=>mode==='grandine'?hailPanel(rows[+b.dataset.point]):selectPlace(rows[+b.dataset.point]));
   }
-  function guide(){panel('La mappa, in 20 secondi',`<ol class="mappa-guide"><li><b>Scegli cosa vedere.</b> Scegli temperatura, pioggia, grandine, vento o temporali. Il pulsante Radar pioggia sovrappone immagini recenti a qualsiasi livello.</li><li><b>Esplora e tocca una città.</b> I numeri dei livelli e il confronto caldo/freddo riguardano il campione nella vista.</li><li><b>Chiedi a Lente.</b> Seleziona una località, poi scrivi nella barra viola. L’IA riceve dati meteo e nome del luogo; il server esclude coordinate, autori e media dall’invio a OpenAI.</li></ol><h3>Leggere bene le fonti</h3><p>Temperature, pioggia, vento e temporali: modello Open-Meteo. Radar: RainViewer, copertura variabile; non identifica grandine. Grandine: osservazioni delle persone, ultime 2 ore. Fulmini: non disponiamo di una rete di rilevamento delle singole scariche. I comuni italiani più piccoli possono non avere dati.</p><p>Usa Riproduci e il cursore per scorrere i quadri radar delle ultime 2 ore. L’orario si riferisce al quadro composito; le misure al suo interno possono avere orari diversi. La mappa non certifica aree sicure e non calcola un arrivo affidabile della grandine.</p><button class="mappa-primary" id="mappa-guide-detail">Apri radar e dettaglio ↗</button>`);$('#mappa-guide-detail').textContent='Mostra il radar';$('#mappa-guide-detail').onclick=()=>{closePanel();radar?.setEnabled(true);};}
+  function guide(){panel('La mappa, in 20 secondi',`<ol class="mappa-guide"><li><b>Scegli cosa vedere.</b> Scegli temperatura, pioggia, grandine, vento o temporali. Il pulsante Radar pioggia sovrappone immagini recenti a qualsiasi livello.</li><li><b>Esplora e tocca una città.</b> I nomi restano disponibili anche senza dati meteo; avvicinati per vederne altri. Città attiva o nasconde le etichette. I numeri dei livelli e il confronto caldo/freddo riguardano il campione nella vista.</li><li><b>Chiedi a Lente.</b> Seleziona una località, poi scrivi nella barra viola. L’IA riceve dati meteo e nome del luogo; il server esclude coordinate, autori e media dall’invio a OpenAI.</li></ol><h3>Leggere bene le fonti</h3><p>Temperature, pioggia, vento e temporali: modello Open-Meteo. Radar: RainViewer, copertura variabile; non identifica grandine. Grandine: osservazioni delle persone, ultime 2 ore. Fulmini: non disponiamo di una rete di rilevamento delle singole scariche. I comuni italiani più piccoli possono non avere dati.</p><p>Usa Riproduci e il cursore per scorrere i quadri radar delle ultime 2 ore. L’orario si riferisce al quadro composito; le misure al suo interno possono avere orari diversi. La mappa non certifica aree sicure e non calcola un arrivo affidabile della grandine.</p><button class="mappa-primary" id="mappa-guide-detail">Apri radar e dettaglio ↗</button>`);$('#mappa-guide-detail').textContent='Mostra il radar';$('#mappa-guide-detail').onclick=()=>{closePanel();radar?.setEnabled(true);};}
   function contextSummary(){
     const s=summary();const info=[];
     if(mode==='vento')info.push('Vento al suolo da modello, non traiettoria di celle temporalesche.');
@@ -269,11 +305,14 @@ export function createMappaEventi(ctx) {
     map.createPane('atlas-geography').style.zIndex=220;
     const streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true});
     const geography=L.layerGroup();
+    L.control.scale({position:'bottomleft',imperial:false,maxWidth:100}).addTo(map);
     for(const offset of [-360,0,360])geography.addLayer(L.geoJSON(atlasLand,{pane:'atlas-geography',coordsToLatLng:c=>L.latLng(c[1],c[0]+offset),interactive:false,style:{color:'#405768',weight:1,fillColor:'#09121c',fillOpacity:1,smoothFactor:1}}));
     const grid=L.layerGroup();for(let lat=-75;lat<=75;lat+=15)grid.addLayer(L.polyline([[lat,-540],[lat,540]],{pane:'atlas-geography',color:'#648997',weight:1,opacity:.11,interactive:false}));for(let lon=-540;lon<=540;lon+=15)grid.addLayer(L.polyline([[-85,lon],[85,lon]],{pane:'atlas-geography',color:'#648997',weight:1,opacity:.11,interactive:false}));
     const cartography=()=>{const detailed=map.getZoom()>=7;if(detailed){if(map.hasLayer(geography))map.removeLayer(geography);if(map.hasLayer(grid))map.removeLayer(grid);if(!map.hasLayer(streets))streets.addTo(map);}else{if(map.hasLayer(streets))map.removeLayer(streets);if(!map.hasLayer(geography))geography.addTo(map);if(!map.hasLayer(grid))grid.addTo(map);}};
     map.on('zoomend',cartography);cartography();
-    markers=L.layerGroup().addTo(map);
+    markers=L.layerGroup().addTo(map);cityLabels=L.layerGroup().addTo(map);
+    map.on('resize',scheduleLabels);
+    $('#mappa-city-names').onclick=()=>{showCityNames=!showCityNames;$('#mappa-city-names').setAttribute('aria-pressed',String(showCityNames));scheduleLabels();};
     radar=createAtlasRadar({L,map,onChange:renderRadar});
     const place=ctx.get().place;if(validPlace(place)){selected={...place};$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
     $('#mappa-zona').onclick=()=>{const p=ctx.get().place;if(validPlace(p))selectPlace(p);else $('#mappa-cerca-testo').focus();};
@@ -290,6 +329,6 @@ export function createMappaEventi(ctx) {
     document.addEventListener('keydown',keydown);document.addEventListener('visibilitychange',visibility);
     refreshTimer=setInterval(()=>{if(!document.hidden){load();if(radarState.enabled)radar.refresh();}},300000);draw();if(mode==='pioggia')radar.setEnabled(true);await load();
   }
-  function dispose(){alive=false;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
+  function dispose(){alive=false;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
   return {page,bind,dispose,active:()=>ctx.get().route==='mappa-eventi'};
 }

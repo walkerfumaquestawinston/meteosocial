@@ -1,23 +1,19 @@
 # MeteoSocial — note per proseguire
 
-## Atlante radar e vento, 21 settembre 2026
+## Città leggibili, 21 settembre 2026
 
-Nuova interfaccia ispirata alla gerarchia visiva di ARGOS Atlas: carta protagonista, cinque livelli sopra, dettagli a sinistra e barra Lente in basso. Identità MeteoSocial, nessuna copia di asset ARGOS.
+La richiesta successiva al radar riguarda nomi delle città e utilità della mappa. Non sono stati aggiunti nuovi fornitori né modificate le autorizzazioni IA.
 
-- dist/mappa-eventi-controller.js: cinque livelli, ricerca, dettagli, IA contestuale e coordinamento del radar.
-- dist/map-radar.js: manifest RainViewer, controlli fonte/tempo, tile layer, sequenza, pause, errori, abort e cleanup.
-- dist/map-land.js: geometria Natural Earth 1:110m, dominio pubblico, 127 feature; attribuzione esistente in dist/assets/NATURAL-EARTH.txt.
-- dist/map-weather-core.js: direzione del vento, riepiloghi geografici e richiesta IA con storia limitata.
-- dist/mappa-eventi.css: layout desktop/mobile; su telefono il pannello sospende la riproduzione e nasconde temporaneamente la timeline per lasciare leggibile la risposta.
-- test-atlas-radar.mjs: fonte, frame futuri/duplicati, dati vento mancanti, cronologia IA, lifecycle e callback tardive del radar.
-- .github/workflows/check.yml: installazione, build e suite del radar oltre ai controlli della mappa e dell'IA.
+- dist/map-city-labels.js: catalogo geografico con fallback, deduplicazione/alias, età dei dati e disposizione deterministica delle etichette. Rettangoli reali dei pannelli riservati; massimo 80 etichette, priorità alla città selezionata.
+- dist/mappa-eventi-controller.js: etichette cliccabili su ogni livello e zoom, interruttore Città, riepilogo richiudibile, località scelta, scala km e zoom locale. I nomi esistono anche senza valori meteo.
+- dist/mappa-eventi.css: etichette da 44px, contrasto, pannelli compatti e assenza di sovrapposizione fra dettaglio e legenda sul telefono.
+- test-map-city-labels.mjs: dati geografici senza meteo, conservazione letture, alias, date UTC, collisioni, bordi e priorità selezione. Aggiunto anche al controllo GitHub.
+- build.mjs e dist/sw.js: nuovo modulo incluso; shell v58.
 
-Radar: solo compositi recenti, circa due ore. I timestamp rappresentano i quadri compositi; copertura variabile, assenza di colore non significa assenza di pioggia. Lente riceve stato/orario del radar, non immagini. Grandine da segnalazioni community, Fulmini da modello temporali: nessuna rete di scariche collegata.
+I cataloghi esistenti CITIES, CITTA_MONDO e comuni server sono riusati. Non affermare copertura di ogni città del mondo: ricerca libera e cartografia stradale completano il catalogo di etichette. Le etichette sono selezionate in base allo spazio; aumentare lo zoom per vederne altre.
 
-Lente riusa il servizio autenticato esistente e mostra le fonti restituite. Le coordinate servono al backend meteo e sono escluse dal payload OpenAI; niente autori o media. Cronologia limitata agli ultimi tre scambi della stessa località e trasmessa solo su richiesta. Nessuna chiamata IA automatica durante pan, zoom o refresh.
+Meteo, radar e IA: preservati i limiti della versione precedente. Le coordinate vanno al solo backend meteo e non a OpenAI; nessun autore o media, massimo tre scambi della località su richiesta esplicita. Lente non interpreta i pixel radar. Grandine community e temporali da modello non diventano allerte ufficiali.
 
-Verifiche: 49 suite passate; sei suite legacy classificate separatamente. Test browser desktop 1280×800 e mobile 390×844: radar reale RainViewer, zoom alle strade, località, domanda conservata quando serve login, nessun overflow né errore console. Meteo in cache durante indisponibilità della fonte, chiaramente indicato. Servizio IA reale non invocato dall'anteprima.
+Verifiche: 50 suite passate; sei legacy classificate separatamente. Browser su mobile 390×844 e desktop: temperatura, grandine, etichette mondiali, pulsante Città, dettaglio e strade. Nessun errore console rilevato. Le API meteo hanno restituito dati aggiornati durante questa verifica; cache ed errori restano gestiti.
 
-Stato del sito e sincronizzazione: PROJECT_STATUS.md. Dopo un clone installare le dipendenze bloccate e ricostruire. dist/app e dist/server non sono versionati; non cancellare gli altri sorgenti in dist. Lo storico delle note precedenti rimane in Git.
-
-Pubblicato su Sites versione 66 il 21 settembre 2026. GitHub PR #7 integrata in main dopo Check MeteoSocial e anteprima Netlify superati. La sorgente applicativa pubblicata e quella GitHub hanno lo stesso albero; le note di consegna successive non richiedono un altro deploy.
+Stato della pubblicazione: PROJECT_STATUS.md. Dopo clone: pnpm install --frozen-lockfile e pnpm build. Conservare i sorgenti in dist; dist/app e dist/server sono rigenerati. Non sincronizzare database locali con produzione.
