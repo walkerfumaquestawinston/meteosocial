@@ -93,20 +93,20 @@ check(app.includes("'mappa-classica':()=>living.page()"), 'la mappa di prima res
 check(app.includes('mappa:()=>living.page()'), 'e il vecchio indirizzo continua a funzionare per chi lo aveva salvato');
 
 const vista = readFileSync('dist/mappa-eventi-controller.js', 'utf8');
-check(vista.includes("'mappa-classica'"), 'radar classico conservato nei dettagli e nella guida');
+check(vista.includes('createAtlasRadar')&&vista.includes('mappa-radar-toggle'), 'radar accessibile direttamente sulla mappa');
 check(app.includes("'mappa-eventi-view',r==='mappa-eventi'"), 'rotta a tutto schermo');
 const foglio=readFileSync('dist/mappa-eventi.css','utf8');
 check(/html\.mappa-eventi-view #main\{[^}]*padding:\s*0/.test(foglio),'la pagina si ritira');
 check(/\.mappa\{[^}]*position:\s*fixed/.test(foglio),'viewport fisso');
-check(/\.mappa-tela\{[^}]*background:\s*#07131c/.test(foglio),'mappa scura senza tessere');
+check(/\.mappa-tela\{[^}]*background:\s*#0b1924/.test(foglio),'mappa scura senza tessere');
 check(!/html\.mappa-eventi-view aside\{/.test(foglio),'il pannello dettagli non è nascosto con tutte le sidebar');
 const {createMappaEventi}=await import('./dist/mappa-eventi.js');
 const markup=createMappaEventi({esc:x=>String(x),get:()=>({})}).page();
-for(const id of ['temperature','pioggia','grandine','fulmini'])check(markup.includes('data-livello="'+id+'"'),'livello raggiungibile '+id);
+for(const id of ['temperature','pioggia','grandine','vento','fulmini'])check(markup.includes('data-livello="'+id+'"'),'livello raggiungibile '+id);
 check(markup.includes('id="mappa-ia-testo"')&&markup.includes('<form class="mappa-ia"'),'campo di testo IA');
 const {mapAIRequest}=await import('./dist/map-weather-core.js');
 const request=mapAIRequest({name:'Roma',latitude:41.9,longitude:12.5,author:'PRIVATE',photo:'PRIVATE'},'Piove?','Due città nella vista');
-eq(Object.keys(request).sort(),['city','includeCommunity','latitude','longitude','section','layer','question'].sort(),'contratto con il backend meteo');
+eq(Object.keys(request).sort(),['city','includeCommunity','latitude','longitude','section','layer','question','history'].sort(),'contratto con il backend meteo');
 check(request.section==='map'&&request.includeCommunity===false&&!JSON.stringify(request).includes('PRIVATE'),'nessuna espansione a post/autori/media');
 // Coordinate necessarie al nostro backend, escluse dal payload OpenAI: test-lente.mjs.
 for(const query of ['', '?lat=&lon=', '?lat=42', '?lat=x&lon=13']){
