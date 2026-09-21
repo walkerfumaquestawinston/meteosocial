@@ -1,3 +1,41 @@
+# Riprendi da qui — 21 settembre 2026
+
+**Questo è il punto di partenza attuale. Le sezioni sotto sono cronologia: la fase 24.2 non è più l'ultimo lavoro fatto.**
+
+## Dove siamo
+
+| cosa | stato |
+|---|---|
+| `main` | `427e5a3`, CI verde |
+| sito ufficiale su Sites | **versione 64, invariata** |
+| anteprima Netlify | ricostruita da `main`, contiene il lavoro nuovo |
+| ultimo blocco | Mappa eventi atmosferici — vedi `MAPPA-EVENTI-RELEASE.md` |
+
+Il lavoro dal 18 al 21 settembre ha aggiunto una **mappa degli eventi atmosferici** su `#mappa-eventi`, aperta dalla voce Mappa della barra di navigazione: temperature e pioggia mondiali da Open-Meteo, eventi naturali da NASA EONET, segnalazioni di grandine delle persone, comuni ISTAT, e la Lente integrata come barra in cui si scrive la domanda. Più l'avviso grandine con distanza scelta dalla persona.
+
+La mappa MapLibre della versione 64 **non è stata toccata**: resta su `#mappa-classica`, e il vecchio indirizzo `#mappa` continua a funzionare.
+
+## Per riprendere il lavoro
+
+1. `node tools/resume.mjs --check` — controllo dell'ambiente (serve Node con `node:sqlite`; se mancano dipendenze, `pnpm install --frozen-lockfile`).
+2. `node build.mjs` — ricostruisce Worker e bundle. La build è riproducibile: due esecuzioni danno lo stesso output.
+3. `node tools/run-tests.mjs` — la suite. Attualmente **47 superati, 6 non pertinenti, 0 falliti**. I sei non pertinenti interrogano moduli conservati in Git ma esclusi dal bundle: vanno riletti e aggiornati o ritirati, non lasciati rossi per sempre.
+4. `node tools/resume.mjs` — anteprima locale, con profilo di prova e database separato dalla produzione.
+
+Attenzione a due trappole di questo repository:
+- **`dist/` contiene anche sorgenti frontend**, non solo output. Non cancellarla come se fosse generata.
+- **`server/world-cities.js` non esiste più**: il contenuto è in `dist/citta-mondo.js` e `build.mjs` lo incorpora nel Worker rinominandolo `WORLD_CITIES`. Chi tocca `build.mjs` non rimuova quel `.replace()`, o il meteo mondiale sparisce in silenzio. C'è un controllo che lo verifica sul Worker costruito.
+
+## Cosa manca, e chi deve deciderlo
+
+**Pubblicare il Worker su Sites.** Finché non succede, le rotte `/api/mappa/*` non esistono online: sulla mappa i livelli comuni e grandine restano barrati, mentre temperature, pioggia ed eventi funzionano perché il browser interroga le fonti direttamente.
+
+Tre decisioni aperte, del proprietario e non di chi riprende il codice: le notifiche push dell'avviso grandine, la riattivazione di H6 (`dist/arrival-estimate.js`), e se ritirare `#mappa-classica`. Sono spiegate in fondo a `MAPPA-EVENTI-RELEASE.md`.
+
+**B2 resta bloccato** dalle fonti osservate e dalla pianificazione, come da cronologia qui sotto. Nulla in questo blocco lo sblocca.
+
+---
+
 # Sincronizzazione GitHub — 17 settembre 2026
 
 Il repository GitHub walkerfumaquestawinston/meteosocial contiene ora la sorgente Sites bd822c5d88dc0b88a64caf180fb5dfb6a35b71d1. La versione pubblicata è 64, commit applicativo 5b336b97a12e7f8f0f80b713e8ef5154fd6ed381. Il commit sorgente successivo aggiunge le istruzioni per Claude senza cambiare il sito.
