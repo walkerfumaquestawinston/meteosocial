@@ -20,6 +20,11 @@ const paths={
   layers:'<path d="m12 3 10 5-10 5L2 8l10-5Zm-9 10 9 5 9-5M3 18l9 5 9-5"/>'
 };
 export const mapIcon=name=>'<svg class="mappa-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths.world)+'</svg>';
+// Extruded vector geometry: three lit faces, no WebGL context or animation loop.
+// M = weather model; C = community observation. Neither represents a detected strike.
+export function lightningGlyph(kind='model'){
+ return '<span class="lightning-object" aria-hidden="true"><svg viewBox="0 0 44 48" fill="none"><ellipse cx="22" cy="40" rx="17" ry="5" class="bolt-ground"/><path d="m27 3 5 4-4 13-5-4Z" class="bolt-side"/><path d="m32 16 5 4-18 22-5-4Z" class="bolt-side"/><path d="m23 3-15 22h11l-5 13 18-22H22l5-13Z" class="bolt-front"/><path d="m23 3-15 22h3L25 5Z" class="bolt-edge"/></svg><small>'+(kind==='report'?'C':'M')+'</small></span>';
+}
 export function weatherArt(code,isDay=1){
   const kind=!Number.isFinite(code)||code<0?'unknown':[95,96,99].includes(code)?'storm':[71,73,75,77,85,86].includes(code)?'snow':code>=51?'rain':code>=1?'cloud':isDay===0?'moon':'sun';
   return '<span class="mappa-weather-art weather-'+kind+'" aria-hidden="true"><i class="art-orbit"></i><i class="art-orb"></i><i class="art-cloud"></i><i class="art-drops"></i></span>';

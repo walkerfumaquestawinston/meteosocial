@@ -1,5 +1,10 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 21 settembre 2026 — Ripari e fulmini
+
+Revisione pronta per pubblicazione; lo stato di rilascio viene completato dopo la conferma di Sites. Dettagli, confronto, prove e limiti: docs/HAIL-SHELTERS-LIGHTNING.md. Ricerca ripari con recupero su due istanze OSM, filtri 1/3/5 km, indicazioni e ritorno all’elenco; fulmini in rilievo distinti tra modello e community, edifici al chiuso e radar ufficiale. Servizi cartografici esterni intermittenti: nessuna garanzia di disponibilità, posti liberi o rilevamenti reali delle scariche. Build e 15 suite pertinenti superate.
+
+
 ## 21 settembre 2026 — La piazza del cielo
 
 Pubblicata su Sites versione 71 il 21 settembre 2026 alle 13:28 UTC: https://scudo-meteo-community.walkerthehate.chatgpt.site/#community. Runtime Sites 49dd782939640a1fb31f91dbc5887f51f9f691c2, albero a3167d9b8d0aa55188ede2bfffeff3ada56a5079. GitHub PR #12 integrata in main (4c86f06335de97038f9408df44eddb5e68069da7), Check MeteoSocial 35605630575 e anteprima Netlify superati. Queste note successive non modificano il runtime. Analisi competitiva: docs/COMMUNITY-COMPETITIVE-BRIEF.md, nove prodotti meteo e due social; nessuna esclusività o viralità dichiarata come dimostrata.
