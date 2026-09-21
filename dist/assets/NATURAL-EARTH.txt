@@ -4,3 +4,8 @@ Terms: https://www.naturalearthdata.com/about/terms-of-use/
 Natural Earth raster and vector data are public domain.
 Derived geometry: 2-degree triangular surface sampling and original coastline segments.
 This generalized geographic layer does not show current weather or navigable routes.
+
+Atmospheric Atlas (2026-09-21): 50m land + admin_0_boundary_lines_land; 110m country labels.
+Natural Earth commit ca96624a56bd078437bca8184e78163e5039ad19.
+Public-domain vectors simplified at 0.025 degrees and rounded to 3 decimals.
+Reproduce: node tools/generate-map-geography.mjs. Borders are generalized geographic references.
