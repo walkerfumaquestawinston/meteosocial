@@ -1,23 +1,21 @@
-# MeteoSocial — note pubbliche per proseguire
+# MeteoSocial — note per proseguire
 
-## Atlante meteo, 21 settembre 2026
+## Atlante radar e vento, 21 settembre 2026
 
-Partenza dal lavoro Claude già integrato nel ramo principale. Nuova interfaccia della mappa a tutto schermo, con livelli Temperatura, Pioggia, Grandine e Fulmini e confronto delle temperature nella sola area visibile.
+Nuova interfaccia ispirata alla gerarchia visiva di ARGOS Atlas: carta protagonista, cinque livelli sopra, dettagli a sinistra e barra Lente in basso. Identità MeteoSocial, nessuna copia di asset ARGOS.
 
-- dist/mappa-eventi-controller.js: interazioni, caricamento, ricerca e Lente.
-- dist/map-weather-core.js: regole dei dati e confronto geografico, testate senza rete.
-- dist/mappa-eventi.js: normalizzatori NASA e Open-Meteo.
-- dist/mappa-eventi.css: impaginazione adattiva.
-- server/mappa.js: controlli sulle coordinate, associazione corretta dei dati e intervalli di precipitazione.
+- dist/mappa-eventi-controller.js: cinque livelli, ricerca, dettagli, IA contestuale e coordinamento del radar.
+- dist/map-radar.js: manifest RainViewer, controlli fonte/tempo, tile layer, sequenza, pause, errori, abort e cleanup.
+- dist/map-land.js: geometria Natural Earth 1:110m, dominio pubblico, 127 feature; attribuzione esistente in dist/assets/NATURAL-EARTH.txt.
+- dist/map-weather-core.js: direzione del vento, riepiloghi geografici e richiesta IA con storia limitata.
+- dist/mappa-eventi.css: layout desktop/mobile; su telefono il pannello sospende la riproduzione e nasconde temporaneamente la timeline per lasciare leggibile la risposta.
+- test-atlas-radar.mjs: fonte, frame futuri/duplicati, dati vento mancanti, cronologia IA, lifecycle e callback tardive del radar.
+- .github/workflows/check.yml: installazione, build e suite del radar oltre ai controlli della mappa e dell'IA.
 
-La mappa principale è raggiungibile dalla navigazione. La vista radar di dettaglio è conservata. Il modello dei temporali non va presentato come rilevamento delle singole scariche; le osservazioni di grandine non sono allerte ufficiali.
+Radar: solo compositi recenti, circa due ore. I timestamp rappresentano i quadri compositi; copertura variabile, assenza di colore non significa assenza di pioggia. Lente riceve stato/orario del radar, non immagini. Grandine da segnalazioni community, Fulmini da modello temporali: nessuna rete di scariche collegata.
 
-Lente riceve il contesto della località selezionata. Il backend usa le coordinate per ottenere il meteo, ma le esclude dai dati inviati al servizio IA. Nessun autore o media viene allegato da questa vista. test-lente.mjs verifica questo limite.
+Lente riusa il servizio autenticato esistente e mostra le fonti restituite. Le coordinate servono al backend meteo e sono escluse dal payload OpenAI; niente autori o media. Cronologia limitata agli ultimi tre scambi della stessa località e trasmessa solo su richiesta. Nessuna chiamata IA automatica durante pan, zoom o refresh.
 
-Verifiche: build e 48 suite superate; 6 suite legacy segnalate separatamente dal runner. Test aggiunto: test-map-weather-core.mjs. Browser verificato su ricerca, unità, login IA, guida, elenco e layout mobile. Il servizio IA reale non è stato invocato durante il test locale.
+Verifiche: 49 suite passate; sei suite legacy classificate separatamente. Test browser desktop 1280×800 e mobile 390×844: radar reale RainViewer, zoom alle strade, località, domanda conservata quando serve login, nessun overflow né errore console. Meteo in cache durante indisponibilità della fonte, chiaramente indicato. Servizio IA reale non invocato dall'anteprima.
 
-Pubblicazione Sites confermata il 21 settembre 2026: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. GitHub PR #6 integrata; Check MeteoSocial superato dopo avere aggiunto installazione e build prima dei test. Lo storico precedente è disponibile nella cronologia del repository.
-
-Gli artefatti generati dist/app e dist/server non sono versionati. Dopo il clone: pnpm install --frozen-lockfile, poi pnpm build e pnpm test. I sorgenti dentro dist restano versionati: non eliminare quella cartella. Netlify compila già prima della pubblicazione.
-
-CI GitHub: installa le dipendenze bloccate, genera il bundle e verifica le tre suite esistenti più mappa, dati meteo e Lente.
+Stato del sito e sincronizzazione: PROJECT_STATUS.md. Dopo un clone installare le dipendenze bloccate e ricostruire. dist/app e dist/server non sono versionati; non cancellare gli altri sorgenti in dist. Lo storico delle note precedenti rimane in Git.

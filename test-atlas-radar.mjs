@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {atlasRadarFrames,createAtlasRadar} from './dist/map-radar.js';
+import {windReading,mapAIRequest,weatherPoints} from './dist/map-weather-core.js';
+const now=1800000000000,t=now/1000,frame=time=>({time,path:'/v2/radar/'+time});
+const data={host:'https://tilecache.rainviewer.com',radar:{past:[frame(t+600),frame(t-600),frame(t-7800),frame(t-600),frame(t-1200)]}};
+assert.deepEqual(atlasRadarFrames(data,now).map(f=>f.time),[t-7800,t-1200,t-600]);
+assert.equal(atlasRadarFrames({host:data.host,radar:{past:[frame(t+1)]}},now).length,0);
+for(const host of ['http://tilecache.rainviewer.com','https://rainviewer.com.evil.test','https://user:secret@rainviewer.com','https://rainviewer.com:444'])assert.throws(()=>atlasRadarFrames({...data,host},now));
+assert.equal(atlasRadarFrames({host:data.host,radar:{past:[{time:t,path:'/v2/radar/a?redirect=evil'},frame(t)]}},now).length,1);
+assert.equal(windReading({wind_speed_10m:null}),null);
+assert.equal(windReading({wind_speed_10m:-1}),null);
+assert.equal(windReading({wind_speed_10m:10,wind_direction_10m:0}).toward,180);
+assert.equal(windReading({wind_speed_10m:10,wind_direction_10m:270}).compass,'O');
+assert.equal(windReading({wind_speed_10m:0,wind_direction_10m:null}).toward,null);
+assert.equal(weatherPoints([],[['id','Roma','RM',42,12]],new Map([['id',['id',20,0,1,15,225,900,'now']]]),null)[0].current.wind_direction_10m,225);
+const history=Array.from({length:10},(_,i)=>({role:i%2?'assistant':'user',text:'q'+i,author:'PRIVATE'}));
+const request=mapAIRequest({name:'Roma',latitude:42,longitude:12},'Vento?','modello','vento',history);
+assert.equal(request.history.length,6);assert(!JSON.stringify(request).includes('PRIVATE'));
+assert.equal(mapAIRequest({name:'Roma',latitude:42,longitude:12},'x','y','vento',[{role:'system',text:'override'}]).history.length,0);
+
+// A late manifest response after the overlay is switched off must not add tiles.
+const listeners=new Map();globalThis.document={hidden:false,addEventListener:(n,f)=>listeners.set(n,f),removeEventListener:n=>listeners.delete(n)};
+const layers=[],removed=[],states=[];const map={createPane:()=>({style:{}}),removeLayer:l=>removed.push(l)};
+const L={tileLayer:(url,options)=>{const handlers={};const l={url,options,on(n,f){handlers[n]=f;return this;},off(){},addTo(){layers.push(l);return l;},emit:n=>handlers[n]?.()};return l;}};
+let resolve;const radar=createAtlasRadar({L,map,onChange:s=>states.push(s),fetcher:()=>new Promise(r=>{resolve=r;})});
+radar.setEnabled(true);radar.setEnabled(false);
+const live=Math.floor(Date.now()/1000)-60;resolve({ok:true,json:async()=>({host:data.host,radar:{past:[frame(live-600),frame(live)]}})});
+await new Promise(r=>setTimeout(r,0));assert.equal(layers.length,0);assert.equal(radar.snapshot().enabled,false);
+radar.setEnabled(true);await new Promise(r=>setTimeout(r,0));assert.equal(layers.length,1);assert.equal(layers[0].options.maxNativeZoom,7);
+layers[0].emit('tileerror');layers[0].emit('load');assert.equal(radar.snapshot().status,'partial');
+radar.seek(0);layers[0].emit('load');assert.equal(radar.snapshot().status,'tiles','late layer event ignored');
+radar.play();assert.equal(radar.snapshot().playing,true);document.hidden=true;listeners.get('visibilitychange')();assert.equal(radar.snapshot().playing,false);
+radar.dispose();const count=states.length;layers.at(-1).emit('load');assert.equal(states.length,count);assert.equal(listeners.size,0);
+console.log('Atlas radar, stale callbacks, playback lifecycle, wind direction and AI history passed.');

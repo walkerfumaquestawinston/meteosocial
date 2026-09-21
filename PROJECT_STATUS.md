@@ -1,17 +1,15 @@
 # MeteoSocial — stato pubblico del progetto
 
-## 21 settembre 2026 — Atlante meteo
+## 21 settembre 2026 — Atlante, vento e radar
 
-La nuova mappa comprende Temperatura, Pioggia, Grandine e Fulmini, ricerca con scelta della località, confronto caldo/freddo delle città nella vista, guida, elenco accessibile e Lente IA nella mappa.
+La mappa principale (#mappa-eventi) ora ha cinque livelli: Temperatura, Pioggia, Grandine, Vento e Fulmini. Cartografia vettoriale Natural Earth nella vista ampia, strade OpenStreetMap allo zoom locale, pannelli compatti e tutti i livelli visibili sul telefono.
 
-I temporali del livello Fulmini sono dati di modello: le singole scariche non sono rilevate. La grandine mostra osservazioni della community delle ultime due ore. Le previsioni e la pioggia provengono da Open-Meteo. Le immagini radar restano nella vista di dettaglio.
+Radar RainViewer sovrapponibile a qualsiasi livello: sequenza recente di circa due ore, cursore, riproduzione/pausa, orario, aggiornamento ed errori espliciti. Non è una previsione: la copertura varia e una zona vuota non esclude pioggia. Grandine: osservazioni community delle ultime due ore, non certificate. Fulmini: temporali da modello, non singole scariche rilevate.
 
-Verifiche: build completata; 48 suite superate. Il runner segnala separatamente 6 test di moduli già ritirati. Ricerca e interazioni provate nel browser; layout verificato a 390×844.
+Vento: frecce della direzione verso cui soffia, velocità in km/h e confronto nel campione visibile. Lente IA: domande contestuali, fonti della risposta e ultimi tre scambi della stessa località; nessuna analisi dei pixel radar. I limiti di invio a OpenAI restano invariati: niente coordinate, autori o media.
 
-Pubblicata su Sites il 21 settembre 2026: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. PR GitHub #6 integrata nel ramo principale; controllo Check MeteoSocial superato.
+Verifiche: build completata, 49 suite superate; 6 suite di moduli ritirati classificate separatamente dal runner. Browser verificato a 390×844 e 1280×800: radar, località, strade, pannelli, gestione accesso IA e assenza di overflow. Nessun errore console rilevato. IA reale non invocata in anteprima locale; segnalato correttamente il meteo in cache quando il fornitore non risponde.
 
-Lo storico precedente rimane nella cronologia Git. Per riprendere, leggere docs/CLAUDE_HANDOFF.md e le istruzioni del progetto.
+Stato pubblicazione: modifica pronta; il sito pubblico confermato precedente è la versione 65. Aggiornare questa riga solo dopo la conferma di pubblicazione.
 
-Gli artefatti generati dist/app e dist/server non sono versionati. Dopo il clone: pnpm install --frozen-lockfile, poi pnpm build e pnpm test. I sorgenti dentro dist restano versionati: non eliminare quella cartella. Netlify compila già prima della pubblicazione.
-
-CI GitHub: installa le dipendenze bloccate, genera il bundle e verifica le tre suite esistenti più mappa, dati meteo e Lente.
+Per riprendere: leggere RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. Lo storico precedente è conservato in Git. dist/app e dist/server sono output non versionati; i sorgenti dentro dist restano versionati e non devono essere cancellati.
