@@ -13,6 +13,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Install package manager
+        run: npm install --global pnpm@11.19.0
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build application before testing
+        run: pnpm build
       - run: node test-daily-question.mjs
       - run: node test-profession.mjs
       - run: node test-sky-confirm.mjs
+      - run: node --experimental-vm-modules test-mappa.mjs
+      - run: node --experimental-vm-modules test-map-weather-core.mjs
+      - run: node --experimental-vm-modules test-mappa-diretta.mjs
+      - run: node --experimental-vm-modules test-lente.mjs

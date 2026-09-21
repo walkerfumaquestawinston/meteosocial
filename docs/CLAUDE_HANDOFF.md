@@ -19,3 +19,5 @@ Verifiche: build e 48 suite superate; 6 suite legacy segnalate separatamente dal
 Pubblicazione in corso: attendere la nota finale prima di considerare il sito aggiornato. Lo storico precedente è disponibile nella cronologia del repository.
 
 Gli artefatti generati dist/app e dist/server non sono versionati. Dopo il clone: pnpm install --frozen-lockfile, poi pnpm build e pnpm test. I sorgenti dentro dist restano versionati: non eliminare quella cartella. Netlify compila già prima della pubblicazione.
+
+CI GitHub: installa le dipendenze bloccate, genera il bundle e verifica le tre suite esistenti più mappa, dati meteo e Lente.

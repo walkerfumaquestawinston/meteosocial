@@ -13,3 +13,5 @@ Pubblicazione: in preparazione. Il salvataggio del codice non equivale alla pubb
 Lo storico precedente rimane nella cronologia Git. Per riprendere, leggere docs/CLAUDE_HANDOFF.md e le istruzioni del progetto.
 
 Gli artefatti generati dist/app e dist/server non sono versionati. Dopo il clone: pnpm install --frozen-lockfile, poi pnpm build e pnpm test. I sorgenti dentro dist restano versionati: non eliminare quella cartella. Netlify compila già prima della pubblicazione.
+
+CI GitHub: installa le dipendenze bloccate, genera il bundle e verifica le tre suite esistenti più mappa, dati meteo e Lente.
