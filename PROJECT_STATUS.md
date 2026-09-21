@@ -1,15 +1,15 @@
 # MeteoSocial — stato pubblico del progetto
 
-## 21 settembre 2026 — Atlante, vento e radar
+## 21 settembre 2026 — città leggibili, carta al centro
 
-La mappa principale (#mappa-eventi) ora ha cinque livelli: Temperatura, Pioggia, Grandine, Vento e Fulmini. Cartografia vettoriale Natural Earth nella vista ampia, strade OpenStreetMap allo zoom locale, pannelli compatti e tutti i livelli visibili sul telefono.
+La mappa #mappa-eventi mostra nomi selezionabili delle città a ogni zoom e in tutti e cinque i livelli. Le etichette evitano collisioni fra loro e con i comandi; avvicinando la carta compaiono altre località. Catalogo geografico indipendente dalla disponibilità del meteo.
 
-Radar RainViewer sovrapponibile a qualsiasi livello: sequenza recente di circa due ore, cursore, riproduzione/pausa, orario, aggiornamento ed errori espliciti. Non è una previsione: la copertura varia e una zona vuota non esclude pioggia. Grandine: osservazioni community delle ultime due ore, non certificate. Fulmini: temporali da modello, non singole scariche rilevate.
+Il pulsante Città attiva/nasconde i nomi. Riepilogo laterale richiudibile, ritorno alla località scelta, scala in chilometri e comando Centra e ingrandisci nei dettagli. I dati precedenti hanno indicatore e data; una lettura locale vecchia viene aggiornata quando si apre il luogo, se la fonte risponde.
 
-Vento: frecce della direzione verso cui soffia, velocità in km/h e confronto nel campione visibile. Lente IA: domande contestuali, fonti della risposta e ultimi tre scambi della stessa località; nessuna analisi dei pixel radar. I limiti di invio a OpenAI restano invariati: niente coordinate, autori o media.
+Radar RainViewer recente, vento, Lente contestuale e relativi limiti restano quelli della versione 66. Grandine: segnalazioni community non certificate. Fulmini: temporali da modello. Nessuna promessa di arrivo della grandine o certificazione di zona sicura.
 
-Verifiche: build completata, 49 suite superate; 6 suite di moduli ritirati classificate separatamente dal runner. Browser verificato a 390×844 e 1280×800: radar, località, strade, pannelli, gestione accesso IA e assenza di overflow. Nessun errore console rilevato. IA reale non invocata in anteprima locale; segnalato correttamente il meteo in cache quando il fornitore non risponde.
+Verifiche: 50 suite attuali superate; 6 suite di moduli ritirati classificate separatamente dal runner. Browser mobile 390×844 e desktop: nomi, temperatura, grandine, vista mondiale, interruttore nomi, apertura della località e zoom alle strade. Meteo mondiale aggiornato dalla fonte durante la verifica; indisponibilità e dati in cache restano dichiarati.
 
-Pubblicazione confermata: Sites versione 66, 21 settembre 2026, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. GitHub PR #7 integrata in main; Check MeteoSocial e anteprima Netlify superati. Le note successive alla pubblicazione non modificano il runtime.
+Stato pubblicazione: aggiornamento città pronto; ultima pubblicazione confermata precedente, Sites versione 66. Aggiornare questa riga dopo la conferma.
 
-Per riprendere: leggere RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. Lo storico precedente è conservato in Git. dist/app e dist/server sono output non versionati; i sorgenti dentro dist restano versionati e non devono essere cancellati.
+Per proseguire: RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. dist contiene sorgenti, non cancellarla. Solo dist/app e dist/server sono output non versionati. Lo storico resta in Git.

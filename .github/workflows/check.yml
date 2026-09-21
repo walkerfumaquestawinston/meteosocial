@@ -27,3 +27,4 @@ jobs:
       - run: node --experimental-vm-modules test-mappa-diretta.mjs
       - run: node --experimental-vm-modules test-lente.mjs
       - run: node --experimental-vm-modules test-atlas-radar.mjs
+      - run: node test-map-city-labels.mjs

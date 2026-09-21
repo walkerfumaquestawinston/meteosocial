@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {cityCatalog,arrangeCityLabels,weatherAge} from './dist/map-city-labels.js';
+import {CITIES} from './dist/places.js';
+import {CITTA_MONDO} from './dist/citta-mondo.js';
+const rome={name:'Roma',latitude:41.9,longitude:12.5};
+const now=Date.parse('2026-09-21T12:00:00Z');
+assert.equal(weatherAge({time:'2026-09-21T11:30'},now).label,'30 min fa');
+assert.equal(weatherAge({time:'2026-09-19T12:00'},now).stale,true);
+assert.equal(weatherAge({time:'invalid'},now).label,'Orario non disponibile');
+const list=cityCatalog([{...rome,current:{temperature_2m:23}}],[rome,{name:'Paris',latitude:48.85,longitude:2.35}],[['tiny','Borgo','XY',42,13,900]],rome);
+assert.equal(list.length,3);assert.equal(list[0].selected,true);assert.equal(list[0].current.temperature_2m,23);assert.ok(list.some(p=>p.name==='Borgo'&&!p.current));
+assert.equal(cityCatalog([],[{name:'bad',latitude:NaN,longitude:0}],[],null).length,0);
+const aliases=cityCatalog([{...rome,name:'Rome',current:{temperature_2m:24}}],[{...rome,localized:true}],[],null);
+assert.equal(aliases.length,1);assert.equal(aliases[0].name,'Roma');assert.equal(aliases[0].current.temperature_2m,24);
+const actualCatalog=cityCatalog([],[...CITIES.map(c=>({...c,localized:true})),...CITTA_MONDO],[],null);
+assert.ok(actualCatalog.some(p=>p.name==='Roma'));assert.ok(actualCatalog.some(p=>p.name==='Parigi'));
+assert.equal(actualCatalog.some(p=>p.name==='Rome'),false);
+const reserved={left:0,top:0,right:100,bottom:200};
+const candidates=Array.from({length:100},(_,i)=>({name:'City '+i,x:70+i*9,y:160+(i%6)*10,width:130}));
+candidates.push({name:'Chosen',selected:true,x:250,y:240,width:140});
+const arranged=arrangeCityLabels(candidates,{width:390,height:600},[reserved]);
+assert.equal(arranged[0].name,'Chosen');assert.ok(arranged.length>1);
+const overlap=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+for(const [i,p]of arranged.entries()){
+  assert.equal(overlap(p.box,reserved),false);assert.ok(p.box.left>=6&&p.box.right<=384&&p.box.bottom<=594);
+  for(const q of arranged.slice(i+1))assert.equal(overlap(p.box,q.box),false);
+}
+assert.deepEqual(arrangeCityLabels(candidates,{width:390,height:600},[reserved]),arranged,'layout must be deterministic');
+assert.equal(arrangeCityLabels([{x:-100,y:50,width:90}],{width:390,height:600}).length,0);
+assert.equal(arrangeCityLabels([{x:NaN,y:50,width:90}],{width:390,height:600}).length,0);
+console.log('City geography fallback, retained weather, timestamps, label collision and selected priority passed.');
