@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readWeatherSnapshot} from './dist/map-weather-source.js';
+const fresh={cities:[{current:{time:new Date().toISOString()}}]};
+const old={cities:[{current:{time:'2020-01-01T12:00'}}],updated:1};
+let directCalls=0;
+const direct=async()=>{directCalls++;return fresh;};
+assert.equal(await readWeatherSnapshot(async()=>fresh,direct),fresh);
+assert.equal(directCalls,0,'fresh server responses do not duplicate provider traffic');
+assert.equal(await readWeatherSnapshot(async()=>old,direct),fresh);
+assert.equal(directCalls,1,'HTTP success with old measurements refreshes directly');
+assert.equal(await readWeatherSnapshot(async()=>({...fresh,stale:true}),direct),fresh);
+assert.equal(await readWeatherSnapshot(async()=>{throw Error('offline');},direct),fresh);
+const unavailable=async()=>{throw Error('provider unavailable');};
+assert.deepEqual(await readWeatherSnapshot(async()=>old,unavailable),{...old,stale:true});
+await assert.rejects(readWeatherSnapshot(unavailable,unavailable),/provider unavailable/);
+console.log('Fresh/stale snapshots, direct recovery, request count and outage fallback passed.');

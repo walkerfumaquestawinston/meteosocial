@@ -98,7 +98,7 @@ check(app.includes("'mappa-eventi-view',r==='mappa-eventi'"), 'rotta a tutto sch
 const foglio=readFileSync('dist/mappa-eventi.css','utf8');
 check(/html\.mappa-eventi-view #main\{[^}]*padding:\s*0/.test(foglio),'la pagina si ritira');
 check(/\.mappa\{[^}]*position:\s*fixed/.test(foglio),'viewport fisso');
-check(/\.mappa-tela\{[^}]*background:\s*#0b1924/.test(foglio),'mappa scura senza tessere');
+check(vista.includes('L.geoJSON(atlasLand')&&foglio.includes('.mappa-tela{'),'carta vettoriale disponibile senza tessere remote');
 check(!/html\.mappa-eventi-view aside\{/.test(foglio),'il pannello dettagli non è nascosto con tutte le sidebar');
 const {createMappaEventi}=await import('./dist/mappa-eventi.js');
 const markup=createMappaEventi({esc:x=>String(x),get:()=>({})}).page();

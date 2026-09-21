@@ -1,15 +1,15 @@
 # MeteoSocial — stato pubblico del progetto
 
-## 21 settembre 2026 — città leggibili, carta al centro
+## 21 settembre 2026 — nuovo design Atmosfera
 
-La mappa #mappa-eventi mostra nomi selezionabili delle città a ogni zoom e in tutti e cinque i livelli. Le etichette evitano collisioni fra loro e con i comandi; avvicinando la carta compaiono altre località. Catalogo geografico indipendente dalla disponibilità del meteo.
+La mappa #mappa-eventi è stata ridisegnata seguendo la direzione richiesta: un atlante scuro ispirato all'organizzazione di ARGOS, con un'identità meteo originale. Coste Natural Earth 50m, confini nazionali e nomi dei paesi; città selezionabili, anelli termici colorati, strumenti SVG e scheda locale con icone volumetriche leggere. Radar, cinque livelli, ricerca e Lente restano collegati alla località selezionata.
 
-Il pulsante Città attiva/nasconde i nomi. Riepilogo laterale richiudibile, ritorno alla località scelta, scala in chilometri e comando Centra e ingrandisci nei dettagli. I dati precedenti hanno indicatore e data; una lettura locale vecchia viene aggiornata quando si apre il luogo, se la fonte risponde.
+Corretto il caso in cui una risposta HTTP valida conteneva un vecchio meteo mondiale: ora viene provata la fonte diretta. Se anche questa fallisce, la copia precedente resta esplicitamente segnalata. La geometria viene caricata separatamente quando si apre la mappa. Nessun nuovo fornitore a pagamento o permesso IA.
 
-Radar RainViewer recente, vento, Lente contestuale e relativi limiti restano quelli della versione 66. Grandine: segnalazioni community non certificate. Fulmini: temporali da modello. Nessuna promessa di arrivo della grandine o certificazione di zona sicura.
+Verifiche: 51 suite attuali passate; 6 suite legacy classificate separatamente, non considerate superate. Browser desktop 1280×720 e telefono 390×844: nomi, temperatura, radar, dettagli città. Nessun errore console nelle prove. Non effettuati test su dispositivi fisici.
 
-Verifiche: 50 suite attuali superate; 6 suite di moduli ritirati classificate separatamente dal runner. Browser mobile 390×844 e desktop: nomi, temperatura, grandine, vista mondiale, interruttore nomi, apertura della località e zoom alle strade. Meteo mondiale aggiornato dalla fonte durante la verifica; indisponibilità e dati in cache restano dichiarati.
+Pubblicazione di questo aggiornamento in preparazione. Base pubblica precedente: Sites 67 e GitHub PR #8. L'esito effettivo viene registrato dopo il rilascio.
 
-Pubblicazione confermata: Sites versione 67, 21 settembre 2026, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. GitHub PR #8 integrata in main; Check MeteoSocial e anteprima Netlify superati. Le note successive non modificano il runtime.
+Limiti: grandine da community non certificata; fulmini indica temporali da modello, non singole scariche. Radar RainViewer osservato, non previsione. Lente non legge i pixel radar; nessun GPS, autore o media trasmesso a OpenAI.
 
-Per proseguire: RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. dist contiene sorgenti, non cancellarla. Solo dist/app e dist/server sono output non versionati. Lo storico resta in Git.
+Per continuare: RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. dist contiene sorgenti: non cancellarla. Solo dist/app e dist/server sono output rigenerabili.
