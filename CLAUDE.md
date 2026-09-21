@@ -6,7 +6,7 @@ Leggi prima AGENTS.md, PROJECT_STATUS.md, RIPRENDI-QUI.md e PROJECT_VISION.md. I
 
 Ultima pubblicazione verificata su Sites: **versione 64**, fasi 24.1 e 24.2 completate. Il blocco 24.6 non è stato avviato: implementarlo solo se assegnato esplicitamente. Non avviare tutte le fasi in autonomia.
 
-**Dal 18 al 21 settembre 2026 il lavoro è andato oltre le fasi numerate**, su richiesta diretta del proprietario: `main` è a `427e5a3` e contiene la **mappa degli eventi atmosferici** (`#mappa-eventi`, aperta dalla voce Mappa), con meteo ed eventi mondiali in tempo reale, avviso grandine e Lente integrata come barra in cui si scrive. Leggi `MAPPA-EVENTI-RELEASE.md` e la sezione del 21 settembre in `RIPRENDI-QUI.md` prima di toccare quella parte. Il sito su Sites resta alla 64: GitHub e Netlify sono avanti, la pubblicazione è un passo separato.
+**Dal 18 al 21 settembre 2026 il lavoro è andato oltre le fasi numerate**, su richiesta diretta del proprietario: `main` contiene la **mappa degli eventi atmosferici** (`#mappa-eventi`, aperta dalla voce Mappa), con meteo ed eventi mondiali in tempo reale, avviso grandine e Lente integrata come barra in cui si scrive. Leggi `MAPPA-EVENTI-RELEASE.md` e la sezione del 21 settembre in `RIPRENDI-QUI.md` prima di toccare quella parte. Il sito su Sites resta alla 64: GitHub e Netlify sono avanti, la pubblicazione è un passo separato.
 
 Ci sono ora due mappe e convivono: quella MapLibre della versione 64 su `#mappa-classica`, e quella Leaflet degli eventi su `#mappa-eventi`. Nessuna delle due va rimossa senza che il proprietario lo chieda. Il globo 3D e i moduli NASA restano ritirati dal bundle.
 
