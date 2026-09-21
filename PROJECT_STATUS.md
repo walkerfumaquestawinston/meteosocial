@@ -10,6 +10,6 @@ Radar RainViewer recente, vento, Lente contestuale e relativi limiti restano que
 
 Verifiche: 50 suite attuali superate; 6 suite di moduli ritirati classificate separatamente dal runner. Browser mobile 390×844 e desktop: nomi, temperatura, grandine, vista mondiale, interruttore nomi, apertura della località e zoom alle strade. Meteo mondiale aggiornato dalla fonte durante la verifica; indisponibilità e dati in cache restano dichiarati.
 
-Stato pubblicazione: aggiornamento città pronto; ultima pubblicazione confermata precedente, Sites versione 66. Aggiornare questa riga dopo la conferma.
+Pubblicazione confermata: Sites versione 67, 21 settembre 2026, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. GitHub PR #8 integrata in main; Check MeteoSocial e anteprima Netlify superati. Le note successive non modificano il runtime.
 
 Per proseguire: RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. dist contiene sorgenti, non cancellarla. Solo dist/app e dist/server sono output non versionati. Lo storico resta in Git.
