@@ -77,7 +77,7 @@ export async function startLocalPreview({root,port=4589,dataDir,loadAi=true}) {
       const response=await(await loadWorker()).fetch(new Request(url,{method,headers,body:['GET','HEAD'].includes(method)?undefined:Buffer.concat(chunks)}),local.env);
       const outgoing=new Headers(response.headers);outgoing.delete('content-length');outgoing.set('Cache-Control','no-store');
       let body=Buffer.from(await response.arrayBuffer());
-      if(outgoing.get('content-type')?.includes('text/html'))body=Buffer.from(body.toString('utf8').replace('<body>','<body>'+localBanner));
+      if(outgoing.get('content-type')?.includes('text/html'))body=Buffer.from(body.toString('utf8').replace(/<body([^>]*)>/,(_,attributes)=>'<body'+attributes+'>'+localBanner));
       res.writeHead(response.status,Object.fromEntries(outgoing));res.end(method==='HEAD'?undefined:body);
     }catch(e){plain(500,'Errore nell’anteprima locale. Controlla i file del progetto.');console.error('Local preview error:',e.name)}
   });
