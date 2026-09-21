@@ -2,13 +2,15 @@
 
 ## 21 settembre 2026 — Osservatorio locale, cinque fenomeni
 
-Aggiornamento pronto per la pubblicazione sullo stesso sito. Cinque livelli con strumenti dedicati: temperatura/percepita, pioggia oraria/probabilità, grandine community entro 25/50/100/150 km, vento/raffiche, temporali da modello e osservazioni di fulmini. Le ore sono mostrate nel fuso della località. Ogni livello permette di pubblicare un'osservazione pubblica approssimata e di ritrovarla nella community.
+Aggiornamento pubblicato: Sites versione 69, 21 settembre 2026, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. Sorgente runtime Sites 0cceb6e74896e609783d9ca08dfad468e68a46f8. GitHub PR #10 integrata in main (e723ca7fd59856f01b54348478edbdb33431204c), Check MeteoSocial e Netlify superati. Le note successive non modificano il runtime.
+
+Cinque livelli con strumenti dedicati: temperatura/percepita, pioggia oraria/probabilità, grandine community entro 25/50/100/150 km, vento/raffiche, temporali da modello e osservazioni di fulmini. Le ore sono mostrate nel fuso della località. Ogni livello permette di pubblicare un'osservazione pubblica approssimata e di ritrovarla nella community.
 
 Punti coperti integrati nella mappa: ricerca entro 5 km dalla zona scelta, categorie Auto/A piedi, fonti OSM e community, distanze geografiche e indicazioni Google Maps. Copertura, apertura, accesso e disponibilità non sono garantiti. Nella prova reale il servizio Overpass non ha risposto: verificati messaggio di errore e alternativa Google Maps; normalizzazione e risultati verificati con fixture automatiche. Nessun luogo fittizio nel sito.
 
 Lente usa richieste specifiche per ciascun fenomeno e il contesto del raggio grandine. Nessun ampliamento dei permessi: nessun testo di report, GPS, autore o media inviato automaticamente a OpenAI. Nessun nuovo modello o servizio acquistato.
 
-Verifiche: 52 suite passate e 6 legacy classificate separatamente, non superate. Cinque livelli in browser, andamento orario con dati reali, pubblicazione e bozza con profilo/database di prova, layout desktop 1280×720 e mobile 390×844, nessun errore console rilevato. Nuovi test su autorizzazioni, consenso, blocchi, scadenze, antimeridiano, raggio e fusi orari. Il test hail-community mantiene i controlli backend e allinea il controllo asset al manifesto dei moduli ritirati. Stato finale pubblicazione e controlli da annotare dopo il rilascio.
+Verifiche: 52 suite passate e 6 legacy classificate separatamente, non superate. Cinque livelli in browser, andamento orario con dati reali, pubblicazione e bozza con profilo/database di prova, layout desktop 1280×720 e mobile 390×844, nessun errore console rilevato. Nuovi test su autorizzazioni, consenso, blocchi, scadenze, antimeridiano, raggio e fusi orari. Il test hail-community mantiene i controlli backend e allinea il controllo asset al manifesto dei moduli ritirati. Nessuna prova su telefoni fisici.
 
 File e passaggio di consegne: docs/CLAUDE_HANDOFF.md. Nessuna migrazione del database richiesta.
 
