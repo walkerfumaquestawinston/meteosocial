@@ -137,7 +137,7 @@ const MAPPA_METEO_QUANTI = 500;
 const MAPPA_METEO_BLOCCO = 100;
 
 async function mappaMeteoDati(env) {
-  return globeSnapshot(env, 'mappa-comuni-v1', async () => {
+  return globeSnapshot(env, 'mappa-comuni-v2', async () => {
     const scelti = MAPPA_COMUNI.slice(0, MAPPA_METEO_QUANTI);
     const blocchi = [];
     for (let i = 0; i < scelti.length; i += MAPPA_METEO_BLOCCO) blocchi.push(scelti.slice(i, i + MAPPA_METEO_BLOCCO));
@@ -152,6 +152,7 @@ async function mappaMeteoDati(env) {
       try { dati = await atmoFetch('https://api.open-meteo.com/v1/forecast?' + p, 6000000); }
       catch { fail(503, 'Il meteo dei comuni non risponde. Resta disponibile l’ultimo dato già scaricato.'); }
       const righe = Array.isArray(dati) ? dati : [dati];
+      if (righe.length !== blocco.length) fail(503, 'Campione meteo incompleto: località non abbinate.');
       return righe.map((r, i) => {
         const c = r?.current;
         // Senza temperatura leggibile non si scrive niente: meglio un comune
@@ -166,12 +167,14 @@ async function mappaMeteoDati(env) {
           // Direzione da cui viene il vento: serve all'avviso grandine per
           // capire se la nube sta venendo verso chi guarda.
           Number.isFinite(c.wind_direction_10m) ? Math.round(c.wind_direction_10m) : null,
+          Number.isFinite(c.interval) && c.interval > 0 ? c.interval : null,
+          typeof c.time === 'string' ? c.time : null,
         ];
       }).filter(Boolean);
     }));
     const dati = gruppi.flat();
     return {
-      campi: ['istat', 't', 'mm', 'codice', 'vento', 'direzione'],
+      campi: ['istat', 't', 'mm', 'codice', 'vento', 'direzione', 'intervalloSecondi', 'oraUTC'],
       dati,
       chiesti: scelti.length,
       updated: Date.now(),
@@ -195,13 +198,15 @@ async function mappaMeteoDati(env) {
 const AVVISO_FINESTRA_MS = 7200000;
 
 function mappaVentoVicino(meteo, lat, lon) {
+  if (!Number.isFinite(meteo.updated) || Date.now() - meteo.updated > 1800000 || meteo.stale) return null;
   // Il vento del comune piu' vicino fra quelli che ce l'hanno. Approssimazione
   // dichiarata: non e' il vento misurato sul punto esatto.
   let migliore = null, minima = Infinity;
   for (const r of meteo.dati || []) {
     const c = MAPPA_PER_ISTAT.get(r[0]);
     if (!c || !Number.isFinite(r[4]) || !Number.isFinite(r[5])) continue;
-    const d = (c[MAPPA_LAT] - lat) ** 2 + (c[MAPPA_LNG] - lon) ** 2;
+    const d = Math.hypot((c[MAPPA_LAT] - lat) * 111.2, (c[MAPPA_LNG] - lon) * 111.2 * Math.cos(lat * Math.PI / 180));
+    if (d > 25) continue;
     if (d < minima) { minima = d; migliore = { velocitaKmh: r[4], direzioneGradi: r[5], comune: c[MAPPA_NOME] }; }
   }
   return migliore;
@@ -209,11 +214,12 @@ function mappaVentoVicino(meteo, lat, lon) {
 
 async function mappaAvvisoApi(req, env, url) {
   if (req.method !== 'GET') return mappaRisposta({ error: 'Metodo non consentito.' }, 405, 'no-store');
-  const lat = Number(url.searchParams.get('lat')), lon = Number(url.searchParams.get('lon'));
+  const coordinate = key => { const v=url.searchParams.get(key);return v===null||!v.trim()?NaN:Number(v); };
+  const lat = coordinate('lat'), lon = coordinate('lon');
   if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180)
     return mappaRisposta({ error: 'Servono latitudine e longitudine valide.' }, 400, 'no-store');
-  const raggioGrezzo = Number(url.searchParams.get('raggio'));
-  const raggioKm = Number.isFinite(raggioGrezzo) ? Math.max(1, Math.min(50, raggioGrezzo)) : undefined;
+  const raggioGrezzo = coordinate('raggio');
+  const raggioKm = Number.isFinite(raggioGrezzo) ? Math.max(1, Math.min(50, raggioGrezzo)) : 15;
   if (!env?.DB) return mappaRisposta({ avviso: null, motivo: 'Archivio non disponibile.' }, 503, 'no-store');
 
   const adesso = Date.now();
@@ -249,7 +255,7 @@ async function mappaAvvisoApi(req, env, url) {
     motivo: avviso ? null
       : !vento ? 'Il vento non e disponibile adesso, quindi non stimiamo nulla.'
         : !segnalazioni.length ? 'Nessuna segnalazione di grandine nelle ultime due ore.'
-          : 'Nessuna grandine sta venendo verso di te con questi dati.',
+          : 'Questi dati non consentono di stimare un arrivo. Non indicano assenza di rischio.',
     segnalazioniConsiderate: segnalazioni.length,
     vento: vento ? { velocitaKmh: vento.velocitaKmh, direzioneGradi: vento.direzioneGradi, daComune: vento.comune } : null,
     regole: AVVISO_GRANDINE_REGOLE,

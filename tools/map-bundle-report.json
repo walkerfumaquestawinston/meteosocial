@@ -38,7 +38,9 @@
     "dist/studio-canvas.js",
     "dist/creator-studio.js",
     "dist/editorial-world.js",
+    "dist/map-weather-core.js",
     "dist/citta-mondo.js",
+    "dist/mappa-eventi-controller.js",
     "dist/mappa-eventi.js",
     "dist/nearby-tools.js",
     "dist/nearby.js",
@@ -55,11 +57,11 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 398608,
-    "dist/app/sky-postcard-5SOHYOIV.js": 5122,
-    "dist/app/chunk-THW4MYDM.js": 13559,
-    "dist/app/local-map-weather-4KESHFXW.js": 12069,
-    "dist/app/leaflet-OXYWG5OK.js": 149405,
-    "dist/app/citta-mondo-QGRPR6VY.js": 18548
+    "dist/app/main.js": 402070,
+    "dist/app/sky-postcard-CCVWZVDI.js": 5122,
+    "dist/app/chunk-T77WGJBQ.js": 13559,
+    "dist/app/local-map-weather-Q3HDO4XR.js": 12069,
+    "dist/app/leaflet-PMPOHTNZ.js": 149405,
+    "dist/app/citta-mondo-WY7Q24MU.js": 18548
   }
 }

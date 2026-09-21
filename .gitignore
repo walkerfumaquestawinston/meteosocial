@@ -12,3 +12,7 @@ dev.mjs
 *.zip
 netlify-dist/
 .netlify/
+
+# Generated runtime artifacts; rebuild from the complete source tree.
+dist/app/
+dist/server/
