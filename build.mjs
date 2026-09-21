@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {workspaceBundle} from './tools/workspace-bundle.mjs';
 import {build,transform} from 'esbuild';
 import {execFileSync} from 'node:child_process';
 import {RETIRED as retired,isRetired} from './tools/retired-modules.mjs';
@@ -20,9 +21,11 @@ let files=["local-map.js","local-map-weather.js","sky-postcard.js","local-map.cs
 // Legacy sources remain in Git, never in the delivered module graph or shell cache.
 // L'elenco vive in tools/retired-modules.mjs: lo condividono build e test.
 files=files.filter(f=>!isRetired(f));
-files.push('mappa-eventi.js','mappa-eventi.css','profession.js','daily-question.js','forecast-receipt.js','weather-page.js','weather-labels.js','app-updates.js','map-outline.js','map-radar-check.js');
+files.push('map-weather-core.js','mappa-eventi-controller.js','mappa-eventi.js','mappa-eventi.css','profession.js','daily-question.js','forecast-receipt.js','weather-page.js','weather-labels.js','app-updates.js','map-outline.js','map-radar-check.js');
 fs.rmSync('dist/app',{recursive:true,force:true});
-const bundle=await build({entryPoints:['dist/main.js'],outdir:'dist/app',bundle:true,splitting:true,format:'esm',minify:true,target:'es2022',metafile:true,entryNames:'main',chunkNames:'[name]-[hash]'});
+const bundle=await build({absWorkingDir:process.cwd(),entryPoints:['dist/main.js'],plugins:[workspaceBundle(process.cwd())],tsconfigRaw:{},outdir:'dist/app',bundle:true,splitting:true,format:'esm',minify:true,target:'es2022',metafile:true,entryNames:'main',chunkNames:'[name]-[hash]'});
+// Keep dependency audit paths consistent across operating systems.
+bundle.metafile.inputs=Object.fromEntries(Object.entries(bundle.metafile.inputs).map(([k,v])=>[k.replace(/^workspace:/,''),v]));
 for(const input of Object.keys(bundle.metafile.inputs))if(retired.test(input.replace(/^dist\//,'')))throw Error('Retired module in bundle: '+input);
 const styles=['design.css','social.css','global.css','experience.css','sensory.css','refinements.css','network.css','assets/leaflet.css','atlas.css','pulse.css','editorial.css','fitcheck.css','lente.css','atmosphere.css','living-world.css','design-system.css','local-map.css','mappa-eventi.css'];
 // Preserve the former HTML cascade: app styles first, MapLibre styles last.
