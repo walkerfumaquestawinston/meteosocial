@@ -1,5 +1,12 @@
 ## Direzione attuale: mappa locale — 16 settembre 2026
 
+## 22 settembre 2026 — Segnale: nuova direzione visiva, non pubblicata
+
+Su richiesta dell'utente, nuova identità avorio/inchiostro/arancio per Oggi e Meteo, titoli editoriali e barra inferiore a cinque voci con Mappa centrale. Profilo resta accessibile in alto. Ramo `codex/design-segnale-20260922`, derivato dal lavoro grandine della PR #15. Questa scelta aggiorna la precedente preferenza per il tema scuro uniforme.
+
+Dettagli e limiti in `docs/DESIGN-SEGNALE.md`. Anteprima dei moduli sorgente con dati di esempio verificata a desktop, 390 e 320 px. Compilazione completa ancora bloccata da `spawn EPERM` di esbuild su Windows; nessuna pubblicazione. Sites verificato alla versione 73. Completare build, CI e verifica integrata prima del rilascio.
+
+
 La richiesta più recente riguarda MapLibre locale: base rapida, un livello meteo per volta, temperatura continua, vento leggibile, radar onesto, storie essenziali e cartolina 9:16. Il globo e NASA non fanno più parte della navigazione. Il volo introduttivo è soltanto zoom 4→11 sulla mappa, 1,5 secondi, una volta per sessione. Preservare continuità online per lavorare dallo stesso account su un altro PC; non promettere trasferimento delle preferenze browser.
 
 ## Nuova direzione: mappa locale e cartolina del cielo
