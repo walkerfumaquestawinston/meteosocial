@@ -60,3 +60,39 @@ html.mappa-eventi-view .mappa .field-actions .field-ai{background:#221f3c!import
 }
 @media(max-height:620px) and (max-width:920px){.mappa-field{max-height:calc(100% - 285px)}.mappa-pannello{bottom:88px}.mappa-ai-context,.mappa-attribuzioni,.mappa-legenda{display:none}.mappa-radar-heading{display:none}.mappa-radar-timeline{padding:4px 8px}.mappa-strumenti>button:nth-child(n+3){display:none}}
 @media(prefers-reduced-transparency:reduce){.mappa-field{backdrop-filter:none;background:#091722}}
+
+/* A scrollable reading area and a separate action shelf: no content hidden behind buttons. */
+.mappa-field{overflow:hidden;display:flex;flex-direction:column}
+.field-content{display:flex;flex-direction:column;min-height:0;flex:1;padding:0!important}
+.field-scroll{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#41616d transparent;padding:16px;min-height:0;flex:1}
+.field-content .field-actions{position:static;flex-shrink:0;margin:0;padding:11px 12px;background:#0a1923;border-top:1px solid #c3e4ef22;box-shadow:0 -8px 24px #0002}
+.field-hour-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0 14px}
+.mappa .field-hour-grid button{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;min-width:0;min-height:73px;padding:10px 8px 14px;overflow:hidden;background:#d9eff506!important;border:1px solid #c5e4f024!important;text-align:left}
+.field-hour-grid time{font:12px ui-monospace,monospace;color:#b4cbd7}.field-hour-grid b{font-size:15px;font-weight:600;line-height:1.2;color:#fff}
+.mappa[data-mode=fulmini] .field-hour-grid b{font-size:12px}
+.field-hour-grid i{position:absolute;bottom:0;left:0;height:3px;width:var(--bar);background:var(--accent);border-radius:2px}
+.mappa .field-hour-grid button:hover,.mappa .field-hour-grid button:focus-visible{background:color-mix(in srgb,var(--accent) 12%,#091822)!important;border-color:var(--accent)!important}
+.field-hours-heading{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px;color:#bdd4df;font:10px ui-monospace,monospace;letter-spacing:.5px}.field-hours-heading small{font:11px Arial;letter-spacing:0;color:var(--accent)}
+.field-window{padding:12px;border:1px solid #8fc9ff40;border-radius:12px;background:linear-gradient(140deg,#7bc5ff10,#a4dbfa03)}
+.field-window>span{display:flex;align-items:center;gap:7px;font:10px ui-monospace,monospace;color:#a8d9ff}.field-window svg{width:18px;height:18px}.field-window strong{display:block;margin:9px 0;font-size:22px;letter-spacing:-.5px;font-weight:500;color:white}
+.mappa .field-window p{font-size:12px!important;line-height:1.5!important;margin:0;color:#c1d6e3}
+.field-hour-place{font-size:16px;color:var(--accent);line-height:1.4;margin-bottom:15px;overflow-wrap:anywhere}
+.field-hour-nav{display:flex;gap:5px;overflow:auto;padding:3px 3px 8px;scrollbar-width:thin}
+.mappa .field-hour-nav button{flex-shrink:0;min-height:44px;padding:8px;font:12px ui-monospace,monospace}
+.mappa .field-hour-nav button[aria-pressed=true]{color:#05151e!important;background:var(--accent)!important}
+.field-hour-hero{display:flex;align-items:center;justify-content:space-between;margin:18px 0 22px}.field-hour-hero>div{display:grid;gap:8px}.field-hour-hero strong{font-size:40px;line-height:1;letter-spacing:-1.5px;font-weight:500}.field-hour-hero span,.field-hour-hero small{font-size:12px;color:#bdd1df}
+.field-hour-hero .mappa-weather-art{flex-shrink:0;transform:scale(.8);transform-origin:right center}
+.field-hour-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field-hour-metrics>div{padding:12px 9px;border:1px solid #b3d9e525;border-radius:10px;background:#d1eff705;display:grid;gap:9px}.field-hour-metrics span{font-size:12px;color:#b9cfdd}.field-hour-metrics strong{font-size:23px;font-weight:500;color:#fff;letter-spacing:-.5px;white-space:nowrap}.field-hour-metrics small{font-size:12px;letter-spacing:0;color:#bdd6e1}
+.mappa .field-hour-condition{font-size:13px;line-height:1.6;color:#bdd3e2}.mappa #field-hour-ai{display:flex;align-items:center;gap:9px;color:#e0d3ff!important;background:#26223e!important;border:1px solid #b9a2ef55!important}
+/* The city is the anchor; its value no longer squeezes the name into an ellipsis. */
+.mappa .mappa-place-label{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;border-radius:10px;padding:4px 9px}
+.mappa .mappa-place-name,.mappa .mappa-place-label.is-selected .mappa-place-name{font:600 13px/17px Arial,sans-serif;white-space:normal;overflow-wrap:anywhere;max-height:34px;text-overflow:clip}
+.mappa .mappa-place-value,.mappa .mappa-place-label:not(.mode-temperature) .mappa-place-value{order:1;min-width:0;padding:0;line-height:17px;background:none;border:0;box-shadow:none;text-align:left;text-shadow:0 1px 5px #000}
+.mappa .mappa-place-label.is-old .mappa-place-value{opacity:.85}
+@media(min-width:921px){.mappa .mappa-reading{display:none!important}.mappa .mappa-field{top:170px!important}.field-content h2{font-size:22px}.field-content .field-location{margin-bottom:20px}}
+@media(max-width:920px){.field-content{display:none}.mappa-field.is-open{height:calc(100% - 350px);overflow:hidden}.mappa-field.is-open .field-content{display:flex;padding:0!important}.field-mobile-handle{flex-shrink:0}.field-scroll{padding:14px 16px}.field-hour-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.field-hour-grid b{font-size:16px}.mappa .field-hour-grid button{min-height:72px}.field-content .field-location{margin-bottom:14px}}
+@media(max-height:620px) and (max-width:920px){.mappa-field.is-open{height:calc(100% - 285px)}}
+.field-title-row{display:flex;align-items:center;gap:10px;margin-top:8px}.field-title-row h2{font-size:19px;flex:1;min-width:0;line-height:1.2;overflow-wrap:anywhere;letter-spacing:-.5px;margin:5px 0 8px}.field-now{font-size:32px;letter-spacing:-1px;line-height:1.2;font-weight:500;white-space:nowrap;color:#fff}.field-now>small{font-size:13px;letter-spacing:0}.field-now>span{display:block;font-size:10px;letter-spacing:0;text-align:right;color:#b6ced9}.field-title-row+.field-location{font-size:12px;color:#afc6d3;line-height:1.5;margin-bottom:16px}
+html.mappa-eventi-view .mappa .field-hour-nav button[aria-pressed=true]{background:var(--accent)!important;color:#05151e!important;border-color:var(--accent)!important;font-weight:700}
+.field-hour-hero{margin:12px 0 16px}.field-hour-hero .mappa-weather-art{transform:scale(.75)}
+.mappa .mappa-place-label{background:linear-gradient(90deg,#091821ee,#091821b8 92%,#09182188)}

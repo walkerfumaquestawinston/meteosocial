@@ -1,5 +1,15 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## Ora per ora — revisione successiva del 21 settembre
+
+Leggere il primo blocco PROJECT_STATUS.md per pubblicazione e verifiche. La nuova interazione è nelle tessere dell'osservatorio, non una simulazione del futuro sull'intera mappa.
+
+- map-field-core.js: rainWindow verifica due intervalli futuri completi e contigui. Soglie 0,2 mm/30%, esclude valori mancanti e WMO 95/96/99. hourQuestion include solo valori meteo e data/fuso, non coordinate o contenuti community. Riferimento: https://open-meteo.com/en/docs#hourly-parameter-definition (precipitazioni, probabilità e raffiche: ora precedente).
+- map-field-desk.js: dettagli per timestamp, dati della stessa copia mostrata, istruzioni IA esplicite, temperatura attuale nel pannello, mantenimento scroll e azioni separate. Una tessera scaduta non seleziona accidentalmente l'ora successiva.
+- map-city-labels.js / mappa-eventi-controller.js: dimensioni di collisione per etichette multilínea, priorità visiva sopra i vettori vento, centro iniziale, richieste di ricerca legate al pannello, ripristino focus sul controllo ricreato o sulla maniglia mobile.
+- map-field.css: fascia azioni fuori dall'area che scorre, tessere accessibili, dettagli con icone volumetriche CSS. Nessun nuovo effetto GPU continuo.
+- test-map-field.mjs e test-map-city-labels.mjs estesi; cache shell v62. Nessun cambiamento al server, ai dati persistiti o ai segreti.
+
 ## Osservatorio locale — aggiornamento successivo del 21 settembre
 
 - `dist/map-field-desk.js`: pannello per fenomeno, osservazioni, raggi 25/50/100/150 km, anelli Leaflet, ricerca ripari e link di navigazione. Cache limitata, richieste simultanee deduplicate, token per evitare risposte applicate alla località/pannello sbagliati. Distruzione di layer e timer al cambio pagina.

@@ -1,5 +1,18 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 21 settembre 2026 — Ora per ora, revisione della mappa
+
+Implementazione pronta per la pubblicazione successiva alla versione 69; aggiornare questo paragrafo con l'esito effettivo prima del passaggio finale.
+
+- L'osservatorio riunisce città e temperatura attuale in una sola scheda. Sei tessere orarie aprono dettagli di temperatura, percepita, vento medio, raffica, precipitazioni e probabilità. Simboli meteo volumetrici leggeri e IA su richiesta riferita all'ora scelta.
+- Pioggia: prima coppia di ore future complete con <=0,2 mm e <=30% per ora, senza codici temporale nel modello. Non è un indice di sicurezza o una garanzia di asciutto; dati null, buchi temporali e copie offline escludono la proposta. Gli intervalli rispettano il significato Open-Meteo di quantità/probabilità/raffiche nell'ora precedente.
+- Città con etichette su due righe, spazio riservato alla lettura e priorità sopra le frecce del vento. Azioni in una fascia separata, senza coprire il contenuto che scorre. Pannello mobile richiudibile.
+- Correzioni: centro iniziale sulla città scelta, ricerche asincrone chiuse che non riaprono il pannello, conteggi mancanti distinti da zero, selezione oraria per timestamp anziché indice, recupero del focus alla chiusura, aggiornamento del nome a coordinate invariate.
+
+Validazione: build e 15 suite mirate superate, compresi tutti i test del workflow Check MeteoSocial. Aggiunti casi su finestre future, intervalli mancanti/duplicati, dati assenti, temporali, fuso Tokyo, stato giorno/notte e minimizzazione del prompt. Browser 1280×720 e 390×844: cinque livelli, selezione ora, raggio grandine, nuova finestra pioggia, prompt IA e conservazione dopo richiesta di accesso. Nessuna chiamata a pagamento al modello in anteprima; integrazione server esistente verificata con test-lente. Nessun errore console rilevato. Telefono fisico non testato.
+
+Nessuna dipendenza, migrazione o nuovo permesso IA. Il confronto orario locale non sposta l'orario delle osservazioni sulla mappa o del radar. I limiti delle fonti e dei punti coperti restano quelli della versione 69.
+
 ## 21 settembre 2026 — Osservatorio locale, cinque fenomeni
 
 Aggiornamento pubblicato: Sites versione 69, 21 settembre 2026, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. Sorgente runtime Sites 0cceb6e74896e609783d9ca08dfad468e68a46f8. GitHub PR #10 integrata in main (e723ca7fd59856f01b54348478edbdb33431204c), Check MeteoSocial e Netlify superati. Le note successive non modificano il runtime.
