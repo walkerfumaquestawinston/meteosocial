@@ -1,6 +1,6 @@
 # MeteoSocial — riprendi da qui
 
-La revisione corrente è **La piazza del cielo**: community con post condivisi con la mappa, conversazioni e Stesso cielo. Leggere il primo blocco di PROJECT_STATUS.md per lo stato effettivo della pubblicazione; la nota versione 70 sotto è storica.
+Versione 71 pubblicata e PR #12 integrata: **La piazza del cielo**. La revisione corrente comprende community con post condivisi con la mappa, conversazioni e Stesso cielo. Leggere il primo blocco di PROJECT_STATUS.md per lo stato effettivo della pubblicazione; la nota versione 70 sotto è storica.
 
 Versione 70 pubblicata e PR #11 integrata: **Ora per ora** nella mappa, con finestra di pioggia e schede IA contestuali. Il primo blocco PROJECT_STATUS.md riporta commit, pubblicazione e controlli. Le 15 suite pertinenti alla revisione passano; i dati sulla suite completa qui sotto si riferiscono al rilascio precedente.
 
