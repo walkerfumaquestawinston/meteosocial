@@ -1,4 +1,4 @@
-const NETWORK_KINDS=['Osservazione','Domanda','Pioggia','Vento','Grandine','Neve','Cielo sereno','Allagamento'];
+const NETWORK_KINDS=['Osservazione','Domanda','Pioggia','Vento','Grandine','Neve','Cielo sereno','Allagamento','Temperatura','Fulmini'];
 async function networkApi(req,env,url){
  const user=await identity(req),path=url.pathname,now=Date.now();
  if(path==='/api/network/feed'&&req.method==='GET'){

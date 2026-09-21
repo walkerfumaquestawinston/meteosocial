@@ -11,8 +11,9 @@ async function pulseNearby(env,url,user){
  try{const hit=await cache?.match(key);let payload;if(hit)payload=await hit.json();else{
   // Limit the whole application's upstream use; this is not a per-visitor allowance.
   const limit=await q(env,'INSERT INTO limits(key,count) VALUES(?,1) ON CONFLICT(key) DO UPDATE SET count=count+1 RETURNING count','nearby-osm:'+new Date().toISOString().slice(0,10)).first();if(limit.count>80)throw Error('Ricerca cartografica temporaneamente al limite. Restano i luoghi della community.');
-  const filter=category==='people'?'[amenity=library]':'[amenity=parking][covered=yes]';
-  const query=`[out:json][timeout:15];nwr${filter}(around:6000,${center.lat},${center.lon});out center 40;`;
+  const area=`(around:6000,${center.lat},${center.lon})`;
+  const filters=category==='people'?['[amenity~"^(library|community_centre|townhall)$"]']:['[amenity=parking][covered=yes]','[amenity=parking][parking~"^(underground|multi-storey|garage)$"]'];
+  const query=`[out:json][timeout:15];(${filters.map(filter=>'nwr'+filter+area+';').join('')});out center 100;`;
   const r=await fetch('https://overpass.private.coffee/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'MeteoSocial/1.1 (+https://scudo-meteo-community.walkerthehate.chatgpt.site)'},body:new URLSearchParams({data:query}),signal:AbortSignal.timeout(27000)});if(!r.ok)throw Error('Cartografia dei luoghi temporaneamente non disponibile.');
   const raw=await r.text();if(raw.length>300000)throw Error('Risposta cartografica troppo estesa.');const d=JSON.parse(raw);if(!Array.isArray(d.elements)||d.remark)throw Error('Ricerca cartografica incompleta. Riprova più tardi.');payload={places:pulseOSM(d.elements).slice(0,100),updated:d.osm3s?.timestamp_osm_base||Date.now()};if(cache)await cache.put(key,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public,max-age=21600','Content-Type':'application/json'}}));
  }osm=payload.places;osmAt=payload.updated}catch(e){sourceError=['TimeoutError','AbortError','TypeError','SyntaxError'].includes(e.name)?'La fonte cartografica non ha risposto in tempo. Puoi riprovare o usare Google Maps.':e.message||'Cartografia non disponibile.'}

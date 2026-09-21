@@ -1,5 +1,19 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## Osservatorio locale — aggiornamento successivo del 21 settembre
+
+- `dist/map-field-desk.js`: pannello per fenomeno, osservazioni, raggi 25/50/100/150 km, anelli Leaflet, ricerca ripari e link di navigazione. Cache limitata, richieste simultanee deduplicate, token per evitare risposte applicate alla località/pannello sbagliati. Distruzione di layer e timer al cambio pagina.
+- `dist/map-field-core.js`: configurazioni e domande IA per i cinque fenomeni, ore future nel fuso IANA, valori null distinti da zero, filtri temporali e distanza con antimeridiano.
+- `dist/map-field.css`: strumenti con colore/icona/testo distinti, scheda locale compatta, pannello richiudibile su mobile. Niente animazione GPU continua. Il globo non è stato sostituito.
+- `server/atlas.js`: GET `/api/atlas/field-reports` con layer, lat/lon e radius fino a 150. Recupera solo osservazioni recenti, non eliminate/non scadute, geolocalizzate volontariamente, rispettando i blocchi. Campione limitato e flag truncated; nessun autore o media restituito.
+- `server/worker.js`, `server/network.js`: aggiunti tipi Temperatura/Fulmini e geolocalizzazione volontaria per i cinque fenomeni; riusa posts e coordinate già arrotondate, senza nuova tabella. La pubblicazione rapida dura due ore.
+- `server/pulse.js`: la query OSM comprende parcheggi coperti, sotterranei, multipiano e garage; a piedi biblioteche, centri civici, municipi. Mantiene limite upstream di 80 ricerche/giorno, cache 6 ore e coordinate arrotondate prima della richiesta. Nessuno slot disponibile inventato.
+- `test-map-field.mjs`: flussi dei cinque report, sicurezza/origin, consenso, community, precisione, scadenze, blocchi, raggio e fusi. `test-hail-community.mjs`: corretto il controllo di consegna asset rispetto al manifesto corrente, senza eliminare i 68 controlli dei contratti hail. CI include anche entrambi e test-pulse.
+
+Il raggio 150 km è una ricerca di osservazioni, non un radar grandine o ETA. I punti coperti sono entro 5 km: non interrogare Overpass su tutti i 150 km. La ricerca reale Overpass ha restituito timeout durante QA; lo stato di errore e il link alternativo sono stati provati. Non dichiarare disponibilità operativa continua.
+
+Le chiamate IA sono esplicite, con i limiti di consenso già presenti. La previsione locale usa `/api/forecast` per riusare copie e richieste condivise del backend. In caso di copia precedente viene indicato. Nessuna chiave in questo repository. Leggere PROJECT_STATUS.md per il rilascio finale.
+
 ## 21 settembre 2026
 
 Richiesta: ridisegnare sostanzialmente la mappa, avvicinandosi all'organizzazione di ARGOS senza copiarne asset o dati. Conservare la leggibilità e le funzioni meteo.

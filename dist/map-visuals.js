@@ -1,5 +1,6 @@
 // Original lightweight atlas iconography; no external fonts or image requests.
 const paths={
+  shelter:'<path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"/><path d="M9 8h6"/>',
   temperature:'<path d="M9 14.5V5a3 3 0 0 1 6 0v9.5a5 5 0 1 1-6 0Z"/><path d="M12 7v11m5-10h3m-3 4h2"/>',
   pioggia:'<path d="M6 15a5 5 0 1 1 2-9 6 6 0 0 1 11 3 3 3 0 0 1-1 6"/><path d="m7 17-1 3m6-3-1 3m6-3-1 3"/>',
   grandine:'<path d="M5 12a4 4 0 1 1 3-6 5 5 0 0 1 9 2 3 3 0 0 1 2 5"/><path d="m7 16 2 2-2 2-2-2Zm8-1 3 3-3 3-3-3Z"/>',

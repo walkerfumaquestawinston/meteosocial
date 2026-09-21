@@ -1,5 +1,6 @@
 // Public, finite city batch. Shared edge caching avoids a request per marker/visitor.
 async function atlasApi(req,env,url){
+ if(url.pathname==='/api/atlas/field-reports'&&req.method==='GET')return fieldReports(req,env,url);
  if(url.pathname==='/api/atlas/world'&&req.method==='GET')return worldWeather(env);
  if(url.pathname==='/api/atlas/events'&&req.method==='GET')return globeEvents(url,env);
  if(url.pathname==='/api/atlas/hail-map'&&req.method==='GET'){
@@ -27,6 +28,19 @@ async function atlasApi(req,env,url){
  }
  if(url.pathname!=='/api/atlas/cities'||req.method!=='GET')fail(404,'Funzione non disponibile.');
  return atlasCities(url);
+}
+// Bounded community observations, separated from model values and radar pixels.
+async function fieldReports(req,env,url){
+ const latText=url.searchParams.get('lat'),lonText=url.searchParams.get('lon'),lat=Number(latText),lon=Number(lonText),radius=Number(url.searchParams.get('radius')||150),layer=url.searchParams.get('layer');
+ const kinds={temperature:'Temperatura',pioggia:'Pioggia',grandine:'Grandine',vento:'Vento',fulmini:'Fulmini'};
+ if(!latText?.trim()||!lonText?.trim()||!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>85||Math.abs(lon)>180||![25,50,100,150].includes(radius)||!Object.hasOwn(kinds,layer))fail(400,'Scegli un livello, una zona valida e un raggio fino a 150 km.');
+ const user=await identity(req),now=Date.now(),center={lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100},span=(radius+2)/110.574,lonSpan=Math.min(180,(radius+2)/(111.32*Math.max(.01,Math.cos((Math.abs(center.lat)+span)*Math.PI/180))));
+ const args=[kinds[layer],now-7200000,now,now,(center.lat-span)*100,(center.lat+span)*100,center.lon*100,lonSpan*100,center.lon*100,(360-lonSpan)*100];
+ let where='p.kind=? AND p.deleted=0 AND p.created>? AND p.created<=? AND (p.expires IS NULL OR p.expires>?) AND p.map_lat BETWEEN ? AND ? AND (ABS(p.map_lon-?)<=? OR ABS(p.map_lon-?)>=?)';
+ if(user){where+=" AND NOT EXISTS(SELECT 1 FROM links b WHERE b.user=? AND b.target=p.author AND b.kind='block')";args.push(user)}
+ const rows=(await q(env,'SELECT p.id,p.city,substr(p.text,1,500) text,p.created,p.expires,p.map_lat,p.map_lon,COALESCE(h.observed,p.created) observed,h.ended FROM posts p LEFT JOIN hail_details h ON h.post=p.id WHERE '+where+' ORDER BY p.created DESC,p.id DESC LIMIT 501',...args).all()).results;
+ const posts=rows.slice(0,500).filter(p=>p.observed>now-7200000&&p.observed<=now&&pulseDistance(center,{lat:p.map_lat/100,lon:p.map_lon/100})<=radius+1).map(({map_lat,map_lon,...p})=>({...p,latitude:map_lat/100,longitude:map_lon/100}));
+ return json({posts,truncated:rows.length>500,updated:now,radiusKm:radius,windowMinutes:120,precision:'rounded_0.01_degrees'});
 }
 let atlasCitiesFlight=null,atlasCitiesRetryAt=0;
 async function atlasCities(url){
