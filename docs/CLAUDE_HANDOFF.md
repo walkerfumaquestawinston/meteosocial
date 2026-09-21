@@ -1,5 +1,16 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Passaggio a Claude: osservatorio grandine
+
+Revisione consegnata nel ramo GitHub `codex/grandine-claude-20260922`, da continuare prima dell'integrazione. Base GitHub verificata: `5be5026df25faabcca7cbd2479fb96916520c9fd`, albero identico alla base Sites locale `e74cf310242672f59677a37a3a31ad0a739339f8`.
+
+Leggere `docs/HAIL-OBSERVATORY.md`. Implementati filtri temporali 15/30/60/120 minuti, cessate escludibili, ordinamento distanza/recenza, selezione comune a marker/conteggio/elenco, freschezza e radar pioggia. Riutilizzo delle richieste nella medesima cella pubblica di 0,01 gradi.
+
+Verificati 18 casi in `test-hail-desk.mjs`, sintassi dei moduli e interazioni in un harness browser locale. La build completa non è riuscita: Windows restituisce `spawn EPERM` da esbuild. Nessuna pubblicazione; Sites pubblico resta alla versione 73.
+
+Prossimi passi per Claude: installare dal lockfile con Node 24/pnpm 11.19.0, eseguire build e CI (incluso test-hail-desk), verificare la mappa completa a 390 px e desktop, controllare aggiornamento dei pannelli già aperti e stati di errore, completare eventuali correzioni nello stesso ramo o in un ramo derivato. Non presentare i controlli dell'harness come verifica completa dell'app. Radar grandine dedicato, probabilità, traiettorie e notifiche a app chiusa non sono implementati da questa revisione.
+
+
 ## 21 settembre 2026 — Cielo, revisione del design
 
 Pubblicata su Sites versione 73 il 21 settembre 2026 alle 14:31 UTC: https://scudo-meteo-community.walkerthehate.chatgpt.site/. Runtime Sites 57be5b203b1cc088d4f28a36ba4c249bdec5bd83, albero c4909fc8be2bfce939bae8241dd25f9d4e64bad9. GitHub PR #14 integrata in main (d718ba54443c4e4f4b469e52eea73a58eabfbc87), Check MeteoSocial 35612426493 e anteprima Netlify superati. Nuova identità inchiostro/lime, community con feed in primo piano, Home e Lente con illustrazione originale, previsioni e navigazione coordinate. Build e 15 suite superate; browser desktop/390 px, commenti, navigazione e testo grande. Nessuna prova su telefoni fisici. Queste note successive non modificano il runtime. Vedere docs/CIELO-DESIGN.md per riferimenti, scelte e limiti.

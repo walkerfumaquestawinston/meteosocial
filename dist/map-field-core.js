@@ -16,6 +16,25 @@ export function fieldHours(data,now=Date.now()){
 export function withinField(reports,center,radius=150,now=Date.now()){
  return reports.filter(p=>Number.isFinite(p.latitude)&&Number.isFinite(p.longitude)&&Number.isFinite(p.observed??p.created)&&(p.observed??p.created)>now-7200000&&(p.observed??p.created)<=now&&(p.expires==null||p.expires>now)).map(p=>({...p,distance:distanceKm(center,p)})).filter(p=>Number.isFinite(p.distance)&&p.distance<=radius).sort((a,b)=>a.distance-b.distance);
 }
+
+// One selection drives hail pins, counts and the list; elapsed time is UTC.
+export function hailSelection(reports,center,{radius=150,minutes=120,includeEnded=true,sort='distance',now=Date.now()}={}){
+ if(!center||!Number.isFinite(center.latitude)||Math.abs(center.latitude)>85||!Number.isFinite(center.longitude)||Math.abs(center.longitude)>180||!Number.isFinite(radius)||radius<=0||radius>150||![15,30,60,120].includes(minutes))return [];
+ const seen=new Set();
+ const list=withinField(Array.isArray(reports)?reports:[],center,radius,now).filter(p=>{
+  if(Math.abs(p.latitude)>85||Math.abs(p.longitude)>180||(p.observed??p.created)<=now-minutes*60000||(!includeEnded&&p.ended))return false;
+  if(p.id!=null){if(seen.has(p.id))return false;seen.add(p.id);}return true;
+ });
+ return list.sort((a,b)=>sort==='recent'?(b.observed??b.created)-(a.observed??a.created)||a.distance-b.distance:a.distance-b.distance||(b.observed??b.created)-(a.observed??a.created));
+}
+
+export function hailEvidence(reports,{state='loading',updatedAt=0,now=Date.now()}={}){
+ const old=updatedAt>0&&now-updatedAt>=300000;
+ if(state==='loading')return {tone:'pending',title:'Aggiornamento in corso',detail:'Attendi le osservazioni della zona.'};
+ if(state!=='ok'||!updatedAt||old)return {tone:'unknown',title:updatedAt?'Osservazioni da aggiornare':'Osservazioni non disponibili',detail:'Non possiamo descrivere la situazione attuale. Riprova ad aggiornare.'};
+ const active=reports.filter(p=>!p.ended),latest=reports.reduce((n,p)=>Math.max(n,p.observed??p.created),0);
+ return {tone:active.length?'reported':'empty',title:active.length?active.length+(active.length===1?' osservazione non cessata':' osservazioni non cessate'):reports.length?'Solo osservazioni cessate':'Nessuna osservazione nei filtri',detail:'Segnalazioni della community, non verificate. Il silenzio non esclude grandine.',active:active.length,ended:reports.length-active.length,latest};
+}
 export function rangeBounds(p,km){
  const lat=km/110.574,lon=km/(111.32*Math.max(.01,Math.cos(p.latitude*Math.PI/180)));
  return [[Math.max(-85,p.latitude-lat),p.longitude-lon],[Math.min(85,p.latitude+lat),p.longitude+lon]];
