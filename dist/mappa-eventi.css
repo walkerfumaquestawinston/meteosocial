@@ -1,0 +1,453 @@
+/* Mappa eventi atmosferici — linguaggio da cruscotto dentro l'app morbida
+   (specifica parte 4). Stessa tavolozza del resto dell'app, grammatica diversa:
+   monospaziato per i dati, maiuscoletto per le etichette, angoli stretti,
+   bordi di un pixel, profondita' data dal backdrop-filter e non dalle ombre. */
+
+/* La mappa e' la pagina. L'impalcatura dell'app si ritira: niente riempimenti,
+   niente colonna laterale, niente scorrimento del documento. Stesso schema gia'
+   collaudato in local-map.css per la mappa della zona, cosi' le due viste si
+   comportano allo stesso modo invece di inventare ciascuna il suo. */
+html.mappa-eventi-view body{ overflow: hidden; }
+html.mappa-eventi-view body > header{
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 64px; min-height: 64px;
+  background: #0b1725 !important;
+  z-index: 92;
+  padding-top: env(safe-area-inset-top);
+}
+html.mappa-eventi-view .shell{ padding: 0 !important; display: block; }
+html.mappa-eventi-view #main{ padding: 0 !important; max-width: none; width: 100%; }
+html.mappa-eventi-view aside{ display: none; }
+
+.mappa{
+  --map-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, monospace;
+  --map-r: 4px;
+  --map-r-pill: 6px;
+  --map-hud: rgba(7,14,28,.82);
+  --map-bordo: rgba(255,255,255,.12);
+  /* Fra l'intestazione fissa e la barra di navigazione fissa: cosi' la mappa
+     prende tutto quello che resta, su qualunque schermo, senza calcoli a occhio. */
+  position: fixed;
+  inset: 64px 0 calc(76px + env(safe-area-inset-bottom));
+  overflow: hidden;
+  background: #091421;
+}
+
+/* Tutti i numeri in monospaziato con cifre di larghezza fissa: altrimenti il
+   conteggio che si aggiorna ogni secondo fa ballare la riga. */
+.mappa-mono,
+.mappa-riga{
+  font-family: var(--map-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0;
+}
+
+/* La mappa riempie tutto; ogni comando le galleggia sopra. */
+.mappa-tela{
+  position: absolute;
+  inset: 0;
+  /* Questo elemento diventa lui stesso il contenitore di Leaflet, che gli
+     mette un fondo grigio chiaro. Se le tessere non arrivano deve restare il
+     fondo scuro della vista, non un foglio bianco con sopra dei puntini.
+     Attenzione: `.mappa-tela .leaflet-container` non funzionerebbe, perche'
+     non c'e' niente dentro da colpire: la classe finisce su questo stesso nodo. */
+  background: #091421;
+}
+
+/* Le fasce sopra la mappa lasciano passare i clic dove non c'e' un comando:
+   senza questo, una striscia trasparente impedirebbe di trascinare la mappa. */
+.mappa-alto,
+.mappa-basso{
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 400;
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s2);
+  pointer-events: none;
+}
+.mappa-alto{ top: 0; }
+/* Una velatura sotto la fascia bassa: le attribuzioni sono licenze e devono
+   restare leggibili anche quando sotto passa una zona chiara della mappa. */
+.mappa-basso{
+  bottom: 0;
+  padding-top: var(--s5);
+  background: linear-gradient(to top, rgba(4,10,20,.92), rgba(4,10,20,0));
+}
+.mappa-alto > *,
+.mappa-basso > *{ pointer-events: auto; }
+
+.mappa-stato{
+  justify-self: start;
+  max-width: 100%;
+  background: var(--map-hud);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  padding: var(--s2) var(--s3);
+  display: grid;
+  gap: 2px;
+}
+
+/* Fonte che non risponde: barrata e in colore d'allerta. */
+.mappa-giu{ color: var(--allerta); }
+
+/* Cerca un luogo: stessa fonte di geocodifica che l'app usa gia' altrove. */
+.mappa-cerca{
+  display: flex;
+  gap: var(--s1);
+  background: var(--map-hud);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  padding: var(--s1);
+}
+.mappa-cerca input{
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 var(--s2);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--t-body);
+}
+.mappa-cerca input::placeholder{ color: var(--ink-3); }
+.mappa-cerca button{
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--map-r);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--t-title);
+}
+
+/* I contatori sono anche gli interruttori dei livelli: un comando solo per
+   "quanti ce ne sono" e "mostrameli", che non possono contraddirsi. Riga a
+   scorrimento orizzontale perche' cinque non stanno in larghezza su un telefono. */
+.mappa-contatori{
+  display: flex;
+  gap: var(--s2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mappa-contatori::-webkit-scrollbar{ display: none; }
+
+.mappa-pillola{
+  flex: 0 0 auto;
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  padding: var(--s1) var(--s2);
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r-pill);
+  background: var(--map-hud);
+  backdrop-filter: blur(20px);
+  color: var(--ink-3);
+  font-family: var(--map-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+.mappa-pillola-nome{ font-size: var(--t-label); }
+.mappa-pillola-conto{ font-size: var(--t-body); color: var(--ink); }
+.mappa-pillola[aria-pressed="true"]{
+  border-color: var(--dato);
+  background: var(--dato-soft);
+  color: var(--ink-2);
+}
+/* Livello spento: il numero si spegne con lui, altrimenti sembra che si stia
+   contando qualcosa che sulla mappa non c'e'. */
+.mappa-pillola[aria-pressed="false"] .mappa-pillola-conto{ color: var(--ink-3); }
+
+/* Strumenti in colonna sul bordo destro, come una barra di una mappa operativa. */
+.mappa-strumenti{
+  position: absolute;
+  right: var(--s2);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 400;
+  display: grid;
+  gap: var(--s1);
+  justify-items: end;
+}
+.mappa-strumenti > *{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: var(--map-hud);
+  backdrop-filter: blur(20px);
+  color: var(--ink-2);
+  font-family: var(--map-mono);
+  font-size: var(--t-body);
+  text-decoration: none;
+}
+.mappa-strumenti .mappa-raggio{ padding: 0; }
+/* Largo abbastanza da leggere "15 km": una distanza mezza nascosta non e' una
+   scelta consapevole, ed e' proprio la scelta che decide se sarai avvisato. */
+.mappa-strumenti select{
+  width: 64px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  text-align: center;
+}
+
+/* La scheda scorre sopra la mappa da sinistra: si continua a vedere il punto
+   di cui si sta leggendo, invece di coprirlo con una finestra. */
+.mappa-pannello{
+  position: absolute;
+  left: var(--s2);
+  top: var(--s2);
+  bottom: var(--s2);
+  z-index: 410;
+  width: min(340px, calc(100% - var(--s2) * 2));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--map-hud);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  padding: var(--s3);
+}
+.mappa-pannello[hidden]{ display: none; }
+.mappa-pannello-testa{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+.mappa-pannello-testa h2{ margin: 0; font-size: var(--t-title); }
+#mappa-pannello-chiudi{
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: transparent;
+  color: var(--ink-2);
+}
+
+/* La barra dell'IA: si scrive, non si sceglie da un menu di domande pronte. */
+.mappa-ia{
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  background: var(--map-hud);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--dato);
+  border-radius: var(--map-r-pill);
+  padding: var(--s1) var(--s2);
+}
+.mappa-ia-marchio{
+  flex: 0 0 auto;
+  color: var(--dato);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+}
+.mappa-ia input{
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--t-body);
+}
+.mappa-ia input::placeholder{ color: var(--ink-3); }
+.mappa-ia button{
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--map-r);
+  background: var(--dato-soft);
+  color: var(--ink);
+  font-size: var(--t-title);
+}
+.mappa-ia button:disabled{ opacity: .5; }
+
+/* ELENCO e la stessa mappa in forma leggibile: una mappa da sola non e
+   utilizzabile con uno screen reader. Sta fra gli strumenti sul bordo destro. */
+
+/* L'elenco esiste perche' una mappa da sola non e' utilizzabile con uno
+   screen reader: sono gli stessi elementi, in forma leggibile. */
+.mappa-lista{
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: var(--map-hud);
+  padding: var(--s3);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.mappa-lista ol{ margin: var(--s2) 0 0; padding-inline-start: var(--s6); display: grid; gap: var(--s1); }
+.mappa-lista li{ color: var(--ink-2); font-size: var(--t-small); }
+.mappa-lista .mappa-mono{ text-transform: none; letter-spacing: 0; }
+
+.mappa-vuoto{
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: var(--map-hud);
+  padding: var(--s3);
+  color: var(--ink-2);
+  font-size: var(--t-small);
+}
+.mappa-vuoto button{
+  margin-inline-start: var(--s2);
+  min-height: 44px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--dato);
+  border-radius: var(--map-r);
+  background: var(--dato-soft);
+  color: var(--ink);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+}
+
+/* Le attribuzioni sono licenze, non decorazione: piccole ma sempre visibili. */
+.mappa-attribuzioni{
+  font-size: var(--t-label);
+  color: var(--ink-3);
+  margin: 0;
+  text-align: center;
+  /* Licenze, non decorazione: restano visibili sopra la mappa, non nascoste
+     in fondo a una pagina che qui non scorre piu. */
+  text-shadow: 0 1px 2px #000;
+}
+
+/* Nomi dei comuni sopra i punti. Ombra di un pixel per restare leggibili su
+   qualsiasi fondo della mappa, chiaro o scuro che sia. */
+.mappa-etichetta{ pointer-events: none; }
+.mappa-etichetta span{
+  position: absolute;
+  left: 8px;
+  top: -8px;
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  color: var(--ink);
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+  white-space: nowrap;
+}
+
+/* Vicino al bordo destro l'etichetta si ribalta a sinistra del punto: fuori
+   dal riquadro verrebbe tagliata a meta' parola. */
+.mappa-etichetta-sinistra span{ left: auto; right: 8px; }
+/* Nomi lunghi al centro dello schermo: sotto il punto, centrati. */
+.mappa-etichetta-centro span{ left: 50%; top: 10px; transform: translateX(-50%); }
+
+/* Le schede restano nel carattere dell'app: la Mappa e' tecnica, non ostile.
+   Solo le etichette dei campi tengono il monospaziato. */
+.mappa-scheda dl{ display: grid; grid-template-columns: auto 1fr; gap: var(--s1) var(--s3); margin: var(--s3) 0; }
+.mappa-scheda dt{
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+  color: var(--ink-3);
+}
+.mappa-scheda dd{ margin: 0; color: var(--ink); }
+.mappa-scheda .mappa-fonte{
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .06em;
+  color: var(--ink-3);
+  border-top: 1px solid var(--map-bordo);
+  padding-top: var(--s2);
+}
+
+/* Il monospaziato non deve mai scendere sotto i 12 px: sotto non si legge. */
+@media (max-width: 380px){
+  .mappa-riga, .mappa-pillola, .mappa-elenco{ font-size: 12px; }
+}
+
+/* Schermo largo: le barre non si stirano da un bordo all'altro. Una casella di
+   ricerca larga milleduecento pixel non aiuta nessuno a cercare; i contatori
+   vanno a destra, ricerca e Lente restano al centro dove cade lo sguardo. */
+@media (min-width: 900px){
+  .mappa-alto{
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+  .mappa-cerca{
+    grid-column: 1; grid-row: 1;
+    justify-self: center;
+    width: min(460px, 100%);
+  }
+  .mappa-contatori{ grid-column: 2; grid-row: 1; }
+  .mappa-stato{ grid-column: 1; grid-row: 2; }
+  .mappa-ia,
+  .mappa-avviso,
+  .mappa-lista{
+    justify-self: center;
+    width: min(760px, 100%);
+  }
+  .mappa-attribuzioni{ grid-column: 1 / -1; }
+}
+
+/* Fonte che risponde ma con il dato precedente: segnata, non barrata. Non e'
+   un guasto, ma non e' nemmeno il dato di adesso, e va detto. */
+.mappa-vecchio{ color: var(--persone); }
+
+/* Fonte chiesta dal browser direttamente, perche' il nostro server non ha
+   risposto. Il dato e' fresco: percio' non e' barrata ne' segnata come vecchia.
+   Ma la strada e' diversa, e la parola "diretto" resta leggibile accanto al
+   nome invece di essere affidata a un colore che non tutti distinguono. */
+.mappa-diretto{ color: var(--persone); }
+
+/* L'IA dentro la scheda: la domanda parte da li, e la risposta compare sotto
+   dichiarata come generata, mai confusa con una previsione ufficiale. */
+.mappa-lente{ margin: var(--s3) 0 var(--s2); }
+.mappa-chiedi{
+  min-height: 44px;
+  padding: var(--s2) var(--s4);
+  border: 1px solid var(--dato);
+  border-radius: var(--map-r, 4px);
+  background: var(--dato-soft);
+  color: var(--ink);
+  font-family: var(--map-mono);
+  font-size: var(--t-label);
+  letter-spacing: .1em;
+}
+.mappa-chiedi[disabled]{ opacity: .6; }
+#mappa-risposta p{ color: var(--ink-2); font-size: var(--t-small); }
+
+/* Avviso grandine: normalmente e una riga sobria che dice perche non ci sono
+   avvisi. Quando ce ne e uno davvero, diventa il primo elemento che si vede. */
+.mappa-avviso{
+  border: 1px solid var(--map-bordo);
+  border-radius: var(--map-r);
+  background: var(--map-hud);
+  padding: var(--s2) var(--s3);
+  color: var(--ink-2);
+  font-size: var(--t-small);
+  display: grid;
+  gap: var(--s1);
+}
+.mappa-avviso p{ margin: 0; }
+.mappa-avviso-attivo{
+  border-color: var(--persone);
+  background: var(--persone-soft);
+  color: var(--ink);
+}
+
+/* I tre strumenti sul bordo destro: distanza dell'avviso, segnalazione,
+   ritorno alla mappa della zona. Sono icone perche' la colonna deve restare
+   stretta, e ognuno porta la sua etichetta per chi usa uno screen reader. */
+.mappa-raggio{ display: flex; align-items: center; }
+.mappa-segnala{ border-color: var(--persone) !important; background: var(--persone-soft) !important; }
+.mappa-classica{ color: var(--dato) !important; }

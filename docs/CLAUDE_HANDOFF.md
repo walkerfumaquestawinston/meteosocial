@@ -2,6 +2,90 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## La mappa diventa la pagina, ed è raggiungibile — 21 settembre 2026
+
+**Per chi riprende da qui.** La mappa eventi era stata costruita ma lasciata su una rotta non collegata: il proprietario per tre giorni non ha visto niente, e aveva ragione a dirlo. Due cose sono cambiate.
+
+**Dov'è adesso.** La voce **Mappa** della barra apre `#mappa-eventi`. La mappa MapLibre della versione 64 è intatta su `#mappa-classica`; il vecchio `#mappa` funziona ancora. Modificati: `dist/index.html` (un solo href della navigazione) e `dist/main.js` (rotta nuova, tema, voce attiva, classe a tutto schermo).
+
+**Come è fatta.** `html.mappa-eventi-view` in `dist/mappa-eventi.css` ritira l'impaginazione dell'app, sul modello già esistente di `local-map.css`. `.mappa` è `position: fixed` fra intestazione e barra di navigazione; `.mappa-tela` la riempie e ha fondo `#091421` — attenzione, quell'elemento **diventa** il contenitore Leaflet, quindi `.mappa-tela .leaflet-container` non lo colpirebbe. Le fasce `.mappa-alto` e `.mappa-basso` hanno `pointer-events: none` con i figli a `auto`: senza questo una striscia trasparente impedirebbe di trascinare la mappa.
+
+**L'IA.** `chiediAllaLente(domanda)` in `dist/mappa-eventi.js`: il campo `#mappa-ia-testo` manda la domanda con allegato il riassunto della vista. Alla Lente vanno **solo** `city`, `question`, `includeCommunity`. `test-mappa.mjs` legge la chiamata vera e fallisce se compaiono altri campi: se serve aggiungerne uno, va aggiornato il controllo con cognizione, non allentato.
+
+**Ricaduta diretta alle fonti.** Se `ctx.api('atlas/world')` o `ctx.api('atlas/events')` falliscono, `meteoMondialeDiretto()` e `eventiNasaDiretti()` chiedono a Open-Meteo e NASA dal browser. Lo stato del livello diventa `diretto` e la barra delle fonti lo scrive. `normalizzaEventiNasa()` e `abbinaMeteoCitta()` sono esportate e pure: si provano senza rete (`test-mappa-diretta.mjs`). Se si tocca la normalizzazione degli eventi, va tenuta allineata a `server/globe-events.js`, che fa lo stesso lavoro dall'altra parte.
+
+**Attenzione al file delle città.** `server/world-cities.js` **non esiste più**: il contenuto è in `dist/citta-mondo.js` e `build.mjs` lo incorpora nel Worker rinominandolo `WORLD_CITIES`. Chi modifica `build.mjs` non tolga quel `.replace()`, o il meteo mondiale sparisce in silenzio; c'è un controllo che lo verifica sul Worker costruito.
+
+**Cosa resta da fare.** Pubblicare il Worker su Sites, altrimenti le rotte `/api/mappa/*` non rispondono e la mappa vive solo di fonti dirette. Le tre decisioni aperte restano del proprietario: notifiche push dell'avviso grandine, riattivazione di H6, e se `#mappa-classica` vada ritirata del tutto.
+
+## Grandine: segnalare, scegliere la distanza, essere avvisati prima — 18 settembre 2026
+
+Richiesta del proprietario: che la gente possa segnalare, possa mettere la distanza preferita, e che quando succede venga avvisata prima.
+
+**Cosa esisteva già, verificato prima di costruire.** Le segnalazioni con la dimensione dei chicchi funzionano e sono consegnate (`quick-report.js`, `hail-tools.js`, tabella `hail_details` con `observed` e `size`). La tabella `hail_watches` ha già un campo `radius`, cioè la distanza preferita, e l'API `/api/hail/watch` la legge. Mancavano due cose: l'interfaccia per la distanza era ritirata dal bundle, e la logica dell'avviso non era consegnata.
+
+**`server/grandine-avviso.js`, funzione pura con le tre condizioni della specifica 3.3.** Non basta che la grandine sia vicina: deve venire verso di te. Almeno due segnalazioni concordi entro 3 km l'una dall'altra; tempo stimato fra 3 e 40 minuti; non più di un avviso all'ora per persona. La direzione conta: il vento meteorologico dice da dove viene, quindi la nube si muove nella direzione opposta, e la componente verso chi guarda deve superare 0,5.
+
+`test-grandine-avviso.mjs`, **30 controlli**: il caso che deve funzionare, e poi ogni condizione violata una per volta — una sola segnalazione, due segnalazioni lontane fra loro, troppo vicina, troppo lontana, vento debole, vento contrario, vento di traverso, avviso già mandato, posizione mancante, vento illeggibile, segnalazioni vecchie o dal futuro, dimensione non dichiarata. La funzione è pura e l'orologio entra dai parametri, quindi il risultato non dipende da quando gira il test.
+
+**`/api/mappa/grandine-avviso`** mette insieme le segnalazioni delle ultime due ore con zona dichiarata, il vento del comune più vicino preso dalla cache del meteo (nessuna chiamata esterna in più) e quelle regole. Non manda notifiche: risponde *se ci sarebbe da avvisare*. Quando non c'è un avviso dice **perché**, che è più utile del silenzio. Non tiene memoria di chi è stato avvisato: l'ultimo avviso lo ricorda il browser, così la regola dell'ora vale senza schedare nessuno.
+
+Dettagli, limiti e la decisione non presa su H6: PROJECT_STATUS.md.
+
+## Mappa: meteo preciso per comune, pioggia e Lente sulla vista — 18 settembre 2026
+
+Richiesta del proprietario: dati meteo aggiornati e precisi (temperatura, pioggia, meteo) e l'IA molto più presente nella mappa.
+
+**Meteo per comune, endpoint nuovo.** `/api/mappa/meteo` raccoglie temperatura, pioggia, vento e codice meteo per i **500 comuni più popolosi**, in cinque chiamate a blocchi di 100, e li conserva quindici minuti nella stessa cache (`globe_snapshots`) che l'app usa già per il meteo mondiale. Il client non interroga mai Open-Meteo: con cento persone sulla mappa sarebbero centinaia di migliaia di chiamate all'ora.
+
+Perché 500 e non 7.894, scelta dichiarata e non svista: un giro completo sarebbe 79 chiamate e circa trenta secondi, troppo dentro la finestra di una richiesta. 500 sono cinque chiamate e un paio di secondi, e coprono per intero i livelli di zoom fino al 10, che filtrano per popolazione. Sui centri più piccoli il meteo non c'è e viene dichiarato assente, non stimato: il punto resta grigio e più piccolo, e la scheda lo dice.
+
+**Livello PIOGGIA.** Il dato c'era già nelle risposte di Open-Meteo e non veniva mostrato. Ora un anello azzurro che cresce con i millimetri compare solo dove sta piovendo davvero: zero millimetri non disegna niente, perché «non piove» non è un dato da mostrare.
+
+Dettagli completi in PROJECT_STATUS.md.
+
+## Mappa mondiale: temperature, eventi NASA, grandine e Lente — 18 settembre 2026
+
+Quattro livelli su #mappa-eventi, tutti collegati a fonti reali: comuni ISTAT, 200 citta mondiali (Open-Meteo), eventi NASA EONET in tempo reale, grandine dalla community. **I servizi mondiali esistevano gia nel Worker** dal tempo del globo ritirato: non serviva costruirli ne serviva uno scheduler, perche globeSnapshot e gia la pipeline con cache di 15 minuti e dato precedente conservato.
+
+Ogni livello carica separato: una fonte che cade non ferma le altre, e la barra di stato la barra in rosso. Da ogni scheda si puo chiedere a Lente, con il solo nome della localita nel payload.
+
+Limite: ARGOS ha 177.700 nodi, qui il massimo e 7.894 comuni + 200 citta + 300 eventi. Densita di classe ARGOS sull'Italia, non sul mondo.
+
+## Mappa eventi atmosferici — API e prima vista — 18 settembre 2026
+
+Secondo blocco. **Rotta nuova `#mappa-eventi`, in Leaflet come chiede la specifica. La Mappa MapLibre della versione 64 non è stata toccata**: si confrontano sull'anteprima e si decide quale diventa `#mappa`, che è una riga.
+
+`server/mappa.js` serve `GET /api/mappa/comuni` filtrando per riquadro e zoom; i comuni viaggiano dentro il Worker come letterale compatto, quindi nessuna fonte esterna e nessuno scheduler per questo blocco. `dist/mappa-eventi.js` disegna con Leaflet su canvas e **carica Leaflet solo entrando nella sezione**: verificato nel browser che prima non venga scaricato.
+
+Sette pillole su otto non si mostrano: senza fonte collegata sarebbero interruttori che non accendono niente. Restano bloccati i livelli che richiedono scheduler e rete.
+
+`test-mappa.mjs`: 36 controlli. Suite 45 superati, 0 falliti. Sull'anteprima Netlify l'API risponderà solo dopo la pubblicazione del Worker su Sites: fino ad allora la barra di stato mostra la fonte barrata, che è il comportamento previsto.
+
+## Mappa eventi atmosferici — blocco 1.2 — 18 settembre 2026
+
+Primo blocco della specifica PROMPT-MAPPA. Generato `dati/comuni.json`: **7.894 comuni, 1.045 KB**, ordinato per abitanti decrescente. Rigenerabile con `tools/genera-comuni.mjs`.
+
+**Provenienza diversa da quella chiesta:** la specifica dice ISTAT, ma da qui `istat.it` non è raggiungibile. I dati vengono da due pacchetti npm MIT derivati da ISTAT (`italian-cap-comuni-province@1.1.1` per le coordinate, `comuni-json@1.0.0` per la popolazione). Sono copie di terzi: vanno riverificate contro la fonte ufficiale. Il lockfile del progetto non è stato toccato.
+
+**Mancanze dichiarate:** 387 comuni senza popolazione (`abitanti: null`, non zero) e altitudine assente per tutti (nessuna fonte). I 387 restano invisibili ai livelli di zoom che filtrano per abitanti fino a zoom 11.
+
+**Quattro bloccanti prima di proseguire**, dettagliati in PROJECT_STATUS.md: non esiste uno scheduler su Sites e tutta la pipeline della parte 1.1 si regge su cron; da questo ambiente le fonti esterne non sono raggiungibili; la specifica vieta MapLibre e impone Leaflet mentre la Mappa attuale è MapLibre e pubblicata nella versione 64; la licenza della fonte fulmini non è verificabile da qui.
+
+Il file non è ancora servito: collegarlo alle API è il blocco 1.3-1.4, e la specifica dice di fermarsi prima.
+
+## Regola di consegna e Netlify confermato — 18 settembre 2026
+
+**Ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale.** Regola del proprietario: niente resta in chat o in locale, commit e push appena il lavoro è verificato, con PROJECT_STATUS.md e questo file aggiornati nello stesso push. Il testo completo è in CLAUDE.md, sezione «Collaborazione».
+
+La PR #2 è stata integrata su richiesta esplicita del proprietario: `main` è passato da `00c851f` a `615e3e3` e porta la build riproducibile, la suite eseguibile, le quattro correzioni di leggibilità e la configurazione Netlify. CI verde su Node 24. Il sito su Sites resta invariato alla versione 64: un push su GitHub non lo aggiorna.
+
+**Il sito Netlify è confermato funzionante dal proprietario.** Progetto `friendly-pothos-c169ad`, costruito da `main`. Da questo ambiente non è raggiungibile — la politica di rete della sessione consente solo GitHub e i registri dei pacchetti — quindi la conferma è del proprietario, non una mia misura. Resta vero il limite documentato: attraverso il proxy l'app è in sola lettura.
+
+**Le anteprime per pull request sono attive**, e cambiano il modo di lavorare: ogni PR riceve un proprio indirizzo (`https://deploy-preview-<numero>--friendly-pothos-c169ad.netlify.app`) costruito dal suo ramo. Un aggiornamento su un ramo quindi **si vede subito**, senza doverlo prima integrare in `main`: la regola di consegna in tempo reale è soddisfatta lavorando sul ramo, come dice CLAUDE.md.
+
+Netlify aggiunge tre controlli propri su ogni PR. Sulla PR #3 `Redirect rules` e `Header rules` risultano **success**: è una conferma indipendente, non mia, che il proxy `/api/*` e le intestazioni dichiarate in `netlify.toml` sono validi e accettati. Non dice nulla sulle scritture, che restano bloccate per i motivi documentati e non per la configurazione.
+
 ## Anteprima Netlify con API in proxy — 18 settembre 2026
 
 Su richiesta esplicita del proprietario. **La pubblicazione ufficiale resta su Sites**, allo stesso indirizzo: Netlify non la sostituisce e non tocca il database di produzione. Versione pubblicata invariata: 64.

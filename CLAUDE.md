@@ -18,6 +18,19 @@ Lavora su un ramo separato per il compito assegnato, per esempio claude/nome-com
 
 Apri una pull request quando GitHub è configurato, oppure consegna un diff con il commit di base se non hai accesso. Scrivi: obiettivo, file modificati, verifiche eseguite, limiti. Il coordinatore integra, risolve eventuali conflitti, verifica e pubblica nello stesso progetto Sites. Non creare un altro sito né cambiare accessi o servizi.
 
+### Ogni aggiornamento dev'essere ricostruibile da ChatGPT in tempo reale
+
+Regola del proprietario, 18 settembre 2026. Vale per ogni intervento, anche il più piccolo.
+
+Nessun aggiornamento resta solo in chat o solo su questo computer. Appena un lavoro è compiuto e verificato va su GitHub: commit e push subito, non a fine sessione e non accumulando più cose in un colpo solo. Chi riprende da ChatGPT deve trovare su GitHub lo stato reale in quel momento, non una versione di qualche ora prima.
+
+Ogni push porta con sé il proprio contesto, così da bastare da solo:
+- il messaggio di commit dice cosa cambia, perché, e cosa è stato verificato;
+- PROJECT_STATUS.md e docs/CLAUDE_HANDOFF.md vengono aggiornati **nello stesso push**, non dopo;
+- i limiti e le cose non verificate si dichiarano, non si sottintendono.
+
+Se un lavoro non si riesce a salvare su GitHub, dillo chiaramente invece di lasciarlo in sospeso: un aggiornamento che esiste solo qui, per il coordinatore non esiste.
+
 ## Struttura e avvio
 
 Attenzione: dist/ contiene anche SORGENTI frontend. Non cancellarla come se fosse solo output.
