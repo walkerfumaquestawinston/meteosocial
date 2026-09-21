@@ -11,7 +11,7 @@ export function fieldHours(data,now=Date.now()){
  let formatter;try{formatter=new Intl.DateTimeFormat('sv-SE',{timeZone:data.timezone||'UTC',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'})}catch{return []}
  const local=t=>formatter.format(new Date(t)).replace(' ','T'),counts=new Map();h.time.forEach(t=>counts.set(t,(counts.get(t)||0)+1));
  const epoch=value=>{if(typeof value==='number')return value*1000;if(typeof value!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(value)||counts.get(value)>1)return NaN;const wall=Date.parse(value+'Z');if(!Number.isFinite(wall))return NaN;let guess=wall;for(let i=0;i<3;i++)guess=wall-(Date.parse(local(guess)+'Z')-guess);return local(guess)===value?guess:NaN;};
- return h.time.map((time,i)=>({time:epoch(time),...Object.fromEntries(['temperature_2m','apparent_temperature','precipitation','precipitation_probability','wind_speed_10m','wind_gusts_10m','weather_code'].map(k=>[k,Number.isFinite(h[k]?.[i])?h[k][i]:null]))})).filter(p=>Number.isFinite(p.time)&&p.time>=now&&p.time<now+7*3600000).slice(0,6);
+ return h.time.map((time,i)=>({time:epoch(time),...Object.fromEntries(['temperature_2m','apparent_temperature','precipitation','precipitation_probability','wind_speed_10m','wind_gusts_10m','weather_code','is_day'].map(k=>[k,Number.isFinite(h[k]?.[i])?h[k][i]:null]))})).filter(p=>Number.isFinite(p.time)&&p.time>=now&&p.time<now+7*3600000).slice(0,6);
 }
 export function withinField(reports,center,radius=150,now=Date.now()){
  return reports.filter(p=>Number.isFinite(p.latitude)&&Number.isFinite(p.longitude)&&Number.isFinite(p.observed??p.created)&&(p.observed??p.created)>now-7200000&&(p.observed??p.created)<=now&&(p.expires==null||p.expires>now)).map(p=>({...p,distance:distanceKm(center,p)})).filter(p=>Number.isFinite(p.distance)&&p.distance<=radius).sort((a,b)=>a.distance-b.distance);
@@ -19,4 +19,22 @@ export function withinField(reports,center,radius=150,now=Date.now()){
 export function rangeBounds(p,km){
  const lat=km/110.574,lon=km/(111.32*Math.max(.01,Math.cos(p.latitude*Math.PI/180)));
  return [[Math.max(-85,p.latitude-lat),p.longitude-lon],[Math.min(85,p.latitude+lat),p.longitude+lon]];
+}
+
+// Only complete future intervals; precipitation and gusts refer to the preceding hour.
+// A low-rain window is an observation about model data, never a safety score.
+export function rainWindow(hours,now=Date.now()){
+ const eligible=h=>Number.isFinite(h.precipitation)&&h.precipitation>=0&&h.precipitation<=.2&&Number.isFinite(h.precipitation_probability)&&h.precipitation_probability>=0&&h.precipitation_probability<=30&&Number.isFinite(h.weather_code)&&![95,96,99].includes(h.weather_code);
+ const ordered=hours.filter(h=>Number.isFinite(h.time)).slice().sort((a,b)=>a.time-b.time);
+ for(let i=0;i<ordered.length-1;i++){
+  const a=ordered[i],b=ordered[i+1];
+  if(a.time-3600000>=now&&b.time-a.time===3600000&&eligible(a)&&eligible(b))return {start:a.time-3600000,end:b.time,probability:Math.max(a.precipitation_probability,b.precipitation_probability),amount:a.precipitation+b.precipitation};
+ }
+ return null;
+}
+
+export function hourQuestion(h,timezone='UTC'){
+ const number=n=>Number.isFinite(n)?String(n):'non disponibile';
+ const at=new Intl.DateTimeFormat('it-IT',{timeZone:timezone,dateStyle:'short',timeStyle:'short'}).format(new Date(h.time));
+ return `Spiega questa previsione Open-Meteo del ${at} (${timezone}): temperatura ${number(h.temperature_2m)} °C, percepita ${number(h.apparent_temperature)} °C, vento ${number(h.wind_speed_10m)} km/h, codice meteo ${number(h.weather_code)}. Nell’ora precedente: precipitazioni ${number(h.precipitation)} mm, probabilità ${number(h.precipitation_probability)}%, raffiche massime ${number(h.wind_gusts_10m)} km/h. Distingui previsione e osservazione; niente minuti di arrivo, certezze di sicurezza o scariche rilevate.`;
 }

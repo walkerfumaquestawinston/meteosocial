@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import worker from './dist/server/index.js';
-import {fieldHours,withinField,rangeBounds} from './dist/map-field-core.js';
+import {fieldHours,withinField,rangeBounds,rainWindow,hourQuestion} from './dist/map-field-core.js';
 const now=Date.now(),db=new DatabaseSync(':memory:');db.exec('PRAGMA foreign_keys=ON');
 for(const f of fs.readdirSync('drizzle').filter(f=>f.endsWith('.sql')))db.exec(fs.readFileSync('drizzle/'+f,'utf8'));
 const env={DB:{prepare:sql=>({bind:(...v)=>({first:async()=>db.prepare(sql).get(...v)||null,all:async()=>({results:db.prepare(sql).all(...v)}),run:async()=>({meta:{changes:db.prepare(sql).run(...v).changes}})})})}};
@@ -33,3 +33,19 @@ const hours=fieldHours(h,ts);assert.equal(hours.length,2);assert.equal(hours[0].
 assert.equal(fieldHours({timezone:'bad',hourly:h.hourly},ts).length,0);assert.equal(fieldHours({hourly:{time:[null,'bad',Infinity]}},ts).length,0);
 assert.equal(fieldHours({timezone:'Europe/Rome',hourly:{time:['2026-10-25T02:00','2026-10-25T02:00']}},Date.parse('2026-10-25T00:00Z')).length,0,'ambiguous duplicated DST slots omitted');
 console.log('Field desk: all five report flows, consent, auth, expiry, blocks, 150 km boundaries, dateline and timezone checks passed.');
+
+const start=Date.parse('2026-09-21T13:00Z');
+const dry=i=>({time:start+i*3600000,precipitation:.1,precipitation_probability:20,weather_code:2});
+assert.deepEqual(rainWindow([dry(1),dry(2)],start),{start,end:start+7200000,probability:20,amount:.2});
+assert.equal(rainWindow([dry(1),dry(2)],start+1),null,'partly elapsed intervals are not complete future windows');
+assert.equal(rainWindow([dry(1),dry(3)],start),null,'missing hour is not a continuous window');
+assert.equal(rainWindow([dry(1),{...dry(2),weather_code:95}],start),null,'storm code excludes low-rain window');
+for(const key of ['precipitation','precipitation_probability','weather_code'])assert.equal(rainWindow([dry(1),{...dry(2),[key]:null}],start),null,'unknown '+key+' is never clear weather');
+assert.equal(rainWindow([dry(1),{...dry(2),precipitation_probability:31}],start),null);
+assert.equal(rainWindow([dry(1),{...dry(2),precipitation:-.2}],start),null);
+assert.equal(rainWindow([dry(1),dry(1)],start),null,'duplicate slot is not another hour');
+assert.equal(rainWindow([dry(3),dry(2),dry(1)],start).start,start,'earliest qualifying window wins without reordering caller data');
+const q=hourQuestion({...dry(1),temperature_2m:null,latitude:42.123456,longitude:13.765432},'Asia/Tokyo');
+assert.match(q,/23:00/);assert.match(q,/temperatura non disponibile/);assert.match(q,/Nell’ora precedente/);assert.ok(!q.includes('42.123456')&&!q.includes('13.765432'));assert.ok(q.length<=700);
+assert.equal(fieldHours({timezone:'UTC',hourly:{time:[start/1000],is_day:[0]}},start)[0].is_day,0,'night artwork retains solar state');
+console.log('Hourly explorer: future intervals, low-rain uncertainty, gaps, duplicates, night state, local time and AI data minimization passed.');

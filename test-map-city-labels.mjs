@@ -28,4 +28,7 @@ for(const [i,p]of arranged.entries()){
 assert.deepEqual(arrangeCityLabels(candidates,{width:390,height:600},[reserved]),arranged,'layout must be deterministic');
 assert.equal(arrangeCityLabels([{x:-100,y:50,width:90}],{width:390,height:600}).length,0);
 assert.equal(arrangeCityLabels([{x:NaN,y:50,width:90}],{width:390,height:600}).length,0);
+const tall=arrangeCityLabels([{name:'Long name',x:180,y:220,width:210,height:64},{name:'Other',x:190,y:250,width:120,height:48}],{width:600,height:600});
+assert.equal(tall[0].height,64,'reserve both lines of the city name and its weather reading');
+assert.equal(tall[0].width,210);assert.equal(overlap(tall[0].box,tall[1].box),false);
 console.log('City geography fallback, retained weather, timestamps, label collision and selected priority passed.');

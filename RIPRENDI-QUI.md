@@ -1,5 +1,7 @@
 # MeteoSocial — riprendi da qui
 
+Ultimo aggiornamento di sviluppo: **Ora per ora** nella mappa, con finestra di pioggia e schede IA contestuali. Fare riferimento al primo blocco PROJECT_STATUS.md per l'esito della pubblicazione; non considerare un commit locale prova di messa online. Le 15 suite pertinenti alla revisione passano; i dati sulla suite completa qui sotto si riferiscono al rilascio precedente.
+
 ## Base attuale
 
 Il ramo main di GitHub contiene il lavoro condiviso. Sites ospita il sito ufficiale: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi.

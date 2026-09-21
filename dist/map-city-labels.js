@@ -31,7 +31,7 @@ export function arrangeCityLabels(candidates, viewport, reserved=[]) {
     .map((c,i)=>({...c,order:i})).sort((a,b)=>Number(!!b.selected)-Number(!!a.selected)||(b.priority||0)-(a.priority||0)||a.order-b.order);
   for(const p of ranked){
     if(p.x<0||p.x>viewport.width||p.y<0||p.y>viewport.height)continue;
-    const h=44,w=Math.min(p.width,190);
+    const h=Number.isFinite(p.height)?Math.max(44,Math.min(70,p.height)):44,w=Math.min(p.width,210);
     const offsets=[[8,-22],[-w-8,-22],[-w/2,-h-10],[-w/2,10]];
     for(const [dx,dy] of offsets){
       const box={left:p.x+dx,right:p.x+dx+w,top:p.y+dy,bottom:p.y+dy+h};
