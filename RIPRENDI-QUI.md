@@ -6,10 +6,12 @@
 
 | cosa | stato |
 |---|---|
-| `main` | `427e5a3`, CI verde |
+| ramo di riferimento | `main` — leggi lo stato con `git log --oneline -5 origin/main`, non da una sigla scritta qui |
 | sito ufficiale su Sites | **versione 64, invariata** |
-| anteprima Netlify | ricostruita da `main`, contiene il lavoro nuovo |
+| anteprima Netlify | ricostruita da `main` a ogni integrazione |
 | ultimo blocco | Mappa eventi atmosferici — vedi `MAPPA-EVENTI-RELEASE.md` |
+
+Qui non c'è la sigla di un commit di proposito: un documento che la fissa diventa falso nell'istante in cui viene integrato, e chi lo legge non ha modo di accorgersene. La sigla si chiede a Git, che non mente.
 
 Il lavoro dal 18 al 21 settembre ha aggiunto una **mappa degli eventi atmosferici** su `#mappa-eventi`, aperta dalla voce Mappa della barra di navigazione: temperature e pioggia mondiali da Open-Meteo, eventi naturali da NASA EONET, segnalazioni di grandine delle persone, comuni ISTAT, e la Lente integrata come barra in cui si scrive la domanda. Più l'avviso grandine con distanza scelta dalla persona.
 
