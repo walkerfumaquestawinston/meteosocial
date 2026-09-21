@@ -19,4 +19,16 @@ r=await request('network/clip',{body:form()});check(r.status===200,'video stores
 r=await request('network/video/'+clipID,{user:null,headers:{range:'bytes=4-7'}});check(r.status===206&&new TextDecoder().decode(r.data)==='ftyp','video range playback');check(r.headers.get('content-range')==='bytes 4-7/64','range headers');check(r.headers.get('cache-control')==='private,no-store','private media no cache');check((await request('network/video/'+clipID,{headers:{range:'bytes=70-'}})).status===416,'invalid range rejected');check((await request('network/video/'+clipID,{headers:{range:'bytes=-0'}})).status===416,'empty suffix rejected');check((await request('network/video/'+clipID,{headers:{range:'bytes=-4'}})).data.length===4,'suffix range');check((await request('network/video/'+clipID,{method:'HEAD'})).data.length===0,'HEAD no body');
 await request('link',{user:'B',body:{kind:'block',target:alice,active:true}});check((await request('network/video/'+clipID,{user:'B'})).status===404,'blocked video hidden');await request('delete',{body:{id:clipID}});check((await request('network/video/'+clipID,{user:null})).status===404,'deleted video unavailable');check((await request('network/feed?id='+clipID,{user:null})).data.posts.length===0,'deleted deep link unavailable');
 check((await request('network/clip',{body:form(crypto.randomUUID())})).status===200,'fourth upload attempt allowed');check((await request('network/clip',{body:form(crypto.randomUUID())})).status===429,'video upload rate limit');
+const fresh=crypto.randomUUID(),old=crypto.randomUUID(),future=crypto.randomUUID();
+insert.run(fresh,alice,'Pioggia recente','Torino','Pioggia',Date.now()-60000);
+insert.run(old,alice,'Pioggia di ieri','Torino','Pioggia',Date.now()-86400000);
+insert.run(future,alice,'Data errata','Torino','Pioggia',Date.now()+3600000);
+r=await request('network/feed?window=2h&topic=Pioggia&city=Torino');
+check(r.data.posts.length===1&&r.data.posts[0].id===fresh,'same-sky excludes old and future reports');
+check((await request('network/feed?window=2h&topic=Neve&city=Torino')).data.posts.length===0,'same-sky respects weather category');
+check((await request('network/feed?window=garbage')).status===400,'invalid time window rejected');
+await request('comments',{user:'B',body:{id:crypto.randomUUID(),post:fresh,text:'Visible until blocked'}});
+await request('link',{body:{kind:'block',target:bruno,active:true}});
+check((await request('network/comments?id='+fresh)).data.comments.length===0,'blocked commenters excluded from thread');
+check((await request('network/comments?id='+fresh,{user:null})).data.comments.length===1,'personal block does not delete public comments');
 console.log(checks+' social-feed checks passed: filters, pagination, profiles, expiry, uploads, ownership, ranges, deletion and rate limits.');
