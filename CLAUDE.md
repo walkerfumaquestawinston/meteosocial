@@ -4,9 +4,13 @@ Leggi prima AGENTS.md, PROJECT_STATUS.md, RIPRENDI-QUI.md e PROJECT_VISION.md. I
 
 ## Punto di partenza
 
-Ultima pubblicazione verificata: versione 64, fase 24.2 completata (Chi ci lavora). La 24.1 è completata. Il prossimo blocco previsto è 24.6, ma implementarlo solo se assegnato esplicitamente. Non avviare tutte le fasi in autonomia.
+Ultima pubblicazione verificata su Sites: **versione 64**, fasi 24.1 e 24.2 completate. Il blocco 24.6 non è stato avviato: implementarlo solo se assegnato esplicitamente. Non avviare tutte le fasi in autonomia.
 
-La direzione attuale è la mappa locale MapLibre, non il globo 3D o NASA. Conserva il tema, le funzioni già operative, l’onestà dei dati e la moderazione. Nessun numero inventato. Non presentare dati di modello come misure osservate. Il verdetto B2 resta bloccato dalle fonti osservate e dalla pianificazione documentate.
+**Dal 18 al 21 settembre 2026 il lavoro è andato oltre le fasi numerate**, su richiesta diretta del proprietario: `main` è a `427e5a3` e contiene la **mappa degli eventi atmosferici** (`#mappa-eventi`, aperta dalla voce Mappa), con meteo ed eventi mondiali in tempo reale, avviso grandine e Lente integrata come barra in cui si scrive. Leggi `MAPPA-EVENTI-RELEASE.md` e la sezione del 21 settembre in `RIPRENDI-QUI.md` prima di toccare quella parte. Il sito su Sites resta alla 64: GitHub e Netlify sono avanti, la pubblicazione è un passo separato.
+
+Ci sono ora due mappe e convivono: quella MapLibre della versione 64 su `#mappa-classica`, e quella Leaflet degli eventi su `#mappa-eventi`. Nessuna delle due va rimossa senza che il proprietario lo chieda. Il globo 3D e i moduli NASA restano ritirati dal bundle.
+
+Conserva il tema, le funzioni già operative, l’onestà dei dati e la moderazione. Nessun numero inventato. Non presentare dati di modello come misure osservate. Quando una fonte non risponde, dichiararlo: non riempire il buco. Il verdetto B2 resta bloccato dalle fonti osservate e dalla pianificazione documentate.
 
 ## Collaborazione
 
@@ -37,6 +41,7 @@ Attenzione: dist/ contiene anche SORGENTI frontend. Non cancellarla come se foss
 - dist/main.js e moduli dist/*.js: frontend; dist/design-system.css e altri CSS: stili.
 - server/*.js: sorgenti backend; dist/server/index.js: output generato.
 - build.mjs: composizione Worker e bundle; dist/app/: bundle generati.
+- dati/comuni.json e dist/citta-mondo.js: elenchi che build.mjs incorpora nel Worker. Il secondo viene rinominato WORLD_CITIES, come già accade a CITIES di dist/places.js: servono sia al browser sia al Worker, e duplicarli farebbe divergere le due copie. Chi tocca build.mjs non rimuova quelle sostituzioni.
 - db/schema.ts, drizzle/: schema e migrazioni; non riscrivere migrazioni già applicate.
 - tools/local-preview.mjs: database di prova separato dalla produzione.
 
@@ -46,10 +51,17 @@ Controllo ambiente: node tools/resume.mjs --check
 Build: node build.mjs
 Anteprima portabile: node tools/resume.mjs
 
-Esegui solo test pertinenti al cambiamento. Esempi già verificati per le ultime fasi:
+Suite completa: node tools/run-tests.mjs — oggi 47 superati, 6 non pertinenti, 0 falliti. I non pertinenti interrogano moduli conservati in Git ma esclusi dal bundle consegnato.
+
+Esegui i test pertinenti al cambiamento. Già verificati:
+- node test-mappa.mjs — API dei comuni, raggiungibilità della mappa dal menù, modalità a tutto schermo, cosa viene mandato alla Lente
+- node test-mappa-diretta.mjs — eventi NASA tenuti e scartati, abbinamento meteo, elenco città unico fra browser e Worker
+- node test-grandine-avviso.mjs — le tre condizioni dell'avviso, ognuna violata una per volta
 - node test-daily-question.mjs
 - node test-profession.mjs
 - node test-sky-confirm.mjs
+
+Nessuno di questi usa la rete: le funzioni sono pure e l'orologio entra dai parametri, quindi il risultato non dipende da quando girano.
 
 Non servono credenziali di produzione per questi test. Se una fonte esterna fallisce, dichiaralo; non usare dati inventati nella versione pubblica.
 
