@@ -19,3 +19,5 @@ Lente riusa il servizio autenticato esistente e mostra le fonti restituite. Le c
 Verifiche: 49 suite passate; sei suite legacy classificate separatamente. Test browser desktop 1280×800 e mobile 390×844: radar reale RainViewer, zoom alle strade, località, domanda conservata quando serve login, nessun overflow né errore console. Meteo in cache durante indisponibilità della fonte, chiaramente indicato. Servizio IA reale non invocato dall'anteprima.
 
 Stato del sito e sincronizzazione: PROJECT_STATUS.md. Dopo un clone installare le dipendenze bloccate e ricostruire. dist/app e dist/server non sono versionati; non cancellare gli altri sorgenti in dist. Lo storico delle note precedenti rimane in Git.
+
+Pubblicato su Sites versione 66 il 21 settembre 2026. GitHub PR #7 integrata in main dopo Check MeteoSocial e anteprima Netlify superati. La sorgente applicativa pubblicata e quella GitHub hanno lo stesso albero; le note di consegna successive non richiedono un altro deploy.

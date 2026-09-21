@@ -10,6 +10,6 @@ Vento: frecce della direzione verso cui soffia, velocità in km/h e confronto ne
 
 Verifiche: build completata, 49 suite superate; 6 suite di moduli ritirati classificate separatamente dal runner. Browser verificato a 390×844 e 1280×800: radar, località, strade, pannelli, gestione accesso IA e assenza di overflow. Nessun errore console rilevato. IA reale non invocata in anteprima locale; segnalato correttamente il meteo in cache quando il fornitore non risponde.
 
-Stato pubblicazione: modifica pronta; il sito pubblico confermato precedente è la versione 65. Aggiornare questa riga solo dopo la conferma di pubblicazione.
+Pubblicazione confermata: Sites versione 66, 21 settembre 2026, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. GitHub PR #7 integrata in main; Check MeteoSocial e anteprima Netlify superati. Le note successive alla pubblicazione non modificano il runtime.
 
 Per riprendere: leggere RIPRENDI-QUI.md e docs/CLAUDE_HANDOFF.md. Lo storico precedente è conservato in Git. dist/app e dist/server sono output non versionati; i sorgenti dentro dist restano versionati e non devono essere cancellati.
