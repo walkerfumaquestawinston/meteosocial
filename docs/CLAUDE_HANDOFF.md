@@ -16,7 +16,7 @@ Lente riceve il contesto della località selezionata. Il backend usa le coordina
 
 Verifiche: build e 48 suite superate; 6 suite legacy segnalate separatamente dal runner. Test aggiunto: test-map-weather-core.mjs. Browser verificato su ricerca, unità, login IA, guida, elenco e layout mobile. Il servizio IA reale non è stato invocato durante il test locale.
 
-Pubblicazione in corso: attendere la nota finale prima di considerare il sito aggiornato. Lo storico precedente è disponibile nella cronologia del repository.
+Pubblicazione Sites confermata il 21 settembre 2026: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. GitHub PR #6 integrata; Check MeteoSocial superato dopo avere aggiunto installazione e build prima dei test. Lo storico precedente è disponibile nella cronologia del repository.
 
 Gli artefatti generati dist/app e dist/server non sono versionati. Dopo il clone: pnpm install --frozen-lockfile, poi pnpm build e pnpm test. I sorgenti dentro dist restano versionati: non eliminare quella cartella. Netlify compila già prima della pubblicazione.
 

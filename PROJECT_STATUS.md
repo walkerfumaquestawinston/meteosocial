@@ -8,7 +8,7 @@ I temporali del livello Fulmini sono dati di modello: le singole scariche non so
 
 Verifiche: build completata; 48 suite superate. Il runner segnala separatamente 6 test di moduli già ritirati. Ricerca e interazioni provate nel browser; layout verificato a 390×844.
 
-Pubblicazione: in preparazione. Il salvataggio del codice non equivale alla pubblicazione del sito.
+Pubblicata su Sites il 21 settembre 2026: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. PR GitHub #6 integrata nel ramo principale; controllo Check MeteoSocial superato.
 
 Lo storico precedente rimane nella cronologia Git. Per riprendere, leggere docs/CLAUDE_HANDOFF.md e le istruzioni del progetto.
 
