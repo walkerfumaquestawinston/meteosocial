@@ -2,7 +2,7 @@
 
 ## Ora per ora — revisione successiva del 21 settembre
 
-Leggere il primo blocco PROJECT_STATUS.md per pubblicazione e verifiche. La nuova interazione è nelle tessere dell'osservatorio, non una simulazione del futuro sull'intera mappa.
+Sites versione 70 pubblicata, GitHub PR #11 integrata e controlli verdi. Leggere il primo blocco PROJECT_STATUS.md per commit e verifiche. La nuova interazione è nelle tessere dell'osservatorio, non una simulazione del futuro sull'intera mappa.
 
 - map-field-core.js: rainWindow verifica due intervalli futuri completi e contigui. Soglie 0,2 mm/30%, esclude valori mancanti e WMO 95/96/99. hourQuestion include solo valori meteo e data/fuso, non coordinate o contenuti community. Riferimento: https://open-meteo.com/en/docs#hourly-parameter-definition (precipitazioni, probabilità e raffiche: ora precedente).
 - map-field-desk.js: dettagli per timestamp, dati della stessa copia mostrata, istruzioni IA esplicite, temperatura attuale nel pannello, mantenimento scroll e azioni separate. Una tessera scaduta non seleziona accidentalmente l'ora successiva.

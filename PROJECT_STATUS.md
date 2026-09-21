@@ -2,7 +2,7 @@
 
 ## 21 settembre 2026 — Ora per ora, revisione della mappa
 
-Implementazione pronta per la pubblicazione successiva alla versione 69; aggiornare questo paragrafo con l'esito effettivo prima del passaggio finale.
+Pubblicato: Sites versione 70, 21 settembre 2026 alle 12:57 UTC, https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. Sorgente runtime Sites 4b564171fee1f3991cbb7625b311589baf71faa2; albero f728435fefe8fe44d38768bbe6f74a44a665ca93. GitHub PR #11 integrata in main (d7a6edf03b5ef55d2dca65499e9b0fb82f1eea48). Check MeteoSocial run 35602330633 e anteprima Netlify superati. Queste note successive non modificano il runtime.
 
 - L'osservatorio riunisce città e temperatura attuale in una sola scheda. Sei tessere orarie aprono dettagli di temperatura, percepita, vento medio, raffica, precipitazioni e probabilità. Simboli meteo volumetrici leggeri e IA su richiesta riferita all'ora scelta.
 - Pioggia: prima coppia di ore future complete con <=0,2 mm e <=30% per ora, senza codici temporale nel modello. Non è un indice di sicurezza o una garanzia di asciutto; dati null, buchi temporali e copie offline escludono la proposta. Gli intervalli rispettano il significato Open-Meteo di quantità/probabilità/raffiche nell'ora precedente.
