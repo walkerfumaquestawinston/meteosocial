@@ -32,3 +32,5 @@ jobs:
       - run: node test-map-field.mjs
       - run: node test-pulse.mjs
       - run: node --experimental-vm-modules test-hail-community.mjs
+      - run: node test-network.mjs
+      - run: node test-community-context.mjs

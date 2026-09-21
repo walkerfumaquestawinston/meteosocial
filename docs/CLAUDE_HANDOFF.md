@@ -1,5 +1,19 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 21 settembre 2026 — La piazza del cielo
+
+Revisione community pronta; pubblicazione da completare (ultima versione online: 70). Analisi competitiva: docs/COMMUNITY-COMPETITIVE-BRIEF.md, nove prodotti meteo e due social; nessuna esclusività o viralità dichiarata come dimostrata.
+
+- Community principale collegata a posts, lo stesso archivio delle segnalazioni della mappa eventi. Pannello Dal posto conserva sky_reports senza duplicazioni né cancellazioni.
+- Nella zona, Seguiti, Tutti i cieli, Salvati; foto, video brevi fino a 8 MB, domande, commenti, profili pubblici e link condivisibili. Filtri per fenomeno e ricerca.
+- Stesso cielo: pioggia/neve/sereno secondo il modello attuale, racconti dichiarati nelle ultime due ore. Dati offline, vecchi o assenti portano alla scoperta generale. Nessun giudizio automatico di autenticità.
+- Conversione delle coordinate dei post da centesimi di grado prima di aprire la mappa. Risoluzione manuale dei nomi senza coordinate, senza scegliere arbitrariamente un omonimo.
+- Corretto contrasto dei post e dialoghi, vuoti senza falsa attività, contenuti vecchi/futuri esclusi dal canale recente, commentatori bloccati nascosti.
+- Lente contestuale riutilizzata su richiesta con gli stessi limiti IA. Nessuna nuova dipendenza, migrazione, chiave o chiamata a pagamento nei test. Cache shell v63.
+
+Verifica: build e 15 suite mirate superate; ultimi ritocchi ricontrollati con network, community-context, map-field e lente. Browser desktop e 390 px: domanda locale, commento, salvataggio, raccolta, ritorno alla mappa, filtro domande, pannello rapido e assenza di scorrimento orizzontale. Nessun errore console nel controllo finale dei commenti. Non eseguite prove su telefono fisico.
+
+
 ## Ora per ora — revisione successiva del 21 settembre
 
 Sites versione 70 pubblicata, GitHub PR #11 integrata e controlli verdi. Leggere il primo blocco PROJECT_STATUS.md per commit e verifiche. La nuova interazione è nelle tessere dell'osservatorio, non una simulazione del futuro sull'intera mappa.

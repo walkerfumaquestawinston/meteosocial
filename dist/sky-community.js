@@ -86,5 +86,5 @@ export function createSkyCommunity(ctx){
 
  window.addEventListener('sky-published',()=>load(true));
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&active())load(true)});
- return {page,bind,open,quick,profileHTML,bindProfile,showZone,load,refresh(){renderFeed()},stop(){clearInterval(timer);timer=0;feedMotion?.stop()},data:()=>data};
+ return {panel:()=>`<details class="community-live"><summary>Dal posto · segnalazioni nelle ultime 2 ore</summary><p>Osservazioni vicine alla località selezionata, fino a 150 km. Sono racconti delle persone, non allerte ufficiali.</p>${grid()}<div id="sky-feed">${content()}</div><p id="sky-feedback" class="sky-success" aria-live="polite" ${feedbackText?'':'hidden'}>${esc(feedbackText)}</p><a href="#mappa">Esplora le segnalazioni sulla mappa</a></details>`,page,bind,open,quick,profileHTML,bindProfile,showZone,load,refresh(){renderFeed()},stop(){clearInterval(timer);timer=0;feedMotion?.stop()},data:()=>data};
 }

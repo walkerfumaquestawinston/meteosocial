@@ -1,5 +1,5 @@
 // Funzioni conservate, riattivabili singolarmente.
-export const FEATURES={schools:false,postType:false,legacyFeed:false,stories:false,extraCommunity:false,hailSection:false,hailMap:false,coveredPlaces:false,offlinePlaces:false,editorial:false,clans:false,challenges:false,voices:false,fitCheck:false};
+export const FEATURES={schools:false,postType:true,legacyFeed:true,stories:false,extraCommunity:false,hailSection:false,hailMap:false,coveredPlaces:false,offlinePlaces:false,editorial:false,clans:false,challenges:false,voices:false,fitCheck:false};
 
 const routeFeatures={scuole:'schools',grandine:'hailSection','grandine-mappa':'hailMap',ripari:'coveredPlaces',offline:'offlinePlaces',redazione:'editorial',studio:'editorial',stanza:'editorial',avatar:'editorial',roast:'editorial','meteo-play':'editorial','meteo-cinema':'editorial',clan:'clans',sfide:'challenges',voci:'voices',fitcheck:'fitCheck',stories:'stories',archivio:'legacyFeed',persona:'legacyFeed',post:'legacyFeed'};
 export function featureRouteEnabled(route){const key=routeFeatures[String(route).split(/[?:]/)[0]];return !key||FEATURES[key]}
