@@ -38,6 +38,56 @@ function mappaColore(valore) {
   return s[s.length - 1][1];
 }
 
+// Le stesse categorie del Worker, con le stesse parole italiane: cambiare la
+// strada da cui arrivano i dati non deve cambiare come si chiamano le cose.
+export const MAPPA_GENERI = {
+  wildfires: 'Incendio', severeStorms: 'Tempesta', floods: 'Alluvione', volcanoes: 'Vulcano',
+  seaLakeIce: 'Ghiaccio', dustHaze: 'Polvere e foschia', drought: 'Siccità', landslides: 'Frana',
+  snow: 'Neve', tempExtremes: 'Temperature estreme', earthquakes: 'Terremoto',
+  waterColor: 'Colore delle acque', manmade: 'Evento segnalato',
+};
+
+// Il catalogo NASA cosi' come arriva, ridotto a quello che la mappa sa
+// disegnare. Funzione pura e orologio dai parametri, perche' un catalogo vero
+// contiene eventi chiusi, geometrie assenti e date future, e vanno scartati
+// senza inventare una posizione al loro posto.
+export function normalizzaEventiNasa(dati, adesso = Date.now()) {
+  if (!Array.isArray(dati?.events)) return [];
+  const eventi = [];
+  for (const e of dati.events.slice(0, 300)) {
+    if (!e || e.closed !== null || typeof e.id !== 'string') continue;
+    // Si tiene la posizione piu recente fra quelle valide, come fa il Worker:
+    // un evento che si muove ha piu punti, e il primo sarebbe quello vecchio.
+    const g = (Array.isArray(e.geometry) ? e.geometry : [])
+      .filter(p => p && p.type === 'Point' && Array.isArray(p.coordinates) && p.coordinates.length >= 2
+        && p.coordinates.slice(0, 2).every(Number.isFinite)
+        && Math.abs(p.coordinates[0]) <= 180 && Math.abs(p.coordinates[1]) <= 90
+        && Number.isFinite(Date.parse(p.date)) && Date.parse(p.date) <= adesso + 600000)
+      .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))[0];
+    if (!g) continue;
+    const categoria = (Array.isArray(e.categories) ? e.categories : []).map(c => c?.id).find(id => MAPPA_GENERI[id]);
+    const valore = MAPPA_GENERI[categoria] || 'Evento naturale';
+    eventi.push({
+      id: e.id, categoryId: categoria, name: String(e.title || valore).slice(0, 100), value: valore,
+      latitude: g.coordinates[1], longitude: g.coordinates[0], at: Date.parse(g.date), started: Date.parse(g.date),
+      color: '#ff5a47', detail: 'Ultima posizione nel catalogo; non una rilevazione istantanea.',
+      link: 'https://eonet.gsfc.nasa.gov/api/v3/events/' + encodeURIComponent(e.id),
+    });
+  }
+  return eventi;
+}
+
+// Open-Meteo risponde con una riga per coordinata, nello stesso ordine. Se il
+// conto non torna l'abbinamento sarebbe una lotteria: meglio niente che una
+// temperatura attribuita alla citta sbagliata.
+export function abbinaMeteoCitta(blocco, righe) {
+  if (!Array.isArray(righe) || righe.length !== blocco.length) return null;
+  return righe.map((riga, i) => ({
+    ...blocco[i],
+    current: riga?.current && Number.isFinite(riga.current.temperature_2m) ? riga.current : null,
+  }));
+}
+
 const mappaNumero = (n) => Number.isFinite(n) ? n.toLocaleString('it-IT') : '—';
 const mappaOra = (t) => Number.isFinite(t) ? new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '—';
 
@@ -84,32 +134,74 @@ export function createMappaEventi(ctx) {
 
   const $ = (s) => document.querySelector(s);
 
+  // La mappa e' la pagina, non un riquadro dentro una pagina: occupa tutto lo
+  // schermo e ogni comando ci galleggia sopra. Prima era impilata fra pannelli
+  // e su un telefono restavano ottanta pixel di mappa, misurati nel browser.
+  //
+  // Le pillole in alto fanno due lavori insieme, come in ogni mappa operativa:
+  // dicono quanti elementi ci sono e accendono o spengono quel livello. Tenere
+  // separati contatore e interruttore significherebbe due comandi per la stessa
+  // cosa e due modi di essere in disaccordo.
   function page() {
     return `<section class="mappa" aria-label="Mappa eventi atmosferici">
-      <div class="mappa-stato" id="mappa-stato" role="status">
-        <p class="mappa-riga"><span id="mappa-sistema">SISTEMA ATTIVO</span> · <span id="mappa-ora">--:--:--</span> UTC</p>
-        <p class="mappa-riga">FONTI <span id="mappa-fonti">—</span></p>
-        <p class="mappa-riga">NODI <span id="mappa-nodi">—</span> · EVENTI ATTIVI <span id="mappa-eventi-attivi">—</span></p>
-      </div>
-      <div class="mappa-avviso" id="mappa-avviso" role="status" hidden></div>
-      <div class="mappa-quadro">
-        <div class="mappa-tela" id="mappa-tela" role="application" aria-label="Mappa degli eventi atmosferici"></div>
-        <div class="mappa-controlli">
-          <div class="mappa-livelli" role="group" aria-label="Livelli della mappa">
-            ${livelli.map(l => `<button type="button" class="mappa-pillola" data-livello="${l.id}" aria-pressed="${l.attivo}">${l.icona} ${l.nome} <span data-conteggio="${l.id}">—</span></button>`).join('')}
-          </div>
-          <div class="mappa-azioni">
-            <button type="button" class="mappa-elenco" id="mappa-elenco" aria-expanded="false">ELENCO</button>
-            <button type="button" class="mappa-chiedi mappa-chiedi-vista" id="mappa-lente">CHIEDI A LENTE</button>
-          </div>
-          <a class="mappa-segnala" href="#segnala">◇ SEGNALA GRANDINE</a>
-          <label class="mappa-raggio"><span>AVVISAMI ENTRO</span>
-            <select id="mappa-raggio">${AVVISO_DISTANZE.map(k => `<option value="${k}"${k === raggioAvviso ? ' selected' : ''}>${k} km</option>`).join('')}</select>
-          </label>
+      <div class="mappa-tela" id="mappa-tela" role="application" aria-label="Mappa degli eventi atmosferici"></div>
+
+      <div class="mappa-alto">
+        <form class="mappa-cerca" id="mappa-cerca" role="search">
+          <label class="sr-only" for="mappa-cerca-testo">Cerca un luogo sulla mappa</label>
+          <input id="mappa-cerca-testo" type="search" placeholder="Cerca una località…" autocomplete="off" enterkeyhint="search">
+          <button type="submit" aria-label="Cerca">⌕</button>
+        </form>
+        <div class="mappa-contatori" role="group" aria-label="Livelli della mappa">
+          ${livelli.map(l => `<button type="button" class="mappa-pillola" data-livello="${l.id}" aria-pressed="${l.attivo}">
+            <span class="mappa-pillola-nome">${l.nome}</span>
+            <span class="mappa-pillola-conto">${l.icona} <span data-conteggio="${l.id}">—</span></span>
+          </button>`).join('')}
+        </div>
+        <!-- Lo stato sta nella stessa fascia dei contatori invece di essere
+             posizionato a mano: cosi' non ci finisce sotto quando le pillole
+             cambiano altezza. Prima era assoluto e si sovrapponeva. -->
+        <div class="mappa-stato" id="mappa-stato" role="status">
+          <p class="mappa-riga"><span id="mappa-sistema">SISTEMA ATTIVO</span> · <span id="mappa-ora">--:--:--</span> UTC</p>
+          <p class="mappa-riga">FONTI <span id="mappa-fonti">—</span></p>
+          <p class="mappa-riga">NODI <span id="mappa-nodi">—</span> · EVENTI ATTIVI <span id="mappa-eventi-attivi">—</span></p>
         </div>
       </div>
-      <div class="mappa-lista" id="mappa-lista" hidden></div>
-      <p class="mappa-attribuzioni">Mappa © OpenStreetMap · Comuni ISTAT · Meteo Open-Meteo · Eventi NASA EONET · Grandine: segnalazioni delle persone, non allerte ufficiali</p>
+
+      <!-- La scheda scorre sopra la mappa invece di aprirsi come finestra: si
+           continua a vedere dove si trova quello che si sta leggendo. -->
+      <aside class="mappa-pannello" id="mappa-pannello" hidden aria-live="polite">
+        <div class="mappa-pannello-testa">
+          <h2 id="mappa-pannello-titolo"></h2>
+          <button type="button" id="mappa-pannello-chiudi" aria-label="Chiudi la scheda">✕</button>
+        </div>
+        <div class="mappa-pannello-corpo" id="mappa-pannello-corpo"></div>
+      </aside>
+
+      <div class="mappa-strumenti">
+        <button type="button" class="mappa-elenco" id="mappa-elenco" aria-expanded="false" aria-label="Elenco di quello che c'è sulla mappa">☰</button>
+        <a class="mappa-segnala" href="#segnala" aria-label="Segnala grandine">◇</a>
+        <label class="mappa-raggio"><span class="sr-only">Avvisami entro</span>
+          <select id="mappa-raggio" aria-label="Distanza entro cui essere avvisati della grandine">${AVVISO_DISTANZE.map(k => `<option value="${k}"${k === raggioAvviso ? ' selected' : ''}>${k} km</option>`).join('')}</select>
+        </label>
+        <a class="mappa-classica" href="#mappa-classica" aria-label="Apri la mappa della tua zona">⌖</a>
+      </div>
+
+      <div class="mappa-basso">
+        <div class="mappa-avviso" id="mappa-avviso" role="status" hidden></div>
+        <div class="mappa-lista" id="mappa-lista" hidden></div>
+        <!-- L'IA si chiede scrivendo, non scegliendo fra domande gia' pronte:
+             e' la differenza fra un assistente e un menu. Quello che si vede
+             sulla mappa viene allegato alla domanda, cosi' la risposta parla
+             di questa vista e non del mondo in generale. -->
+        <form class="mappa-ia" id="mappa-ia">
+          <span class="mappa-ia-marchio" aria-hidden="true">⬦ LENTE</span>
+          <label class="sr-only" for="mappa-ia-testo">Chiedi a Lente cosa sta succedendo sulla mappa</label>
+          <input id="mappa-ia-testo" type="text" placeholder="Chiedi cosa sta succedendo qui…" autocomplete="off" enterkeyhint="send">
+          <button type="submit" id="mappa-ia-invia" aria-label="Manda la domanda a Lente">→</button>
+        </form>
+        <p class="mappa-attribuzioni">© OpenStreetMap · Comuni ISTAT · Meteo Open-Meteo · Eventi NASA EONET · Grandine: segnalazioni delle persone, non allerte ufficiali</p>
+      </div>
     </section>`;
   }
 
@@ -124,7 +216,9 @@ export function createMappaEventi(ctx) {
     // deve sapere.
     const fonti = $('#mappa-fonti');
     if (fonti) {
-      const peso = { '': 0, vecchio: 1, giu: 2 };
+      // "diretto" pesa meno di "vecchio": il dato e' fresco, e' la strada che
+      // cambia. Ma piu di "ok", perche' chi guarda deve poterlo vedere scritto.
+      const peso = { '': 0, diretto: 1, vecchio: 2, giu: 3 };
       const per = new Map();
       for (const l of livelli) {
         const attuale = per.get(l.fonte) ?? '';
@@ -133,7 +227,8 @@ export function createMappaEventi(ctx) {
       fonti.innerHTML = [...per].map(([nome, stato]) =>
         stato === 'giu' ? `<s class="mappa-giu">${esc(nome)}</s>`
           : stato === 'vecchio' ? `<span class="mappa-vecchio">${esc(nome)}*</span>`
-            : esc(nome)).join(' · ');
+            : stato === 'diretto' ? `<span class="mappa-diretto" title="Chiesto dal browser direttamente alla fonte: il nostro server non ha risposto. Dato fresco, ma senza cache condivisa.">${esc(nome)} diretto</span>`
+              : esc(nome)).join(' · ');
     }
 
     // NODI: elementi realmente caricati. Mai numeri inventati.
@@ -154,6 +249,58 @@ export function createMappaEventi(ctx) {
       const c = document.querySelector(`[data-conteggio="${l.id}"]`);
       if (c) c.textContent = l.stato === 'giu' ? '—' : mappaNumero(l.conteggio);
     }
+  }
+
+  // ---- fonti chieste direttamente dal browser ------------------------------
+  //
+  // Normalmente le fonti le interroga il Worker: raccoglie, mette in cache
+  // quindici minuti e conserva il dato precedente quando non rispondono. Se il
+  // Worker non c'e' o non conosce ancora queste rotte, la mappa resterebbe
+  // vuota pur essendo le fonti perfettamente vive. Allora le chiede da se'.
+  //
+  // Cosa si perde, e va detto invece di nasconderlo:
+  //   - niente cache condivisa: ogni browser interroga per conto suo;
+  //   - niente conservazione del dato precedente se la fonte cade;
+  //   - il numero di chiamate cresce con le persone collegate.
+  // Per questo resta una ricaduta, non la strada normale, e la barra di stato
+  // scrive "diretto" accanto alla fonte: chi guarda deve sapere da dove arriva.
+  //
+  // Non e' una pratica nuova nel progetto: dist/sky-community.js chiede gia'
+  // Open-Meteo dal browser. Le due fonti rispondono con CORS aperto.
+
+  const MAPPA_MISURE = 'temperature_2m,weather_code,is_day,precipitation,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,cloud_cover';
+
+  // L'elenco delle citta arriva con import() e solo qui: sono 20 KB che non
+  // hanno motivo di pesare sull'avvio di chi non apre mai la mappa.
+  async function meteoMondialeDiretto() {
+    try {
+      const { CITTA_MONDO } = await import('./citta-mondo.js');
+      const blocchi = [];
+      for (let i = 0; i < CITTA_MONDO.length; i += 50) blocchi.push(CITTA_MONDO.slice(i, i + 50));
+      const gruppi = await Promise.all(blocchi.map(async blocco => {
+        const params = new URLSearchParams({
+          latitude: blocco.map(c => c.latitude).join(','),
+          longitude: blocco.map(c => c.longitude).join(','),
+          current: MAPPA_MISURE, timezone: 'GMT', forecast_days: '1',
+        });
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?' + params, { signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw Error('Open-Meteo: ' + r.status);
+        const abbinate = abbinaMeteoCitta(blocco, await r.json());
+        if (!abbinate) throw Error('campione incompleto');
+        return abbinate;
+      }));
+      const citta = gruppi.flat().filter(c => c.current);
+      return citta.length ? citta : null;
+    } catch { return null; }
+  }
+
+  async function eventiNasaDiretti() {
+    try {
+      const r = await fetch('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=300', { signal: AbortSignal.timeout(15000) });
+      if (!r.ok) throw Error('EONET: ' + r.status);
+      const eventi = normalizzaEventiNasa(await r.json());
+      return eventi.length ? eventi : null;
+    } catch { return null; }
   }
 
   // ---- caricamento: ogni livello per conto suo ------------------------------
@@ -195,7 +342,15 @@ export function createMappaEventi(ctx) {
       l.conteggio = l.dati.length;
       l.stato = d.stale ? 'vecchio' : '';
       aggiornamenti.temperature = d.updated;
-    } catch { if (token === sequenza) { l.dati = []; l.conteggio = 0; l.stato = 'giu'; } }
+    } catch {
+      // Il nostro server non risponde: invece di mostrare una mappa vuota si
+      // chiede la stessa cosa alla stessa fonte, direttamente. Vedi
+      // fonteDiretta() per cosa si perde facendolo.
+      const diretto = await meteoMondialeDiretto();
+      if (token !== sequenza) return;
+      if (diretto) { l.dati = diretto; l.conteggio = diretto.length; l.stato = 'diretto'; aggiornamenti.temperature = Date.now(); }
+      else { l.dati = []; l.conteggio = 0; l.stato = 'giu'; }
+    }
   }
 
   async function caricaEventi(token) {
@@ -206,7 +361,12 @@ export function createMappaEventi(ctx) {
       l.dati = d.events || []; l.conteggio = l.dati.length;
       l.stato = d.stale ? 'vecchio' : '';
       aggiornamenti.eventi = d.updated;
-    } catch { if (token === sequenza) { l.dati = []; l.conteggio = 0; l.stato = 'giu'; } }
+    } catch {
+      const diretto = await eventiNasaDiretti();
+      if (token !== sequenza) return;
+      if (diretto) { l.dati = diretto; l.conteggio = diretto.length; l.stato = 'diretto'; aggiornamenti.eventi = Date.now(); }
+      else { l.dati = []; l.conteggio = 0; l.stato = 'giu'; }
+    }
   }
 
   async function caricaGrandine(token) {
@@ -403,6 +563,23 @@ export function createMappaEventi(ctx) {
 
   // ---- schede: prima le persone, poi il modello, sempre con la fonte -------
 
+  // La scheda scorre sopra la mappa invece di aprirsi come finestra sopra tutto:
+  // si continua a vedere il punto di cui si sta leggendo. Sostituisce ctx.modal
+  // solo qui dentro; nel resto dell'app la finestra resta quella di sempre.
+  function pannello(titolo, corpo) {
+    const p = $('#mappa-pannello'); if (!p) return;
+    $('#mappa-pannello-titolo').textContent = titolo;
+    $('#mappa-pannello-corpo').innerHTML = corpo;
+    p.hidden = false;
+    $('#mappa-pannello-chiudi').onclick = () => chiudiPannello();
+  }
+
+  function chiudiPannello() {
+    const p = $('#mappa-pannello'); if (!p) return;
+    p.hidden = true;
+    $('#mappa-pannello-corpo').innerHTML = '';
+  }
+
   function bloccoLente(citta, domanda) {
     return `<p class="mappa-lente"><button type="button" class="mappa-chiedi" data-citta="${esc(citta)}" data-domanda="${esc(domanda)}">CHIEDI A LENTE</button></p>
       <div id="mappa-risposta" role="status"></div>`;
@@ -437,7 +614,7 @@ export function createMappaEventi(ctx) {
     const nota = m
       ? '<p>Dato di modello, non una misura presa da una stazione qui.</p>'
       : `<p>Per questo comune il meteo non è disponibile: la raccolta copre i 500 comuni più popolosi. Non mettiamo un numero stimato al suo posto.</p>`;
-    ctx.modal(c[1], `<div class="mappa-scheda">
+    pannello(c[1], `<div class="mappa-scheda">
       <p class="mappa-riga">${esc(c[2])} · ${ab}</p>
       <dl>${meteo}
       <dt>CODICE ISTAT</dt><dd class="mappa-mono">${esc(c[0])}</dd>
@@ -445,7 +622,7 @@ export function createMappaEventi(ctx) {
       ${nota}
       ${bloccoLente(c[1], `Che tempo fa a ${c[1]}?`)}
       <p class="mappa-fonte">FONTE  Comuni ISTAT${m ? ` · meteo Open-Meteo${aggiornamenti.meteoComuni ? ', aggiornato alle ' + mappaOra(aggiornamenti.meteoComuni) : ''}` : ''}</p>
-    </div>`, null);
+    </div>`);
     collegaLente();
   }
 
@@ -466,22 +643,55 @@ export function createMappaEventi(ctx) {
     return pezzi;
   }
 
+  // La domanda scritta dalla barra in fondo. Quello che si vede sulla mappa
+  // viene allegato, cosi' la risposta parla di questa vista e non del mondo in
+  // generale; ma alla Lente arriva solo il nome della localita e il riassunto
+  // dei conteggi, mai coordinate precise, autori o foto.
+  async function chiediAllaLente(domanda) {
+    const citta = ctx.get()?.place?.name || 'la zona che sto guardando';
+    const pezzi = riassuntoVista();
+    const riassunto = pezzi.length ? pezzi.join('; ') : 'nessun dato caricato in questo momento';
+    if (!domanda) { chiediSullaVista(); return; }
+    const campo = $('#mappa-ia-testo'), invia = $('#mappa-ia-invia');
+    if (invia) invia.disabled = true;
+    pannello('Lente', `<div class="mappa-scheda">
+      <p class="mappa-riga">LA TUA DOMANDA</p>
+      <p>${esc(domanda)}</p>
+      <p class="mappa-riga">COSA C'È SULLA MAPPA ORA</p>
+      <p>${esc(riassunto)}.</p>
+      <div id="mappa-risposta" role="status"><p>Lente sta leggendo…</p></div>
+      <p class="mappa-fonte">Alla Lente arriva solo il nome della località, la domanda e questo riassunto. Mai coordinate precise, autori o foto.</p>
+    </div>`);
+    try {
+      const r = await ctx.api('ai', { city: citta, question: `Sulla mappa vedo: ${riassunto}. ${domanda}`, includeCommunity: false });
+      const testo = r?.answer || r?.text || '';
+      const slot = $('#mappa-risposta');
+      if (slot) slot.innerHTML = testo
+        ? `<p>${esc(testo)}</p><p class="mappa-fonte">RISPOSTA GENERATA · non è una previsione ufficiale</p>`
+        : '<p>Lente non ha risposto. Riprova tra poco.</p>';
+      if (campo) campo.value = '';
+    } catch (e) {
+      const slot = $('#mappa-risposta');
+      if (slot) slot.innerHTML = `<p>${esc(e?.message || 'Lente non è disponibile adesso.')}</p>`;
+    } finally { if (invia) invia.disabled = false; }
+  }
+
   async function chiediSullaVista() {
     const citta = ctx.get()?.place?.name || 'la zona che sto guardando';
     const pezzi = riassuntoVista();
     const riassunto = pezzi.length ? pezzi.join('; ') : 'nessun dato caricato in questo momento';
-    ctx.modal('Chiedi a Lente', `<div class="mappa-scheda">
+    pannello('Chiedi a Lente', `<div class="mappa-scheda">
       <p class="mappa-riga">COSA C'È SULLA MAPPA ORA</p>
       <p>${esc(riassunto)}.</p>
       <p class="mappa-fonte">Alla Lente arriva solo il nome della località e questa domanda. Mai coordinate precise, autori o foto.</p>
       ${bloccoLente(citta, `Sulla mappa vedo: ${riassunto}. Cosa sta succedendo dalle parti di ${citta}, e cosa conviene aspettarsi nelle prossime ore?`)}
-    </div>`, null);
+    </div>`);
     collegaLente();
   }
 
   function schedaCitta(c) {
     const k = c.current;
-    ctx.modal(c.name, `<div class="mappa-scheda">
+    pannello(c.name, `<div class="mappa-scheda">
       <p class="mappa-riga">${esc(c.country_code || '')}</p>
       <dl>
         <dt>TEMPERATURA</dt><dd class="mappa-mono">${Math.round(k.temperature_2m)}°</dd>
@@ -491,12 +701,12 @@ export function createMappaEventi(ctx) {
       <p>Nessuno ha ancora raccontato il cielo qui.</p>
       ${bloccoLente(c.name, `Com'è il tempo a ${c.name}?`)}
       <p class="mappa-fonte">FONTE  Open-Meteo${aggiornamenti.temperature ? ' · aggiornato alle ' + mappaOra(aggiornamenti.temperature) : ''}. Dato di modello, non una misura osservata.</p>
-    </div>`, null);
+    </div>`);
     collegaLente();
   }
 
   function schedaEvento(e) {
-    ctx.modal(e.name || e.value, `<div class="mappa-scheda">
+    pannello(e.name || e.value, `<div class="mappa-scheda">
       <p class="mappa-riga">${esc(e.value || 'EVENTO NATURALE')}</p>
       <dl>
         <dt>POSIZIONE</dt><dd class="mappa-mono">${Number(e.latitude).toFixed(3)}, ${Number(e.longitude).toFixed(3)}</dd>
@@ -504,19 +714,19 @@ export function createMappaEventi(ctx) {
       </dl>
       <p>${esc(e.detail || 'Ultima posizione nel catalogo; non una rilevazione istantanea.')}</p>
       <p class="mappa-fonte">FONTE  NASA EONET${e.link ? ` · <a href="${esc(e.link)}" target="_blank" rel="noopener">catalogo ↗</a>` : ''}</p>
-    </div>`, null);
+    </div>`);
   }
 
   function schedaGrandine(p) {
     const mm = Number(p.hail?.size);
-    ctx.modal('Grandine', `<div class="mappa-scheda">
+    pannello('Grandine', `<div class="mappa-scheda">
       <p class="mappa-riga">${esc(p.city || 'Zona segnalata')}${Number.isFinite(p.created) ? ' · ' + mappaOra(p.created) : ''}</p>
       <dl>
         <dt>CHICCHI</dt><dd>${Number.isFinite(mm) ? `circa ${mm} mm` : 'dimensione non dichiarata'}</dd>
         ${Number.isFinite(p.confirms) ? `<dt>CONFERME</dt><dd class="mappa-mono">${mappaNumero(p.confirms)}</dd>` : ''}
       </dl>
       <p class="mappa-fonte">FONTE  Segnalazioni della community. <strong>Non è un'allerta ufficiale.</strong></p>
-    </div>`, null);
+    </div>`);
   }
 
   // ---- elenco accessibile --------------------------------------------------
@@ -562,8 +772,29 @@ export function createMappaEventi(ctx) {
       salvaLivelli();
       if (l.attivo) carica(); else { l.dati = []; l.conteggio = 0; disegna(); scriviStato(); scriviLista(); mostraVuoto(); }
     };
-    const lente = $('#mappa-lente');
-    if (lente) lente.onclick = () => chiediSullaVista();
+    // La barra dell'IA: si scrive una domanda e si manda. Vuota, chiede a
+    // Lente cosa sta succedendo nella vista, che e' la domanda piu probabile.
+    const formIA = $('#mappa-ia');
+    if (formIA) formIA.onsubmit = (e) => { e.preventDefault(); chiediAllaLente($('#mappa-ia-testo')?.value.trim() || ''); };
+
+    // La ricerca usa il geocodificatore di Open-Meteo, lo stesso che l'app usa
+    // gia' altrove: nessuna fonte nuova, nessuna chiave da custodire.
+    const formCerca = $('#mappa-cerca');
+    if (formCerca) formCerca.onsubmit = async (e) => {
+      e.preventDefault();
+      const testo = $('#mappa-cerca-testo')?.value.trim();
+      if (!testo || !map) return;
+      try {
+        const r = await fetch('https://geocoding-api.open-meteo.com/v1/search?' + new URLSearchParams({ name: testo, count: '1', language: 'it', format: 'json' }), { signal: AbortSignal.timeout(10000) });
+        const d = await r.json();
+        const luogo = d?.results?.[0];
+        if (!luogo || !Number.isFinite(luogo.latitude)) { pannello('Ricerca', `<div class="mappa-scheda"><p>Nessun luogo trovato per «${esc(testo)}».</p></div>`); return; }
+        map.setView([luogo.latitude, luogo.longitude], 9);
+      } catch {
+        pannello('Ricerca', '<div class="mappa-scheda"><p>La ricerca dei luoghi non risponde adesso. Riprova tra poco.</p></div>');
+      }
+    };
+
     const raggio = $('#mappa-raggio');
     if (raggio) raggio.onchange = () => {
       const scelto = Number(raggio.value);

@@ -4,7 +4,7 @@
 Prima dell'intervento esistevano 35 città con simboli meteo e NASA EONET limitato agli ultimi 7 giorni. Il proprietario ha approvato l'estensione senza duplicare tali funzioni. Gli aloni rappresentano campioni del modello, non aree radar. Gli estremi sono quelli del campione, non record del pianeta.
 
 ## Modifiche
-- server/world-cities.js: 200 località reali del dataset Natural Earth 1:110m, selezionate per popolazione nel dataset. Nomi e coordinate provengono dalla fonte, non sono osservazioni meteo né una graduatoria aggiornata delle popolazioni.
+- dist/citta-mondo.js (fino al 21 settembre 2026 in server/world-cities.js): 200 località reali del dataset Natural Earth 1:110m, selezionate per popolazione nel dataset. Nomi e coordinate provengono dalla fonte, non sono osservazioni meteo né una graduatoria aggiornata delle popolazioni.
 - server/world-weather.js: quattro richieste da 50 località in parallelo, dati correnti Open-Meteo, tempo limite 25 secondi; cache condivisa persistente D1, aggiornamento su consultazione ogni 15 minuti, lock contro duplicazioni, ultimo dato preservato e dichiarato in caso di errore.
 - server/globe-events.js: fino a 300 eventi NASA aperti, nessun taglio automatico a 7 giorni; prima data disponibile e ultima posizione del catalogo, fonte esplicita, cache persistente. Le date non certificano inizio/durata reale dell'evento.
 - server/atlas.js: nuova lettura mondiale separata; le 35 città delle altre sezioni restano preservate.

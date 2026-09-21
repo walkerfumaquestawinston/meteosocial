@@ -6,6 +6,28 @@ GitHub resta pubblico per scelta esplicita del proprietario. La vecchia app sing
 
 Le note precedenti qui sotto restano cronologia; le affermazioni sul mancato trasferimento GitHub sono superate da questa sincronizzazione.
 
+## La mappa diventa la pagina, ed è raggiungibile — 21 settembre 2026
+
+Il proprietario ha detto la cosa più utile che potesse dire: «non ho visto aggiornamenti». Aveva ragione, e il motivo era preciso.
+
+**Perché non si vedeva niente.** La mappa esisteva su `#mappa-eventi`, una rotta **non collegata da nessuna parte**: per aprirla bisognava scrivere l'indirizzo a mano. Era stata lasciata così come «decisione del proprietario», e il risultato è che per tre giorni nessuno l'ha vista. Una funzione che non si raggiunge, per chi la usa non esiste.
+
+Ora la voce **Mappa** della barra apre questa vista. La mappa MapLibre della versione 64 non è stata toccata: resta su `#mappa-classica`, con un collegamento dalla vista nuova, e il vecchio indirizzo `#mappa` continua a funzionare per chi lo avesse salvato. `test-mappa.mjs` controlla adesso anche la raggiungibilità, così non si ripete in silenzio.
+
+**La mappa è la pagina, non un riquadro dentro la pagina.** Il proprietario ha mandato lo schermo di ARGOS Atlas: mappa a tutto schermo, comandi che ci galleggiano sopra. Prima era impilata fra pannelli e su un telefono da 375 px restavano **ottanta pixel di mappa visibile**, misurati nel browser. Adesso occupa tutto lo spazio fra intestazione e barra di navigazione, riusando `html.mappa-eventi-view` sul modello già collaudato di `local-map.css`: ricerca di una località in alto al centro, contatori a destra, stato sotto, strumenti sul bordo destro, scheda che scorre **sopra** la mappa invece di coprirla con una finestra.
+
+I contatori fanno due lavori insieme: dicono quanti elementi ci sono e accendono o spengono quel livello. Tenerli separati significherebbe due comandi per la stessa cosa e due modi di essere in disaccordo.
+
+**L'IA si chiede scrivendo.** La barra in fondo è un campo di testo, non un pulsante con una domanda già pronta. Quello che si vede sulla mappa viene allegato alla domanda, così la risposta parla di questa vista; ma alla Lente arrivano **solo** il nome della località, la domanda e il riassunto dei conteggi. Mai coordinate, autori o foto: c'è un controllo che legge la chiamata vera e fallisce se qualcuno ci aggiungesse un campo.
+
+**Le fonti si possono chiedere anche senza il nostro server.** Se `/api/atlas/*` non risponde — per esempio perché su Sites gira ancora la versione 64, che quelle rotte non le ha — il browser interroga Open-Meteo e NASA EONET **direttamente**, come `dist/sky-community.js` fa già da tempo. Non è gratis e lo si dichiara: niente cache condivisa, niente dato precedente conservato se la fonte cade, e le chiamate crescono con le persone collegate. Per questo resta una ricaduta e la barra scrive **«diretto»** accanto alla fonte. Verificato nel browser: 8 chiamate a Open-Meteo e 2 a NASA, contatori a 200 temperature, 32 con pioggia, 6 eventi.
+
+**Una sola verità per le città del mondo.** L'elenco delle 200 località Natural Earth era in `server/world-cities.js`, dove il browser non arriva. È passato a `dist/citta-mondo.js`, e `build.mjs` lo incorpora nel Worker rinominandolo `WORLD_CITIES` — lo stesso trucco già usato per `CITIES` di `places.js`. Duplicarlo avrebbe prodotto due copie destinate a divergere senza che nessuno se ne accorgesse. Il file si carica con `import()` solo quando serve: non pesa sull'avvio di chi non apre mai la mappa.
+
+Verifiche: suite completa **47 superati, 0 falliti**; `test-mappa.mjs` 53 controlli, `test-mappa-diretta.mjs` 39; browser reale a 375 e 1280 px, nessun errore JavaScript, posizioni **misurate**.
+
+Limiti dichiarati: da questo ambiente Open-Meteo, NASA e le tessere della mappa **non sono raggiungibili**, quindi le prove nel browser usano risposte finte con il codice vero; in produzione rispondono. Perché le rotte `/api/mappa/*` funzionino davvero, il Worker va pubblicato su Sites. La Lente sull'anteprima locale risponde «Accedi con ChatGPT per partecipare», che è l'errore onesto di un ambiente senza identità.
+
 ## Grandine: segnalare, scegliere la distanza, essere avvisati prima — 18 settembre 2026
 
 Richiesta del proprietario: che la gente possa segnalare, possa mettere la distanza preferita, e che quando succede venga avvisata prima.

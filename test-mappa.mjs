@@ -78,4 +78,53 @@ eq(scrittura.status, 405, 'la scrittura non e consentita');
 const senzaZoom = await chiedi('');
 eq(senzaZoom.corpo.zoom, 11, 'senza zoom si applica il predefinito 11');
 
-console.log(n + ' controlli mappa superati: livelli di zoom, soglie reali, riquadro, troncamento dichiarato, abitanti null, fonte, cache, metodi.');
+// --- la mappa dev'essere raggiungibile, non solo esistere ------------------
+// Per tre giorni la mappa nuova e' esistita senza che nessun collegamento ci
+// portasse: bisognava scrivere l'indirizzo a mano. Questi controlli servono a
+// non ripetere quell'errore in silenzio.
+const { readFileSync } = await import('node:fs');
+const html = readFileSync('dist/index.html', 'utf8');
+const nav = html.match(/<nav[^>]*>[\s\S]*?<\/nav>/)[0];
+check(nav.includes('href="#mappa-eventi"'), 'la barra di navigazione porta alla mappa degli eventi');
+check(!/<a href="#mappa">/.test(nav), 'la voce Mappa non punta piu alla vista precedente');
+
+const app = readFileSync('dist/main.js', 'utf8');
+check(app.includes("'mappa-classica':()=>living.page()"), 'la mappa di prima resta raggiungibile su #mappa-classica');
+check(app.includes('mappa:()=>living.page()'), 'e il vecchio indirizzo continua a funzionare per chi lo aveva salvato');
+const vista = readFileSync('dist/mappa-eventi.js', 'utf8');
+check(vista.includes('href="#mappa-classica"'), 'dalla mappa nuova si torna a quella di prima');
+
+// --- la mappa dev'essere la pagina, non un riquadro dentro la pagina --------
+// Il proprietario ha chiesto una mappa come quelle operative: a tutto schermo,
+// con i comandi che ci galleggiano sopra. Se qualcuno rimettesse la vista
+// dentro l'impaginazione normale, questi controlli lo direbbero.
+check(app.includes("'mappa-eventi-view',r==='mappa-eventi'"), 'la rotta accende la modalita a tutto schermo');
+const foglio = readFileSync('dist/mappa-eventi.css', 'utf8');
+check(/html\.mappa-eventi-view #main\{[^}]*padding: 0/.test(foglio), 'a tutto schermo l impaginazione dell app si ritira');
+check(/\.mappa\{[\s\S]*?position: fixed/.test(foglio), 'la sezione della mappa e fissa allo schermo');
+check(/\.mappa-tela\{[\s\S]*?background: #091421/.test(foglio),
+  'la tela ha un fondo scuro: senza tessere non diventa un foglio bianco');
+
+// L'IA si chiede scrivendo, non scegliendo da un elenco di domande pronte.
+check(vista.includes('id="mappa-ia-testo"') && vista.includes('<form class="mappa-ia"'),
+  'la barra dell IA e un campo di testo, non un pulsante con domanda fissa');
+check(vista.includes('function chiediAllaLente'), 'la domanda scritta viene mandata a Lente');
+check(/riassunto\}\. \$\{domanda\}/.test(vista) || vista.includes('Sulla mappa vedo: ${riassunto}. ${domanda}'),
+  'alla domanda viene allegato quello che si vede sulla mappa');
+// La regola del progetto: alla Lente arrivano solo il nome della localita, la
+// domanda e il riassunto dei conteggi. Mai coordinate, autori o foto. Si
+// guarda la chiamata vera, non il testo intorno.
+// Si arriva fino a "})", non al primo "}": dentro c'e' un testo con ${...},
+// e fermarsi li darebbe un elenco di campi inventato.
+const chiamate = [...vista.matchAll(/ctx\.api\('ai',\s*\{([\s\S]*?)\}\)/g)].map(m => m[1]);
+eq(chiamate.length, 2, 'le chiamate a Lente sono due: la barra e le schede');
+for (const argomenti of chiamate) {
+  // Si tolgono prima i testi: dentro la domanda c'e' «Sulla mappa vedo: ...»,
+  // e "vedo" verrebbe scambiato per un campo che nessuno ha mai scritto.
+  const senzaTesti = argomenti.replace(/`[^`]*`|'[^']*'|"[^"]*"/g, "''");
+  const campi = [...senzaTesti.matchAll(/(\w+)\s*:/g)].map(m => m[1]).sort();
+  eq(campi, ['city', 'includeCommunity', 'question'], 'a Lente vanno solo localita, domanda e la scelta sulla community');
+  check(!/latitude|longitude|lat\b|lon\b|author|photo/.test(argomenti), 'nessuna coordinata, autore o foto nella chiamata');
+}
+
+console.log(n + ' controlli mappa superati: livelli di zoom, soglie reali, riquadro, troncamento dichiarato, abitanti null, fonte, cache, metodi, raggiungibilita.');

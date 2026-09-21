@@ -2,6 +2,22 @@
 
 Le sezioni sono in ordine dal più recente al più vecchio, come in PROJECT_STATUS.md.
 
+## La mappa diventa la pagina, ed è raggiungibile — 21 settembre 2026
+
+**Per chi riprende da qui.** La mappa eventi era stata costruita ma lasciata su una rotta non collegata: il proprietario per tre giorni non ha visto niente, e aveva ragione a dirlo. Due cose sono cambiate.
+
+**Dov'è adesso.** La voce **Mappa** della barra apre `#mappa-eventi`. La mappa MapLibre della versione 64 è intatta su `#mappa-classica`; il vecchio `#mappa` funziona ancora. Modificati: `dist/index.html` (un solo href della navigazione) e `dist/main.js` (rotta nuova, tema, voce attiva, classe a tutto schermo).
+
+**Come è fatta.** `html.mappa-eventi-view` in `dist/mappa-eventi.css` ritira l'impaginazione dell'app, sul modello già esistente di `local-map.css`. `.mappa` è `position: fixed` fra intestazione e barra di navigazione; `.mappa-tela` la riempie e ha fondo `#091421` — attenzione, quell'elemento **diventa** il contenitore Leaflet, quindi `.mappa-tela .leaflet-container` non lo colpirebbe. Le fasce `.mappa-alto` e `.mappa-basso` hanno `pointer-events: none` con i figli a `auto`: senza questo una striscia trasparente impedirebbe di trascinare la mappa.
+
+**L'IA.** `chiediAllaLente(domanda)` in `dist/mappa-eventi.js`: il campo `#mappa-ia-testo` manda la domanda con allegato il riassunto della vista. Alla Lente vanno **solo** `city`, `question`, `includeCommunity`. `test-mappa.mjs` legge la chiamata vera e fallisce se compaiono altri campi: se serve aggiungerne uno, va aggiornato il controllo con cognizione, non allentato.
+
+**Ricaduta diretta alle fonti.** Se `ctx.api('atlas/world')` o `ctx.api('atlas/events')` falliscono, `meteoMondialeDiretto()` e `eventiNasaDiretti()` chiedono a Open-Meteo e NASA dal browser. Lo stato del livello diventa `diretto` e la barra delle fonti lo scrive. `normalizzaEventiNasa()` e `abbinaMeteoCitta()` sono esportate e pure: si provano senza rete (`test-mappa-diretta.mjs`). Se si tocca la normalizzazione degli eventi, va tenuta allineata a `server/globe-events.js`, che fa lo stesso lavoro dall'altra parte.
+
+**Attenzione al file delle città.** `server/world-cities.js` **non esiste più**: il contenuto è in `dist/citta-mondo.js` e `build.mjs` lo incorpora nel Worker rinominandolo `WORLD_CITIES`. Chi modifica `build.mjs` non tolga quel `.replace()`, o il meteo mondiale sparisce in silenzio; c'è un controllo che lo verifica sul Worker costruito.
+
+**Cosa resta da fare.** Pubblicare il Worker su Sites, altrimenti le rotte `/api/mappa/*` non rispondono e la mappa vive solo di fonti dirette. Le tre decisioni aperte restano del proprietario: notifiche push dell'avviso grandine, riattivazione di H6, e se `#mappa-classica` vada ritirata del tutto.
+
 ## Grandine: segnalare, scegliere la distanza, essere avvisati prima — 18 settembre 2026
 
 Richiesta del proprietario: che la gente possa segnalare, possa mettere la distanza preferita, e che quando succede venga avvisata prima.
