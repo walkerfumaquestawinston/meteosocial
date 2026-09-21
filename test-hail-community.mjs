@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import worker from './dist/server/index.js';
+import {isRetired} from './tools/retired-modules.mjs';
 import {mapHailReports} from './dist/hail-map.js';
 import {sharedHailURL,sharedHailPlace,hailReportState} from './dist/hail-tools.js';
 const sqlite=new DatabaseSync(':memory:');sqlite.exec('PRAGMA foreign_keys=ON');for(const f of fs.readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())sqlite.exec(fs.readFileSync('drizzle/'+f,'utf8'));
@@ -45,6 +46,6 @@ try{
  check(sharedHailURL(origin,{name:'A',latitude:NaN,longitude:2})===null,'invalid coordinates never shared');
  check(mapHailReports({updated:now,posts:null},point).fresh===false,'malformed feed not treated as empty safe state');check(mapHailReports({...r.data,updated:now-90001},point).fresh===false,'stale feed explicit');
  await request('delete',{id});check((await request('hail/end',{id,confirm:true})).status===404,'deleted report cannot be updated');
- for(const file of ['hail-tools.js','hail-watch.js']){const response=await worker.fetch(new Request(origin+'/'+file),env);check(response.status===200,'new module included in production bundle')}
+ for(const file of ['hail-tools.js','hail-watch.js']){const response=await worker.fetch(new Request(origin+'/'+file),env);check(response.status===(isRetired(file)?404:200),'asset delivery follows the explicit current module manifest')}
  console.log(n+' hail community checks passed: metadata, atomic writes, voting, ending, private zones, sharing and failure states.');
 }finally{sqlite.close()}

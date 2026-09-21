@@ -1,0 +1,62 @@
+/* Field desk: one geographic canvas, five recognizable weather instruments. */
+.mappa{--field-top:328px}
+.mappa::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 15% 55%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 55%)}
+.mappa .mappa-pulse{display:none}
+.mappa .mappa-reading{padding:14px 16px!important}
+.mappa .mappa-reading{display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:6px 8px}.mappa-reading-name{grid-column:1}.mappa-reading-meta{grid-column:1}.mappa-reading-weather{grid-column:2;grid-row:1 / 3;align-self:center}
+.mappa-reading-heading{display:none}.mappa-reading-name{font-size:18px;margin:0;max-width:165px;line-height:1.2}
+.mappa-reading-weather{height:64px}.mappa-reading-weather>strong{font-size:50px;letter-spacing:-2px}.mappa-reading-weather>strong>small{font-size:30px}
+.mappa-reading-weather .mappa-weather-art{display:none}
+.mappa-reading-meta{font-size:12px;line-height:1.4}.mappa-reading-footer{display:none}
+.mappa-field{position:absolute;top:var(--field-top);bottom:20px;left:24px;width:252px;z-index:402;border:1px solid color-mix(in srgb,var(--accent) 28%,#263641);border-radius:16px;background:linear-gradient(155deg,color-mix(in srgb,var(--accent) 6%,#0c1a24),#07141eee);backdrop-filter:blur(25px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#41616d transparent;box-shadow:0 18px 50px #0003,inset 0 1px #ffffff0b}
+.field-content{padding:16px}.field-mobile-handle{display:none}
+.field-eyebrow{display:flex;justify-content:space-between;align-items:center;font:11px/1.4 ui-monospace,monospace;letter-spacing:1px;color:var(--accent)}
+.field-eyebrow svg{width:26px;height:26px}.field-content h2{font-size:23px;line-height:1.18;letter-spacing:-.7px;color:#fff;margin:10px 0 6px}
+.field-location{font-size:13px;color:#c0d2de;margin:0 0 16px;overflow-wrap:anywhere}
+.field-range-stat{display:flex;align-items:center;gap:14px;padding:4px 0 14px}
+.field-range-stat>strong{font:500 42px/1 Arial,sans-serif;letter-spacing:-2px;color:var(--accent);flex-shrink:0;white-space:nowrap}.field-range-stat small{font-size:15px;letter-spacing:0}.field-range-stat>span{font-size:12px;line-height:1.5;color:#c2d2dc;min-width:0}
+.field-radius{display:flex;gap:4px}.field-radius button{flex:1;min-width:0;padding:7px 2px;font-size:12px!important;min-height:44px;white-space:nowrap}
+html.mappa-eventi-view .mappa .field-radius button[aria-pressed=true]{color:#09151f!important;background:var(--accent)!important;font-weight:700}
+.mappa .field-note{font-size:13px!important;line-height:1.55!important;color:#c5d5df;margin:12px 0}
+.mappa .field-source{font-size:12px!important;color:#a4bdca!important;line-height:1.5;margin:8px 0 14px}
+.field-wide{width:100%;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;font-size:13px!important}
+.field-hours{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:15px;border-bottom:1px solid #abcad125;padding-bottom:10px}
+.field-hours>div{display:grid;grid-template-rows:21px 48px 22px 20px;text-align:center;align-items:end;min-width:0;font-size:12px;color:#c6d8e4}
+.field-hours time{font:12px ui-monospace,monospace}.field-hours b{font-size:14px;color:#fff;font-weight:500;white-space:nowrap}.field-hours small{font-size:10px;line-height:1.4}
+.field-hours i{height:max(2px,calc(var(--bar)*.48));min-height:2px;max-height:48px;display:block;border-radius:4px 4px 1px 1px;margin:5px 7px 0;background:linear-gradient(var(--accent),color-mix(in srgb,var(--accent) 8%,transparent));border-top:1px solid var(--accent);box-shadow:0 -2px 12px color-mix(in srgb,var(--accent) 12%,transparent)}
+.field-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:16px 0 8px}.mappa .field-actions button{display:flex;align-items:center;gap:7px;text-align:left;min-height:52px;padding:9px 7px;font-size:13px;line-height:1.35}
+.field-actions svg{width:19px;height:19px;color:var(--accent)}.field-actions button>span{margin-left:auto}
+.field-content .field-actions{position:sticky;bottom:-16px;padding:10px 0;background:#0a1923;box-shadow:0 -10px 20px #0a1923;z-index:2}.field-content .field-actions button{flex-wrap:nowrap!important;white-space:nowrap;min-height:46px}
+html.mappa-eventi-view .mappa .field-actions #field-report{background:color-mix(in srgb,var(--accent) 16%,#0b1721)!important;border-color:color-mix(in srgb,var(--accent) 40%,transparent)!important}
+html.mappa-eventi-view .mappa .field-actions .field-ai{background:#221f3c!important;border-color:#b09de85c!important;color:#e2d8ff!important}.field-actions .field-ai svg{color:#c9b7ff}
+.field-footnote{font-size:12px;line-height:1.6;color:#a9c0ce;padding-top:12px;border-top:1px dashed #7899ad35;margin:14px 0 0}
+.field-loading{font-size:14px;line-height:1.6;color:#c6d8e3;padding:18px 0}
+.field-report-pin{display:grid!important;place-items:center;background:#091820;border:1.5px solid var(--accent);border-radius:12px 12px 12px 2px;color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent),0 6px 15px #0005}
+.field-report-pin svg{width:22px;height:22px}.field-report-pin i{width:6px;height:6px;position:absolute;right:-3px;top:-3px;border-radius:50%;background:#fff;box-shadow:0 0 6px var(--accent)}.field-report-pin.is-ended{opacity:.5}.field-report-pin.is-ended i{background:#a6b8c5;box-shadow:none}
+.field-range-label{display:grid!important;place-items:center;border:1px solid #d696663d;border-radius:15px;background:#1d232bf5;color:#ffcca4;font:12px ui-monospace,monospace;white-space:nowrap}
+.field-shelter-pin{display:grid!important;place-items:center;background:#152b31;border:2px solid #a9e6ce;border-radius:50%;color:#d4ffea;box-shadow:0 0 0 5px #9deacc17,0 5px 15px #0006}
+.field-report-list{display:grid;gap:9px;margin:15px 0}.mappa .field-report-list button{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:10px;padding:13px;font-size:14px}
+.field-report-list small{display:block;font-size:12px;color:#b2c6d4;line-height:1.5;margin-top:5px}.field-report-list strong{font-size:13px;color:var(--accent);flex-shrink:0}
+.mappa .field-warning{padding:12px;border:1px solid #fbb97855;border-radius:9px;color:#ffdbb8;background:#e9a06b0b;font-size:14px}
+.field-external{display:flex;align-items:center;min-height:48px;padding:10px 12px;border:1px solid #9ce9d256;border-radius:9px;color:#bceede;font-size:14px;line-height:1.5;margin:10px 0;text-decoration:none}
+.field-shelter-details{display:grid;gap:6px;font-size:14px;line-height:1.6}.field-shelter-details dt{color:#a7c1cf;margin-top:10px}.field-shelter-details dd{margin:0;color:white}
+.mappa-ai-context{font-size:12px}.mappa-pillola small{font-size:12px}.mappa .mappa-pillola{gap:8px;padding-left:10px;padding-right:10px}
+.mappa-radar-timeline{padding:8px 12px}.mappa-radar-heading strong{font-size:12px;letter-spacing:.2px}.mappa-radar-timeline p{display:none}.mappa-radar-heading{font-size:12px}.mappa-radar-track{gap:8px}
+.mappa-ai-suggestions button{min-height:36px}.mappa .mappa-legenda{font-size:12px}.mappa-legenda small{font-size:12px}
+.mappa.has-panel .mappa-field{visibility:hidden}.mappa-pannello{top:170px;bottom:16px;height:auto;max-height:none;width:300px}
+@media(min-width:921px){.mappa[data-mode=grandine] .mappa-reading{display:none}.mappa[data-mode=grandine] .mappa-field{top:170px!important}.mappa-field{overflow-x:hidden}.field-content .field-actions button{flex-wrap:wrap;align-content:center}.field-actions button>span{display:none}}
+@media(min-width:921px) and (max-height:820px){.mappa-field{bottom:14px}.field-content h2{font-size:21px}.field-content{padding:14px}.field-hours{margin-top:10px}.field-footnote{margin-top:10px}}
+@media(max-width:920px){
+ .mappa .mappa-reading{display:none}
+ .mappa-field{top:191px!important;bottom:auto;left:12px;right:12px;width:auto;max-height:calc(100% - 350px);z-index:430;border-radius:12px;overflow:hidden}
+ .field-mobile-handle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:9px 12px;min-height:46px!important;border:0!important;border-radius:0!important;text-align:left;font-size:13px!important}
+ .field-mobile-handle>span{display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.field-mobile-handle svg{width:21px;height:21px;color:var(--accent)}.field-mobile-handle>b{font-size:12px;color:var(--accent);white-space:nowrap}
+ .field-content{display:none}.mappa-field.is-open{overflow:auto;box-shadow:0 16px 50px #000a;background:#081722f9}.mappa-field.is-open .field-content{display:block;padding:16px}.field-content h2{font-size:23px}.field-hours>div{grid-template-rows:24px 50px 24px 20px}.field-hours small{font-size:12px}
+ .field-actions{grid-template-columns:1fr 1fr}.field-actions button{font-size:13px!important}.field-content .field-footnote{font-size:12px}
+ .mappa-strumenti{top:248px}.mappa-pillola strong{font-size:12px}.mappa .mappa-pillola{padding:5px 1px;gap:1px}.mappa-pannello{top:191px;bottom:143px;max-height:none;width:auto}
+ .mappa-ai-context{font-size:11px}.mappa-basso{gap:7px}.mappa-radar-heading{flex-wrap:wrap;gap:3px 9px}.mappa-radar-heading strong{font-size:11px}.mappa-radar-heading #mappa-radar-note{font-size:11px}.mappa-radar-heading a{display:none!important}
+ .mappa-legenda{padding:7px 10px}.mappa-legenda small{font-size:11px}.mappa-legenda .mappa-scala{margin:6px 0}.mappa-ai-suggestions{display:none}.mappa.has-panel .mappa-legenda,.mappa.has-panel .mappa-radar-timeline{display:none!important}
+ .mappa-field.is-open~.mappa-strumenti{visibility:hidden}.mappa-field.is-open~.mappa-basso .mappa-legenda,.mappa-field.is-open~.mappa-basso .mappa-radar-timeline{display:none!important}
+}
+@media(max-height:620px) and (max-width:920px){.mappa-field{max-height:calc(100% - 285px)}.mappa-pannello{bottom:88px}.mappa-ai-context,.mappa-attribuzioni,.mappa-legenda{display:none}.mappa-radar-heading{display:none}.mappa-radar-timeline{padding:4px 8px}.mappa-strumenti>button:nth-child(n+3){display:none}}
+@media(prefers-reduced-transparency:reduce){.mappa-field{backdrop-filter:none;background:#091722}}
