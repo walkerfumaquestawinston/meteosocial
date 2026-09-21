@@ -8,15 +8,27 @@ async function pulseNearby(env,url,user){
  // Round before querying a third party. Never store the visitor's exact GPS position.
  const category=url.searchParams.get('category')==='people'?'people':'car';
  const center={lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100},cache=optionalPublicCache(),key=new Request(url.origin+'/api/pulse/osm-cell?lat='+center.lat+'&lon='+center.lon+'&category='+category);let osm=[],sourceError='',osmAt=null;
- try{const hit=await cache?.match(key);let payload;if(hit)payload=await hit.json();else{
+ let saved=null;try{const hit=await cache?.match(key);if(hit){const value=await hit.json();if(Array.isArray(value.places)&&Number.isFinite(value.fetchedAt)&&Date.now()-value.fetchedAt<604800000)saved=value;}}catch{}
+ try{let payload;if(saved&&Date.now()-saved.fetchedAt<21600000)payload=saved;else{
   // Limit the whole application's upstream use; this is not a per-visitor allowance.
   const limit=await q(env,'INSERT INTO limits(key,count) VALUES(?,1) ON CONFLICT(key) DO UPDATE SET count=count+1 RETURNING count','nearby-osm:'+new Date().toISOString().slice(0,10)).first();if(limit.count>80)throw Error('Ricerca cartografica temporaneamente al limite. Restano i luoghi della community.');
   const area=`(around:6000,${center.lat},${center.lon})`;
   const filters=category==='people'?['[amenity~"^(library|community_centre|townhall)$"]']:['[amenity=parking][covered=yes]','[amenity=parking][parking~"^(underground|multi-storey|garage)$"]'];
-  const query=`[out:json][timeout:15];(${filters.map(filter=>'nwr'+filter+area+';').join('')});out center 100;`;
-  const r=await fetch('https://overpass.private.coffee/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'MeteoSocial/1.1 (+https://scudo-meteo-community.walkerthehate.chatgpt.site)'},body:new URLSearchParams({data:query}),signal:AbortSignal.timeout(27000)});if(!r.ok)throw Error('Cartografia dei luoghi temporaneamente non disponibile.');
-  const raw=await r.text();if(raw.length>300000)throw Error('Risposta cartografica troppo estesa.');const d=JSON.parse(raw);if(!Array.isArray(d.elements)||d.remark)throw Error('Ricerca cartografica incompleta. Riprova più tardi.');payload={places:pulseOSM(d.elements).slice(0,100),updated:d.osm3s?.timestamp_osm_base||Date.now()};if(cache)await cache.put(key,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public,max-age=21600','Content-Type':'application/json'}}));
- }osm=payload.places;osmAt=payload.updated}catch(e){sourceError=['TimeoutError','AbortError','TypeError','SyntaxError'].includes(e.name)?'La fonte cartografica non ha risposto in tempo. Puoi riprovare o usare Google Maps.':e.message||'Cartografia non disponibile.'}
+  const query=`[out:json][timeout:7];(${filters.map(filter=>'nwr'+filter+area+';').join('')});out center 100;`;
+  // Two fixed public OSM instances, sequential and bounded: never a user-supplied URL.
+  let lastError;
+  for(const endpoint of ['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter']){
+   try{
+    const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'MeteoSocial/1.1 (+https://scudo-meteo-community.walkerthehate.chatgpt.site)'},body:new URLSearchParams({data:query}),signal:AbortSignal.timeout(8500)});
+    if(!r.ok)throw Error('Cartografia dei luoghi temporaneamente non disponibile.');
+    const raw=await r.text();if(raw.length>300000)throw Error('Risposta cartografica troppo estesa.');const d=JSON.parse(raw);if(!Array.isArray(d.elements)||d.remark)throw Error('Ricerca cartografica incompleta. Riprova più tardi.');
+    payload={places:pulseOSM(d.elements).slice(0,100),updated:d.osm3s?.timestamp_osm_base||Date.now(),fetchedAt:Date.now()};break;
+   }catch(e){lastError=e;}
+  }
+  if(!payload)throw lastError;
+  // Cache failures must not discard valid places. Keep stale data for bounded outage recovery.
+  try{if(cache)await cache.put(key,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public,max-age=604800','Content-Type':'application/json'}}));}catch{}
+ }osm=payload.places;osmAt=payload.updated}catch(e){sourceError=['TimeoutError','AbortError','TypeError','SyntaxError'].includes(e.name)?'La fonte cartografica non ha risposto in tempo. Puoi riprovare o usare Google Maps.':e.message||'Cartografia non disponibile.';if(saved){osm=saved.places;osmAt=saved.updated;sourceError+=' Mostro l’ultima copia disponibile: controlla gli orari e l’accesso.';}}
  const lonSpan=.07/Math.max(.05,Math.cos(center.lat*Math.PI/180)),args=[center.lat-.07,center.lat+.07,center.lon,lonSpan,center.lon,360-lonSpan];const clause=user?" AND NOT EXISTS(SELECT 1 FROM links b WHERE b.user=? AND b.target=s.author AND b.kind='block')":'';if(user)args.push(user);
  const rows=(await q(env,'SELECT s.* FROM shelters s WHERE s.deleted=0 AND CAST(s.lat AS REAL) BETWEEN ? AND ? AND (ABS(CAST(s.lon AS REAL)-?)<=? OR ABS(CAST(s.lon AS REAL)-?)>=?)'+clause+' ORDER BY s.created DESC LIMIT 201',...args).all()).results;
  const community=rows.slice(0,200).map(s=>({id:s.id,name:s.name,lat:Number(s.lat),lon:Number(s.lon),type:'unknown',source:'Community',sourceURL:null,details:s.details,city:s.city,created:s.created,author:s.author,openingHours:null,fee:'Da verificare',availableSlots:null}));

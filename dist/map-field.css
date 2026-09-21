@@ -1,4 +1,16 @@
 /* Field desk: one geographic canvas, five recognizable weather instruments. */
+.lightning-pin{--bolt:#ddc6ff;--bolt-side:#7b50ac;--bolt-edge:#fff;--bolt-halo:#ae7de966;background:transparent;border:0;filter:drop-shadow(0 3px 7px #050812)}
+.lightning-pin.is-report{--bolt:#ffd58b;--bolt-side:#9c541f;--bolt-halo:#ffa74755}
+.lightning-object{display:inline-block;position:relative;width:44px;height:48px;vertical-align:middle}
+.lightning-object svg{display:block;width:100%;height:100%;overflow:visible;transform:rotate(-7deg);transition:transform .18s ease}
+.lightning-object .bolt-front{fill:var(--bolt,#ddc6ff);stroke:#ffffff80;stroke-width:.6}.lightning-object .bolt-side{fill:var(--bolt-side,#7b50ac)}.lightning-object .bolt-edge{fill:var(--bolt-edge,#fff)}.lightning-object .bolt-ground{fill:var(--bolt-halo,#ae7de944);stroke:var(--bolt,#ddc6ff);stroke-width:.6}
+.lightning-object small{position:absolute;right:0;bottom:0;border:1px solid var(--bolt,#ddc6ff);border-radius:4px;background:#101d2d;color:var(--bolt,#ddc6ff);font:700 10px/14px sans-serif;width:15px;text-align:center}
+.lightning-pin:hover .lightning-object svg,.lightning-pin:focus .lightning-object svg{transform:rotate(0) translateY(-3px)}.lightning-pin:focus-visible{outline:3px solid #fff;border-radius:10px}.lightning-pin.is-ended{opacity:.5}
+.lightning-guide{margin:14px 0;padding:14px;border:1px solid #bca1e84d;border-radius:16px;background:linear-gradient(135deg,#bda1ed16,#061821)}.lightning-guide-title{display:flex;align-items:center;gap:10px}.lightning-guide-title strong{font-size:17px;line-height:1.3}.lightning-guide p{font-size:12px;line-height:1.55;color:#ccdaeb}.lightning-guide a{display:block;color:#e1d2ff;font-size:13px;min-height:44px;padding:10px 0}
+.shelter-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mappa .shelter-tabs button{display:flex;gap:8px;align-items:center;justify-content:center;min-height:52px;line-height:1.3;padding:10px;border-radius:12px;font-size:13px}.shelter-tabs .mappa-icon{flex-shrink:0}.mappa .shelter-tabs button[aria-pressed=true]{background:#54dcc421!important;color:#c8fff4!important;border-color:#70e7d1!important}
+.shelter-result-heading{display:flex;align-items:center;gap:14px;padding:20px 0 12px}.shelter-result-heading>strong{font-size:48px;line-height:1;font-weight:600;letter-spacing:-2px;color:#b0ffe8}.shelter-result-heading>span{font-size:14px;line-height:1.4;color:#c8dae0}.shelter-results button{gap:10px;min-height:78px!important}.shelter-results button>span:nth-child(2){flex:1;min-width:0}.shelter-results b{overflow-wrap:anywhere}.shelter-results button>strong{white-space:nowrap;color:#d1fff0}.shelter-results button>strong small{display:block;font-size:10px;font-weight:400;margin-top:6px}.shelter-list-icon{display:grid;place-items:center;width:36px;height:40px;border-radius:10px;background:#7ee9cb14;color:#91ebcd;flex-shrink:0}
+.shelter-bottom-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.shelter-bottom-actions button{flex:1;min-height:48px!important;font-size:13px!important}.shelter-safety{padding:12px 14px;border-left:3px solid #edc28f;background:#edc28f0c;color:#ffe2bb;line-height:1.55;font-size:13px}.shelter-searching{padding:24px 0;font-size:18px;color:#b0ffe8}
+@media(prefers-reduced-motion:reduce){.lightning-object svg{transition:none!important}.lightning-pin:hover .lightning-object svg,.lightning-pin:focus .lightning-object svg{transform:none}}
 .mappa{--field-top:328px}
 .mappa::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 15% 55%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 55%)}
 .mappa .mappa-pulse{display:none}
@@ -96,3 +108,5 @@ html.mappa-eventi-view .mappa .field-actions .field-ai{background:#221f3c!import
 html.mappa-eventi-view .mappa .field-hour-nav button[aria-pressed=true]{background:var(--accent)!important;color:#05151e!important;border-color:var(--accent)!important;font-weight:700}
 .field-hour-hero{margin:12px 0 16px}.field-hour-hero .mappa-weather-art{transform:scale(.75)}
 .mappa .mappa-place-label{background:linear-gradient(90deg,#091821ee,#091821b8 92%,#09182188)}
+
+@media(min-width:921px){.mappa .mappa-pannello:has(.shelter-tabs){width:340px;padding:18px}.mappa-pannello:has(.shelter-tabs) .mappa-pannello-testa h2{font-size:21px;line-height:1.25}.shelter-result-heading{padding:12px 0 8px}}

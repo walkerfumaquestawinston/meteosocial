@@ -3,7 +3,7 @@ import {FIELD_MODES} from './map-field-core.js';
 import {normalizzaEventiNasa,abbinaMeteoCitta,mappaColore} from './mappa-eventi.js';
 import {isStorm,hailLabel,precipitationLabel,validPlace,insideViewport,weatherPoints,visibleSummary,mapAIRequest,windReading} from './map-weather-core.js';
 import {createAtlasRadar} from './map-radar.js';
-import {mapIcon,weatherArt} from './map-visuals.js';
+import {mapIcon,weatherArt,lightningGlyph} from './map-visuals.js';
 import {readWeatherSnapshot} from './map-weather-source.js';
 import {cityCatalog,arrangeCityLabels,weatherAge} from './map-city-labels.js';
 import {CITTA_MONDO} from './citta-mondo.js';
@@ -168,14 +168,18 @@ export function createMappaEventi(ctx) {
       const k=p.current;let color=mappaColore(k.temperature_2m),radius=4;
       if(mode==='temperature'){const halo=L.circleMarker([p.latitude,p.longitude],{radius:10,color,weight:1,opacity:.25,fillColor:color,fillOpacity:.08,interactive:false});markers.addLayer(halo);}
       if(mode==='pioggia'){if(!(k.precipitation>0))continue;color='#6ac5ff';radius=Math.min(16,6+k.precipitation*2);}
-      if(mode==='fulmini'){if(!isStorm(k.weather_code))continue;color='#d8b1ff';radius=10;}
+      if(mode==='fulmini'){
+        if(!isStorm(k.weather_code))continue;
+        const label=p.name+', temporale da modello, '+sourceTime(k);
+        const pin=L.marker([p.latitude,p.longitude],{bubblingMouseEvents:false,title:label,alt:label,icon:L.divIcon({className:'lightning-pin is-model',html:lightningGlyph(),iconSize:[44,48],iconAnchor:[22,40]})});
+        pin.on('click',()=>selectPlace(p,false));pin.bindTooltip(esc(label));markers.addLayer(pin);pin.getElement()?.setAttribute('aria-label',label);continue;
+      }
       if(mode==='vento'){
         const w=windReading(k);if(!w)continue;
         const icon=L.divIcon({className:'mappa-wind-vector',html:'<span style="--wind:'+w.color+';--bearing:'+(w.toward??0)+'deg">'+(w.toward===null||w.speed===0?'·':'↑')+'</span>',iconSize:[28,28],iconAnchor:[14,14]});
         const pin=L.marker([p.latitude,p.longitude],{icon,title:p.name,alt:p.name+', vento '+number(w.speed)+' km/h',bubblingMouseEvents:false});pin.on('click',()=>selectPlace(p,false));markers.addLayer(pin);pin.getElement()?.setAttribute('aria-label',p.name+', vento '+number(w.speed)+' km/h');continue;
       }
       marker(p,color,radius,()=>selectPlace(p,false));
-      if(mode==='fulmini')markers.addLayer(L.marker([p.latitude,p.longitude],{interactive:false,keyboard:false,icon:L.divIcon({className:'mappa-bolt',html:'ϟ',iconSize:[20,28],iconAnchor:[10,14]})}));
     }
     // The field desk renders fresh, scoped community markers in every layer.
     if(showEvents)for(const e of events.filter(p=>insideViewport(p,bounds())))marker(e,'#ff6577',9,()=>eventPanel(e));
@@ -208,7 +212,7 @@ export function createMappaEventi(ctx) {
   }
   function renderLegend(){
     const slot=$('#mappa-legenda');if(!slot)return;
-    slot.innerHTML=mode==='temperature'?'<span>Temperatura · °C</span><div class="mappa-scala"></div><div class="mappa-scale-values"><span>−10</span><span>0</span><span>10</span><span>20</span><span>30</span><span>40+</span></div>':mode==='vento'?'<span>Vento al suolo · km/h</span><div class="mappa-scala wind"></div><div class="mappa-scale-values"><span>0</span><span>20</span><span>40</span><span>60+</span></div><small>Frecce = direzione verso cui soffia</small>':mode==='pioggia'?'<span class="mappa-key rain">● Punti: pioggia da modello</span><small>Tocca per quantità e intervallo · radar sovrapposto</small>':mode==='grandine'?'<span class="mappa-key hail">◇ Grandine segnalata</span><small>Community · ultime 2 ore · non verificata</small>':'<span class="mappa-key storm">ϟ Temporali da modello</span><small>Rilevamento delle scariche non collegato</small>';
+    slot.innerHTML=mode==='temperature'?'<span>Temperatura · °C</span><div class="mappa-scala"></div><div class="mappa-scale-values"><span>−10</span><span>0</span><span>10</span><span>20</span><span>30</span><span>40+</span></div>':mode==='vento'?'<span>Vento al suolo · km/h</span><div class="mappa-scala wind"></div><div class="mappa-scale-values"><span>0</span><span>20</span><span>40</span><span>60+</span></div><small>Frecce = direzione verso cui soffia</small>':mode==='pioggia'?'<span class="mappa-key rain">● Punti: pioggia da modello</span><small>Tocca per quantità e intervallo · radar sovrapposto</small>':mode==='grandine'?'<span class="mappa-key hail">◇ Grandine segnalata</span><small>Community · ultime 2 ore · non verificata</small>':'<span class="mappa-key storm">ϟ M · modello / C · community</span><small>Viola: modello · ambra: osservazioni. Nessun sensore di scariche</small>';
   }
   function panel(title,html,focus=true){
     const origin=document.activeElement;fieldDesk?.close();
