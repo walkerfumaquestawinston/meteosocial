@@ -1,5 +1,10 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 21 settembre 2026 — Cielo, revisione del design
+
+Implementazione e verifica locale completate; pubblicazione del nuovo design in preparazione. La versione pubblica verificata precedente è 72. Nuova identità inchiostro/lime, community con feed in primo piano, Home e Lente con illustrazione originale, previsioni e navigazione coordinate. Build e 15 suite superate, revisione desktop/390 px e testo grande. Vedere docs/CIELO-DESIGN.md per riferimenti, scelte e limiti.
+
+
 ## 21 settembre 2026 — Ripari e fulmini
 
 Pubblicata su Sites versione 72 il 21 settembre 2026 alle 13:55 UTC: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi. Runtime Sites 467092d2499270b8e1e61bc9e38d246b9835188a, albero 543573af630aca511711f6a2fa829994e3e7fa26. GitHub PR #13 integrata in main (3ba99deba2f11c7471bfb724e02615c72a07ded0), Check MeteoSocial 35608411788 e anteprima Netlify superati. Queste note successive non modificano il runtime. Dettagli, confronto, prove e limiti: docs/HAIL-SHELTERS-LIGHTNING.md. Ricerca ripari con recupero su due istanze OSM, filtri 1/3/5 km, indicazioni e ritorno all’elenco; fulmini in rilievo distinti tra modello e community, edifici al chiuso e radar ufficiale. Servizi cartografici esterni intermittenti: nessuna garanzia di disponibilità, posti liberi o rilevamenti reali delle scariche. Build e 15 suite pertinenti superate.
