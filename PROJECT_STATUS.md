@@ -1,5 +1,14 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 22 settembre 2026 — Versione 81 pubblicata: stelle e nuvole naturali
+
+Sites riuscito il 2026-09-22T02:39:46.201214Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . Stelle irregolari con tre punti scintillanti, nuvole vettoriali con sfumature e ombre. Entrambe le sezioni Oggi/Meteo seguono orario locale e codici meteo; verificati notte, pioggia diurna senza stelle e nuvole calde al tramonto. Sole/luna nascosti nel maltempo, riflessi attenuati. Nessun video o nuovo asset scaricato, circa 6 KB gzip per i sorgenti scena.
+
+Runtime afccbbfe41faa95028f2543479714893bfe90a45; albero e8d70d303ca910c5adcf52255508caeef78f73a0 identico al commit GitHub 06342b72dbc46ca764f372eeca12c75baa5e6ffe. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_de57ec53382481919e5332427b1083c7; deployment appgdep_6ab1ea31a94881918adfabdc273ab9c3.
+
+Ramo aggiornato codex/weather-scenery-20260922, PR draft https://github.com/walkerfumaquestawinston/meteosocial/pull/21 sopra PR #20. Anteprima 4595 allineata. Build e quattro suite mirate superate. Fase solare ogni 30 secondi, meteo ogni 15 minuti mentre visibile e al ritorno/cambio città. Le note successive sono solo documentazione e vengono salvate su entrambi i repository senza ulteriore deploy. Dettagli in docs/METEO-ANIMATO.md.
+
+
 ## 22 settembre 2026 — Versione 80 pubblicata: Costa di luce anche in Oggi
 
 Pubblicazione riuscita il 2026-09-22T02:30:41.772715Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . L’ingresso Oggi mostra lo stesso paesaggio animato di Meteo con firma visiva MeteoSocial. Tolti l’immagine decorativa nascosta e il vecchio backdrop blur. La scena si rinnova con i dati/città; gli stati di caricamento ed errore restano espliciti.
