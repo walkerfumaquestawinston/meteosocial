@@ -1,5 +1,16 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 22 settembre 2026 — Versione 82 pubblicata: Il prossimo cambio
+
+Sites riuscito il 2026-09-22T02:59:36.833804Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . Riepilogo delle prossime sei fasce, fonte e motivazione; meteo vecchio/offline non usato per annunci di arrivo. Scena mobile più compatta, moduli secondari fuori dal download iniziale offline, tutte le suite attive abilitate in GitHub Actions.
+
+Runtime Sites 32ce2360de36cd1f7550a2cdc5dcc1ad9413c803; albero b8b798d979d896b2223683022cf56b3ac841cd3c identico al commit GitHub 405d9bd7b2542e81e054d1d2166538d4f1c94ce5. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_76cee195503081919e3635727b6453e5; deployment appgdep_6ab1ef0629748191bd56a2e61bc44bea.
+
+Build e 61 suite attive superate, zero errori; cinque contratti storici ritirati. Controllo mobile 390 px senza overflow, apertura mappa dalla nuova scheda e verifica sito pubblico con riepilogo del vento. Nessun errore console nel controllo finale. Anteprima 4595 allineata. Il browser può inizialmente mostrare l’ultima copia offline, sostituita al ritorno dei dati.
+
+Continuare dal ramo GitHub codex/weather-scenery-20260922, PR draft #21 sopra #20, non da main. Nessuna nuova PR sovrapposta. Queste note successive sono solo documentazione e vengono salvate in entrambi i repository senza un altro deploy. Criteri, limiti e novità future non implementate: docs/PROSSIMO-CAMBIO.md. La pulizia completa degli stili/moduli e la semplificazione della mappa restano da fare.
+
+
 ## 22 settembre 2026 — Il prossimo cambio: rilascio pronto
 
 Oggi presenta sei fasce orarie e un riepilogo del primo cambiamento previsto, con fonte, motivazione e limiti espliciti. Nessuna nuova richiesta dati o dipendenza. La scena mobile è più compatta; la cache iniziale rinvia i moduli secondari; GitHub Actions esegue tutte le suite attive. Dettagli, criteri e prossime tappe in docs/PROSSIMO-CAMBIO.md.
