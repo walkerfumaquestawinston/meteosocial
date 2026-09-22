@@ -56,6 +56,7 @@
     "dist/mappa-eventi.js",
     "dist/nearby.js",
     "dist/city-challenges.js",
+    "dist/weather-scene.js",
     "dist/weather-page.js",
     "dist/community-pulse.js",
     "dist/network.js",
@@ -68,7 +69,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 464173,
+    "dist/app/main.js": 465821,
     "dist/app/sky-postcard-CCVWZVDI.js": 5122,
     "dist/app/chunk-T77WGJBQ.js": 13559,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,

@@ -1,0 +1,57 @@
+/* An original animated coastal sky. All scenery is decorative and cannot intercept input. */
+html:root body.cielo-design.segnale-design #main .weather-hero.has-weather-scene{position:relative;isolation:isolate;overflow:hidden;min-height:420px;background:#12355b!important;border:1px solid #70849b!important;padding:36px!important;display:block}
+.weather-scene{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;--sky-top:#2362a0;--sky-bottom:#9acde1;--orb:#fff1b2;--ridge-far:#477886;--ridge-near:#234b62;--shore:#122d43}
+.weather-scene>div{position:absolute;pointer-events:none}
+.scene-sky{inset:0;background:linear-gradient(var(--sky-top),var(--sky-bottom));}
+html[data-phase=notte] .weather-scene{--sky-top:#06132f;--sky-bottom:#214e88;--orb:#e4efff;--ridge-far:#152d50;--ridge-near:#10243f;--shore:#081b30}
+html[data-phase=alba] .weather-scene{--sky-top:#536bad;--sky-bottom:#f5b892;--ridge-far:#7b7694;--ridge-near:#484d71;--shore:#283651}
+html[data-phase=tramonto] .weather-scene{--sky-top:#393b78;--sky-bottom:#ec946e;--ridge-far:#755479;--ridge-near:#453b62;--shore:#222b48}
+.scene-orb{width:76px;height:76px;right:18%;top:45px;border-radius:50%;background:var(--orb);box-shadow:0 0 60px 20px #ffdc8740;animation:scene-orbit-glow 9s ease-in-out infinite alternate}
+html[data-phase=notte] .scene-orb{background:transparent;box-shadow:inset -17px -5px 0 0 var(--orb);filter:drop-shadow(0 0 14px #bbd9ff60);animation:none;transform:rotate(-18deg)}
+html:is([data-phase=alba],[data-phase=tramonto]) .scene-orb{top:38%;right:22%;width:92px;height:92px}
+.scene-stars{inset:0;opacity:0;background-image:radial-gradient(circle,#fff 0 1px,transparent 1.8px),radial-gradient(circle,#b7d7ff 0 1px,transparent 1.7px);background-size:97px 89px,151px 131px;background-position:12px 20px,55px 70px}
+html[data-phase=notte] .scene-stars{opacity:.65;animation:scene-stars 8s ease-in-out infinite alternate}
+.scene-cloud{width:300px;height:100px;border-radius:50%;background:radial-gradient(ellipse,#e7eff5b3 0 35%,#e7eff538 60%,transparent 73%);filter:blur(8px);right:-35px;top:60px;opacity:.85;animation:scene-cloud-drift 38s ease-in-out infinite alternate}
+.scene-cloud-two{width:380px;height:120px;right:18%;top:140px;opacity:.55;animation-duration:52s;animation-delay:-22s}
+.weather-scene[data-condition=clear] .scene-cloud,.weather-scene[data-condition=unknown] :is(.scene-cloud,.scene-orb,.scene-stars){display:none}
+.weather-scene:is([data-condition=overcast],[data-condition=rain],[data-condition=storm],[data-condition=snow],[data-condition=fog]) .scene-orb{opacity:.16;animation:none}
+.weather-scene:is([data-condition=overcast],[data-condition=rain],[data-condition=storm],[data-condition=snow],[data-condition=fog]) .scene-stars{display:none}
+.weather-scene:is([data-condition=overcast],[data-condition=rain],[data-condition=storm],[data-condition=snow],[data-condition=fog]) .scene-sky{filter:saturate(.35) brightness(.7)}
+.weather-scene[data-condition=storm] .scene-sky{filter:saturate(.3) brightness(.42)}
+.weather-scene:is([data-condition=rain],[data-condition=storm],[data-condition=overcast]) .scene-cloud{width:65%;height:160px;top:5%;background:radial-gradient(ellipse,#9aa6b0b3 20%,#68798680 50%,transparent 73%)}
+.weather-scene[data-windy=true] .scene-cloud{animation-duration:14s}
+.scene-horizon{position:absolute;bottom:0;left:0;width:100%;height:46%}
+.scene-ridge-far{fill:var(--ridge-far)}.scene-ridge-near{fill:var(--ridge-near)}.scene-shore{fill:var(--shore)}
+.scene-water{height:17%;bottom:0;left:-10%;width:120%;background:repeating-linear-gradient(177deg,transparent 0 13px,#c4e6ff18 14px,transparent 16px);opacity:.8;animation:scene-water 9s ease-in-out infinite alternate}
+.scene-mist{display:none;left:-10%;width:120%;top:25%;height:60%;background:linear-gradient(transparent,#d0dce17a,transparent);filter:blur(14px);animation:scene-cloud-drift 24s ease-in-out infinite alternate}
+.weather-scene[data-condition=fog] .scene-mist{display:block}
+.scene-particles{inset:-35px 0 0;overflow:hidden}
+.scene-particles i{position:absolute;left:var(--x);top:-20%;width:1px;height:24px;background:linear-gradient(transparent,#d2e9ffb3);animation:scene-rain var(--duration) linear var(--delay) infinite}
+.weather-scene[data-condition=snow] .scene-particles i{width:5px;height:5px;border-radius:50%;background:#f0f6ffc4;animation-name:scene-snow}
+.scene-scrim{inset:0;background:linear-gradient(90deg,#06172ae8, #06172a99 52%,#06172a15),linear-gradient(0deg,#06172ac9,transparent 55%)}
+html:root body.cielo-design.segnale-design #main .has-weather-scene :is(.weather-hero-copy,.forecast-receipt){position:relative;z-index:1}
+html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-hero-copy{max-width:70%}
+html:root body.cielo-design.segnale-design #main .has-weather-scene :is(h2,p,.weather-date,.weather-big-temp,.forecast-receipt,.forecast-receipt p){color:#f5f8ff!important}
+html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-date{font-size:17px;line-height:1.5}
+html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-art{display:none!important}
+html:root body.cielo-design.segnale-design #main .has-weather-scene .forecast-receipt{margin-top:30px;border-top:1px solid #d7e7ff66!important;background:#091d35b3!important;padding:12px 16px;border-radius:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+html:root body.cielo-design.segnale-design #main .has-weather-scene .forecast-receipt p{margin:0}
+html:root body.cielo-design.segnale-design #main .has-weather-scene :is(.weather-hero-actions button,.forecast-receipt button){background:#102b48!important;color:#fff!important;border:1px solid #9db1cb!important;border-radius:12px;min-height:44px}
+@keyframes scene-cloud-drift{from{transform:translateX(-24px)}to{transform:translateX(44px)}}
+@keyframes scene-water{from{transform:translateX(-2%)}to{transform:translateX(2%)}}
+@keyframes scene-stars{from{opacity:.35}to{opacity:.7}}
+@keyframes scene-orbit-glow{from{opacity:.85}to{opacity:1}}
+@keyframes scene-rain{to{transform:translate(-75px,620px)}}
+@keyframes scene-snow{to{transform:translate(45px,620px) rotate(60deg)}}
+@media(max-width:760px){
+ html:root body.cielo-design.segnale-design #main .weather-hero.has-weather-scene{padding:24px!important;min-height:440px}
+ html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-hero-copy{max-width:100%}
+ html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-big-temp{font-size:96px}
+ html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-date{display:block;max-width:80%;font-size:16px}
+ .scene-orb{right:9%;top:95px;width:64px;height:64px}.scene-cloud{right:-90px}.scene-cloud-two{right:-10%;top:190px}
+ .scene-scrim{background:linear-gradient(90deg,#06172ac9,#06172a52),linear-gradient(0deg,#06172ae0,transparent 75%)}
+ .scene-horizon{height:36%}
+}
+html[data-scene-paused=true] .weather-scene *,html:is(.eco-mode,.reduced-motion,.light-rendering) .weather-scene *,.eco-mode .weather-scene *,.reduced-motion .weather-scene *,.light-rendering .weather-scene *{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.weather-scene *{animation:none!important}.scene-particles{display:none}}
+@media(max-width:760px){html:root body.cielo-design.segnale-design #main .weather-workspace>.atlas-title{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin-bottom:20px!important}html:root body.cielo-design.segnale-design #main .weather-workspace>.atlas-title h1{font-size:24px!important;line-height:1.2}html:root body.cielo-design.segnale-design #main .weather-workspace>.atlas-title p{display:none}.weather-workspace>.atlas-title .signal-kicker{display:none}}

@@ -1,0 +1,13 @@
+# Meteo animato — 22 settembre 2026
+
+La scheda principale della categoria Meteo (#tendenze) ora contiene un paesaggio costiero originale animato in CSS/SVG. Ispirato alla richiesta visiva dell'utente, senza incorporare la foto o riprodurne persone e interfaccia.
+
+Sole di giorno, luna stilizzata e stelle di notte, luce calda per alba/tramonto. Le fasi seguono il fuso e gli orari solari della località con la logica esistente. Il codice meteo corrente del provider determina sereno, nuvole, coperto, pioggia, neve, foschia o temporale. Le nuvole accelerano da 25 km/h di vento. Temporali scuri senza flash. La luna è decorativa, non indica la fase lunare astronomica; il paesaggio non è una webcam o una ricostruzione geografica. I dati restano previsioni da modello con fonte e orario visibili.
+
+Scene aggiornate al caricamento dei dati e al cambio località; fase solare aggiornata ogni 30 secondi e al ritorno alla scheda. Dati mancanti/invalidi usano una scena neutra. Dati salvati offline mantengono l'avviso esistente e l'orario della previsione. Nessuna nuova richiesta a servizi esterni per lo sfondo.
+
+Massimo 20 particelle, animazioni su trasformazione/opacità, decorazioni senza eventi puntatore e nascoste agli screen reader. Animazioni sospese quando la pagina è nascosta e nelle modalità economica/movimento ridotto. Con prefers-reduced-motion il movimento è disabilitato e le particelle nascoste. Testi bianchi su velatura scura e pulsanti con sfondo proprio. Titolo mobile compatto.
+
+Verifiche: build completa; test-weather-scene, test-solar-live-map, test-atmosphere, test-feature-routes e test-startup superati. Coperti tutti i gruppi WMO, valori non validi, soglia vento e limite particelle. Verifica browser di notte con dati correnti, mobile 390 px senza overflow, e pioggia diurna con dati dimostrativi separati. Nessun dato di prova pubblicato. Sorgenti: dist/weather-scene.js e dist/weather-scene.css; integrazione dist/weather-page.js.
+
+Il rilascio aggiorna il Site esistente e l'anteprima locale 4595. La conferma di pubblicazione e il ramo GitHub sono riportati in PROJECT_STATUS.md.

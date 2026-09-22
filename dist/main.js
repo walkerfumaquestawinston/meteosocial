@@ -138,3 +138,7 @@ setInterval(()=>{if(!document.hidden){applySkyTheme(weather);applyCalendarTheme(
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){applySkyTheme(weather);applyCalendarTheme(weather,place);loadWeather()}});
 applySkyTheme(weather);applyCalendarTheme(weather,place);
 setTimeout(()=>mappaEventi.preload().catch(()=>{}),800);
+
+// Pause decorative scene animation while the page is not visible.
+document.documentElement.dataset.scenePaused=String(document.hidden);
+document.addEventListener('visibilitychange',()=>{document.documentElement.dataset.scenePaused=String(document.hidden)});
