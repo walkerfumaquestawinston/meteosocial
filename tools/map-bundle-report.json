@@ -43,6 +43,7 @@
     "dist/studio-canvas.js",
     "dist/creator-studio.js",
     "dist/editorial-world.js",
+    "dist/map-basemap.js",
     "dist/map-live-status.js",
     "dist/map-fresh-cache.js",
     "dist/map-provider.js",
@@ -73,7 +74,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 488635,
+    "dist/app/main.js": 490248,
     "dist/app/sky-postcard-S6FAJZEZ.js": 5122,
     "dist/app/chunk-G4WKHTNL.js": 13566,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,

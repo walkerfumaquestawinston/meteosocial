@@ -1,3 +1,7 @@
+## 22 settembre 2026 — MapTiler pronto per pubblicazione
+
+Prova cartografia integrata, chiave browser ristretta configurata e stile personalizzato salvato nell’account. 68 suite passate. Ultima versione pubblicata confermata 87; attendere nota di esito. Dettagli: docs/MAPPA-MAPTILER.md.
+
 ## 22 settembre 2026 — Versione 87 pubblicata, WeatherAPI in primo piano
 
 WeatherAPI Starter è attivo tramite segreto server. Il meteo della località selezionata usa coordinate, senza lista limitata di città: Roma e Tokyo sono solo test di verifica. La testata locale mostra WeatherAPI; previsioni, colori e radar conservano fonti separate.

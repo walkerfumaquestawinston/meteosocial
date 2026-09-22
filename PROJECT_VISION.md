@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Cartografia MapTiler
+
+Utente approva integrazione MapTiler e chiede il link per pagare Flex. Conservare mappa e pannello affiancati, stile leggibile con pochi elementi di fondo, etichette meteo in evidenza. Creato Atlante chiaro nel suo account. Fonte cartografica distinta dal meteo.
+
 ## 22 settembre 2026 — Acquisto richiesto
 
 L’utente chiede di attivare un abbonamento e integrarlo, poi domanda la differenza tra Starter e Pro+. Registrazione WeatherAPI aperta, nessun acquisto completato. Collegamento server predisposto; attivazione dipende dalla chiave del suo account. Nessun rinnovo annuale richiesto.

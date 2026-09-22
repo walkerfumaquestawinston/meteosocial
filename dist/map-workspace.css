@@ -119,3 +119,6 @@ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .
 }
 
 .provider-current{margin:0 0 18px;padding:16px;border:1px solid #b5ceda;border-radius:16px;background:#edf6fa;color:#163146}.provider-hero{display:flex;align-items:center;gap:14px}.provider-hero strong{font-size:40px}.provider-current p{font-size:12px;line-height:1.5}.provider-current summary{cursor:pointer;font-size:13px;padding:10px 0}.provider-current dl{display:grid;grid-template-columns:1fr 1fr;gap:12px}.provider-current dt{font-size:11px}.provider-current dd{margin:0;font-weight:700}.provider-current a{color:#145579;text-decoration:underline}
+
+.maptiler-credit{position:absolute;left:12px;bottom:6px;z-index:450;display:block;line-height:1}.maptiler-credit img{display:block;width:88px;height:23px}.mappa-maptiler-attribution[hidden]{display:none!important}
+@media(max-width:920px) and (orientation:portrait){.maptiler-credit{left:auto;right:12px;bottom:28px}}
