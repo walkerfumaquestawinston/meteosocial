@@ -1,3 +1,11 @@
+## 22 settembre 2026 — Acquisto richiesto
+
+L’utente chiede di attivare un abbonamento e integrarlo, poi domanda la differenza tra Starter e Pro+. Registrazione WeatherAPI aperta, nessun acquisto completato. Collegamento server predisposto; attivazione dipende dalla chiave del suo account. Nessun rinnovo annuale richiesto.
+
+## 22 settembre 2026 — Preferenze aggiornate dopo la v85
+
+L'utente non approva ancora la mappa. Vuole copertura mondiale, dati recenti con orario esatto e pannello dettagliato sempre affiancato alla cartografia. Budget dati massimo 50 euro al mese. Sul telefono verticale preservare leggibilità mantenendo due aree visibili. Non comprare servizi senza un'offerta precisa; nessun abbonamento attivato. Non confondere frequenza delle chiamate, passi delle previsioni e nuove osservazioni al secondo. Ricerca ufficiale e correzione del campione obsoleto: docs/MAPPA-DATI-RECENTI.md. Questa preferenza supera la precedente scheda richiudibile della v85.
+
 ## 22 settembre 2026 — Una mappa dettagliata che si capisce subito
 
 L'utente chiede una mappa molto utile, ricca e riconoscibile, comprensibile senza difficoltà. Dare priorità a luogo, tempo attuale, prossimo cambiamento e azioni esplicite; dettagli progressivi e strumenti secondari raccolti. Identità inchiostro/lime per i pannelli della mappa, cartografia sincronizzata alle fasi solari. Nessuna promessa di perfezione, unicità assoluta o osservazioni al secondo senza fonte. Prima applicazione: docs/MAPPA-ATLANTE-LOCALE.md; pubblicazione indicata nelle note di esito.

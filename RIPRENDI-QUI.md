@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Mappa affiancata e freschezza, revisione pronta
+
+Corretto il caso riprodotto del catalogo italiano vecchio che prevaleva sul campione recente. La vista chiede al massimo 24 comuni visibili, con cache condivisa, invece del catalogo completo da 500. Orari mancanti/futuri o più vecchi di 30 minuti non alimentano colori/riepiloghi correnti. Mappa e pannello affiancati sul desktop, due aree visibili sul telefono. Orologio, validità del modello ed età sono separati. Build e 66 suite superate. Dettagli: docs/MAPPA-DATI-RECENTI.md. Ultima pubblicazione confermata v85; attendere nota di esito.
+
 ## 22 settembre 2026 — Versione 85 pubblicata: Atlante locale
 
 Sites conferma pubblicazione riuscita il 2026-09-22T05:41:41.288303Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Nuova composizione inchiostro/lime, meteo locale sempre visibile, dettagli progressivi con prossimo cambio e ore, menu Strumenti e selettore fenomeni mobile. Vedi docs/MAPPA-ATLANTE-LOCALE.md.

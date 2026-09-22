@@ -136,9 +136,12 @@ async function mappaApi(req, env, url) {
 const MAPPA_METEO_QUANTI = 500;
 const MAPPA_METEO_BLOCCO = 100;
 
-async function mappaMeteoDati(env) {
-  return globeSnapshot(env, 'mappa-comuni-v2', async () => {
-    const scelti = MAPPA_COMUNI.slice(0, MAPPA_METEO_QUANTI);
+async function mappaMeteoDati(env,ids=null) {
+  const scelti=ids===null?MAPPA_COMUNI.slice(0,MAPPA_METEO_QUANTI):ids.map(id=>MAPPA_PER_ISTAT.get(id));
+  if(!scelti.length)return {dati:[],stale:false,source:'Open-Meteo',updated:Date.now()};
+  const key=ids===null?'mappa-comuni-v2':'mappa-view-v1:'+ids.join(',');
+  return globeSnapshot(env,key,async () => {
+    if(ids!==null)await q(env,"DELETE FROM globe_snapshots WHERE name LIKE 'mappa-view-v1:%' AND updated<? AND lease<?",Date.now()-172800000,Date.now()).run();
     const blocchi = [];
     for (let i = 0; i < scelti.length; i += MAPPA_METEO_BLOCCO) blocchi.push(scelti.slice(i, i + MAPPA_METEO_BLOCCO));
     const gruppi = await Promise.all(blocchi.map(async (blocco) => {
@@ -146,7 +149,7 @@ async function mappaMeteoDati(env) {
         latitude: blocco.map(r => r[MAPPA_LAT]).join(','),
         longitude: blocco.map(r => r[MAPPA_LNG]).join(','),
         current: 'temperature_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,cloud_cover',
-        timezone: 'GMT',
+        timezone: 'GMT',forecast_days:'1',
       });
       let dati;
       try { dati = await atmoFetch('https://api.open-meteo.com/v1/forecast?' + p, 6000000); }
@@ -267,7 +270,12 @@ async function mappaAvvisoApi(req, env, url) {
 async function mappaMeteoApi(req, env, url) {
   if (req.method !== 'GET') return mappaRisposta({ error: 'Metodo non consentito.' }, 405, 'no-store');
   if (!env?.DB) return mappaRisposta({ error: 'La cache del meteo non e disponibile.' }, 503, 'no-store');
-  const dati = await mappaMeteoDati(env);
+  let ids=null;
+  if(url.searchParams.has('ids')){
+    const raw=url.searchParams.get('ids');ids=[...new Set(raw?raw.split(','):[])].sort();
+    if(ids.length>24||ids.some(id=>!/^\d{6}$/.test(id)||!MAPPA_PER_ISTAT.has(id)))return mappaRisposta({error:'Scegli al massimo 24 comuni validi.'},400,'no-store');
+  }
+  const dati = await mappaMeteoDati(env,ids);
   // Un dato conservato non si presenta come fresco: chi legge deve poter
   // distinguere "adesso" da "l'ultimo che siamo riusciti a prendere".
   return mappaRisposta(dati, 200, dati.stale ? 'no-store' : 'public, max-age=300');

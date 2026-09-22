@@ -1,3 +1,5 @@
+import {modelTime} from './map-live-status.js';
+
 // Shared rules for rendering, accessible lists and the AI's visible-area summary.
 export const isStorm = code => [95, 96, 99].includes(code);
 export const isSnow = code => [71,73,75,77,85,86].includes(code);
@@ -21,11 +23,12 @@ export function weatherPoints(world, towns, readings, selected) {
   const points = towns.map(c => ({name:c[1],country_code:'IT',province:c[2],latitude:c[3],longitude:c[4],
     current:readings.has(c[0]) ? (()=>{const r=readings.get(c[0]);return {temperature_2m:r[1],precipitation:r[2],weather_code:r[3],wind_speed_10m:r[4],wind_direction_10m:r[5],interval:r[6],time:r[7],snowfall:r[8]};})() : null}));
   const result = [];
-  // Prefer the chosen location and then the more detailed Italian catalog.
+  // Keep order stable, but a newer timestamp always wins over an older catalog copy.
   for (const p of [selected, ...points, ...world]) {
     if (!validPlace(p) || !Number.isFinite(p.current?.temperature_2m)) continue;
-    if (result.some(q => q.name.toLocaleLowerCase() === p.name.toLocaleLowerCase() && Math.abs(q.latitude-p.latitude)<.2 && Math.abs(q.longitude-p.longitude)<.2)) continue;
-    result.push(p);
+    const i=result.findIndex(q => q.name.toLocaleLowerCase() === p.name.toLocaleLowerCase() && Math.abs(q.latitude-p.latitude)<.2 && Math.abs(q.longitude-p.longitude)<.2);
+    if(i<0)result.push(p);
+    else if((modelTime(p.current)??-Infinity)>(modelTime(result[i].current)??-Infinity))result[i]=p;
   }
   return result;
 }

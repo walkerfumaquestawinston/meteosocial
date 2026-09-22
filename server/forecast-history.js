@@ -41,6 +41,7 @@ async function forecastApi(req,env,url){
  const id=url.searchParams.get('id');if(!/^[a-f0-9-]{36}$/.test(id||''))fail(400,'Copia non valida.');const row=await q(env,'SELECT * FROM forecast_copies WHERE id=?',id).first();if(!row)fail(404,'Copia non trovata.');return json({...forecastSummary(row),location:row.location,source:'Open-Meteo',modelIssuedAt:null,data:JSON.parse(row.payload)});
  }
  const place=forecastLocation(url);
+ if(url.pathname==='/api/forecast/current')return json(await weatherProviderCurrent(env,place));
  if(url.pathname==='/api/forecast/history'){
  const before=url.searchParams.has('before')?Number(url.searchParams.get('before')):Date.now()+1;if(!Number.isFinite(before)||before<0)fail(400,'Data non valida.');
  const rows=(await q(env,'SELECT id,captured,timezone,previous_id,changes,hash FROM forecast_copies WHERE location=? AND captured<? ORDER BY captured DESC LIMIT 21',place.key,before).all()).results;
