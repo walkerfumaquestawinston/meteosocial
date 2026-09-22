@@ -1,3 +1,11 @@
+## 22 settembre 2026 — Versione 87 pubblicata, WeatherAPI in primo piano
+
+WeatherAPI Starter è attivo tramite segreto server. Il meteo della località selezionata usa coordinate, senza lista limitata di città: Roma e Tokyo sono solo test di verifica. La testata locale mostra WeatherAPI; previsioni, colori e radar conservano fonti separate.
+
+Pubblicazione riuscita 2026-09-22T06:23:51.303629Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Sites runtime d56acb31f704c213954f2c00e6e63791e7ec1603 e GitHub 86e667a13144549c22d0493e089afd2cf2cb7f37 condividono tree a7ee5b6dfb555aa5103cd5a568dac84b150be083. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_909fac6362f88191b445da1d8430f13a; deployment appgdep_6ab21ebf30288191b627c88e2cba476f; ambiente revisione 8.
+
+Build riuscita e 4 suite mirate dopo la priorità della testata; CI completa 35694460877 riuscita. Prima della modifica finale erano passate tutte le 67 suite. Il segreto è solo in produzione; anteprima locale allineata nel codice, non contiene la chiave pagata. Limite noto Open-Meteo server e ripiego browser descritti sotto. Non dichiarare dati nuovi ogni secondo. Successivi commit aggiornano solo queste note e non richiedono nuovo deploy.
+
 ## 22 settembre 2026 — WeatherAPI Starter attivo, versione 86 pubblicata
 
 Account WeatherAPI verificato: Starter, 7 USD fatturati. WEATHERAPI_KEY salvata come segreto runtime Sites (revisione 8); nessun valore in Git o nel browser dell’app. Endpoint pubblico provato per Roma e Tokyo: status available, timestamp e metriche reali. Pannello WeatherAPI verificato nel browser pubblico.
