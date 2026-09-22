@@ -89,3 +89,32 @@ html[data-phase=giorno] .scene-beacon{display:none}
  .scene-scrim{background:linear-gradient(90deg,#06172abf,#06172a15),linear-gradient(0deg,#06172aed 0 25%,transparent 42%,#06172a12 75%)}
 }
 @media(prefers-reduced-motion:reduce){.weather-scene *{animation:none!important}}
+/* The same signature landscape welcomes visitors on Oggi. */
+html:root body.cielo-design.segnale-design .home-weather-scene{background:#12355b!important;isolation:isolate;position:relative}
+html:root body.cielo-design.segnale-design .home-weather-scene::before,html:root body.cielo-design.segnale-design .home-weather-scene::after{display:none}
+.home-weather-scene #atmo-weather{position:relative;isolation:isolate}
+.home-weather-scene .scene-signature{position:relative;z-index:1;padding:20px 30px 0;color:#d4e8fb;font-size:11px;font-weight:650;letter-spacing:.14em}
+.home-weather-scene .scene-signature span{color:#99dff5;padding:0 5px}
+html:root body.cielo-design.segnale-design #main .home-weather-scene .atmo-weather{min-height:300px;grid-template-columns:minmax(0,1fr) 170px;padding-top:18px!important}
+html:root body.cielo-design.segnale-design #main .home-weather-scene .weather-art{display:none!important}
+html:root body.cielo-design.segnale-design #main .home-weather-scene .forecast-receipt{background:#071b30cc!important;border:1px solid #819ab766!important;border-radius:12px;padding:12px 16px;margin-bottom:20px}
+.home-weather-scene .scene-horizon{bottom:45px;height:55%}
+.home-weather-scene .scene-water{bottom:50px;height:30%}
+.home-weather-scene .scene-reflection{bottom:85px}
+.home-weather-scene .scene-lighthouse{bottom:75px}
+.home-weather-scene .scene-beacon{bottom:145px}
+@media(max-width:760px){
+ .home-weather-scene .scene-signature{padding:18px 22px 0;font-size:10px;letter-spacing:.1em}
+ html:root body.cielo-design.segnale-design #main .home-weather-scene .atmo-weather{min-height:330px;grid-template-columns:minmax(0,1fr);padding:18px 22px 90px!important}
+ html:root body.cielo-design.segnale-design #main .home-weather-scene .atmo-weather h2{max-width:78%}
+ html:root body.cielo-design.segnale-design #main .home-weather-scene .atmo-weather-meta{max-width:76%;font-size:13px!important}
+ .home-weather-scene .scene-orb{top:105px;right:8%;width:65px;height:65px}
+ .home-weather-scene .scene-cloud{top:130px;right:-65px}.home-weather-scene .scene-cloud-two{top:240px;right:-20px}
+ .home-weather-scene .scene-horizon{left:-10%;width:120%;height:200px;bottom:85px}
+ .home-weather-scene .scene-water{left:-10%;width:120%;height:100px;bottom:90px}
+ .home-weather-scene .scene-reflection{bottom:115px;right:22%;height:75px}
+ .home-weather-scene .scene-lighthouse{bottom:112px}
+ .home-weather-scene .scene-beacon{bottom:163px}
+ .home-weather-scene .scene-scrim{background:linear-gradient(90deg,#06172abd,#06172a15),linear-gradient(0deg,#06172ae0 0 15%,transparent 45%)}
+}
+html:root body.cielo-design.segnale-design #main .home-weather-scene .atmo-weather{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}

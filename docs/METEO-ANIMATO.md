@@ -17,3 +17,9 @@ Il rilascio aggiorna il Site esistente e l'anteprima locale 4595. La conferma di
 La versione precedente muoveva le nuvole di 68 px in 38 secondi: tecnicamente attiva ma poco percepibile. La revisione usa una traversata di 150 px in 12–19 secondi, acqua in 4 secondi e riflessi in 3,8 secondi. Piccolo faro costiero originale con fascio lento senza flash; spazio scenico dedicato su mobile. Nessun video, immagine scaricata, libreria o richiesta di rete aggiunta. Il paesaggio resta illustrativo.
 
 Verifica browser: trasformazioni delle nuvole, acqua e riflessi diverse fra campioni; nessun overflow a 390 px. Build e test-weather-scene, test-solar-live-map, test-startup superati. Rispettate le modalità movimento ridotto e pagina nascosta. Il costo grafico non è zero: non è stato eseguito un benchmark batteria/FPS su telefoni reali.
+
+## Scena d’ingresso anche in Oggi
+
+Costa di luce ora compare nella scheda principale di Oggi, con firma MeteoSocial, usando lo stesso modulo animato di Meteo. Il rinnovo dei dati e il cambio città rigenerano la scena con il codice meteo corretto; i temi solari, stagionali e festivi restano attivi. Rimosso dalla Home il vecchio elemento immagine decorativo (già nascosto) e il backdrop blur che rendeva il nuovo paesaggio indistinto. Nessun asset multimediale o nuova richiesta di rete. Stato di caricamento ed errore restano espliciti senza inventare condizioni meteo.
+
+Il disegno è originale del progetto, ma non si afferma un’esclusività legale o che non esistano interfacce simili. Controllo visivo della Home mobile e desktop, build e suite atmosfera/scena/avvio/fasi solari.
