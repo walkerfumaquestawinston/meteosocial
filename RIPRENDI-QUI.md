@@ -1,3 +1,11 @@
+## 22 settembre 2026 — Versione 83 pubblicata: mappa e neve
+
+Pubblicazione riuscita il 2026-09-22T03:25:20Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Controllo fonti ogni minuto, orari reali distinti, nuovo livello Neve, radar più leggero e contesto IA ampliato. Dettagli: docs/MAPPA-NEVE-MINUTO.md.
+
+Runtime Sites 64df9eb7918a59bb6f82fb810351afaf110e8020 e GitHub 68fc41a44998da1baaffc822fce550ed764b3ba4 condividono albero 01b22a6316f096a0521cfee00fa5ee3183042a63. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_068ac753231c81918c4a43dbbf4d07ae; deployment appgdep_6ab1f50cfe5081918c6788694dfd7aa3. Build, 63 suite e GitHub Actions 35683047168 superati. Verifica pubblica: Neve selezionabile, orari controllo 05:25 / modello 05:15, radar iniziale ultimo quadro 05:20. Anteprima locale 4595 allineata.
+
+Continuare PR draft #21 sul ramo codex/weather-scenery-20260922, non main. Questa nota successiva viene sincronizzata senza un ulteriore deploy del runtime.
+
 ## 22 settembre 2026 — Mappa e neve pronte per la pubblicazione
 
 Controllo fonti ogni minuto, orari distinti, radar senza ricreare immagini invariate, livello Neve e contesto Lente IA ampliato. Build e 63 suite superate. Dettagli e limiti: docs/MAPPA-NEVE-MINUTO.md. Pubblicazione in corso; la sezione precedente descrive la v82.
