@@ -33,6 +33,9 @@ importers:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      esbuild-wasm:
+        specifier: 0.28.2
+        version: 0.28.2
       vite:
         specifier: 8.3.0
         version: 8.3.0(esbuild@0.28.2)
@@ -763,6 +766,11 @@ packages:
     peerDependencies:
       esbuild: '>=0.12 <1'
 
+  esbuild-wasm@0.28.2:
+    resolution: {integrity: sha512-GccVwhv3mmOUVQHCQm2Ox/rby8n/EqUwvZxE6Pjfikrq/lWw9g9WX/u9EykWnpot3Ko6j426DgQdea2xWKIAQA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
     engines: {node: '>=12'}
@@ -1378,6 +1386,8 @@ snapshots:
       esbuild: 0.25.12
     transitivePeerDependencies:
       - supports-color
+
+  esbuild-wasm@0.28.2: {}
 
   esbuild@0.18.20:
     optionalDependencies:

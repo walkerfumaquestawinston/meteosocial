@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import {workspaceBundle} from './tools/workspace-bundle.mjs';
-import {build,transform} from 'esbuild';
+import {build,transform,stop} from './tools/compiler.mjs';
 import {execFileSync} from 'node:child_process';
 import {RETIRED as retired,isRetired} from './tools/retired-modules.mjs';
 // Le 200 citta del mondo vivono in dist/citta-mondo.js perche' servono a due
@@ -39,10 +39,12 @@ const assets={};
 const pwaFiles=['manifest.json','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-192.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png','icons/favicon.ico','icons/og-preview.png'];
 for(const file of pwaFiles)assets['/'+file]={data:fs.readFileSync(file).toString('base64'),type:file.endsWith('.json')?'application/manifest+json; charset=utf-8':file.endsWith('.ico')?'image/x-icon':'image/png'};
 // Stop before packaging if a UI module contains invalid JavaScript.
-for(const f of files.filter(f=>f.endsWith('.js')&&!f.startsWith('assets/')))execFileSync(process.execPath,['--check','dist/'+f],{stdio:'pipe'});
+for(const f of files.filter(f=>f.endsWith('.js')&&!f.startsWith('assets/')))execFileSync(process.execPath,['--check','dist/'+f],{stdio:'inherit'});
 for(const f of files)assets['/'+f]={data:fs.readFileSync('dist/'+f).toString('base64'),type:f.endsWith('.woff2')?'font/woff2':f.endsWith('.webp')?'image/webp':f.endsWith('.bin')?'application/octet-stream':f.endsWith('.html')?'text/html; charset=utf-8':f.endsWith('.js')?'text/javascript; charset=utf-8':f.endsWith('.css')?'text/css; charset=utf-8':f.endsWith('.txt')?'text/plain; charset=utf-8':'image/jpeg'};
 fs.mkdirSync('dist/server',{recursive:true});fs.mkdirSync('dist/.openai',{recursive:true});
 fs.writeFileSync('dist/server/index.js','const assets='+JSON.stringify(assets)+';\n'+fs.readFileSync('dist/places.js','utf8').split('export const normalizeCity')[0].replace('export const CITIES','const ATLAS_CITIES')+'\n'+fs.readFileSync('dist/atmosphere-core.js','utf8').replace(/export /g,'')+'\n'+fs.readFileSync('server/hail-service.js','utf8')+'\n'+fs.readFileSync('server/google3d.js','utf8')+'\n'+fs.readFileSync('server/atmosphere.js','utf8')+'\n'+fs.readFileSync('server/assistant.js','utf8')+'\n'+fs.readFileSync('server/fitcheck.js','utf8')+'\n'+fs.readFileSync('server/studio.js','utf8')+'\n'+fs.readFileSync('server/pulse.js','utf8')+'\n'+fs.readFileSync('dist/citta-mondo.js','utf8').replace('export const CITTA_MONDO','const WORLD_CITIES')+'\n'+fs.readFileSync('server/world-weather.js','utf8')+'\n'+fs.readFileSync('server/globe-events.js','utf8')+'\n'+fs.readFileSync('server/atlas.js','utf8')+'\n'+fs.readFileSync('server/global.js','utf8')+'\n'+fs.readFileSync('server/social.js','utf8')+'\n'+fs.readFileSync('server/network.js','utf8')+'\n'+fs.readFileSync('server/profession.js','utf8')+'\n'+fs.readFileSync('server/sky.js','utf8')+'\n'+fs.readFileSync('server/questions.js','utf8')+'\n'+fs.readFileSync('server/answer-push.js','utf8')+'\n'+fs.readFileSync('server/moderation.js','utf8')+'\n'+fs.readFileSync('server/local-coast.js','utf8')+'\n'+fs.readFileSync('server/local-weather.js','utf8')+'\n'+fs.readFileSync('server/forecast-history.js','utf8')+'\n'+comuniLetterale()+fs.readFileSync('server/grandine-avviso.js','utf8').replace(/export /g,'')+'\n'+fs.readFileSync('server/mappa.js','utf8')+'\n'+fs.readFileSync('server/daily-question.js','utf8')+'\n'+fs.readFileSync('server/growth.js','utf8')+'\n'+fs.readFileSync('server/worker.js','utf8'));
 fs.copyFileSync('.openai/hosting.json','dist/.openai/hosting.json');
 fs.cpSync('drizzle','dist/.openai/drizzle',{recursive:true});
 console.log('Built MeteoSocial Worker and assets');
+
+stop();

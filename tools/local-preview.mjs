@@ -41,7 +41,7 @@ export function createLocalEnvironment(root, dataDir=path.join(root,'.local-deve
   return {env,close:()=>db.close()};
 }
 
-export async function startLocalPreview({root,port=4589,dataDir,loadAi=true}) {
+export async function startLocalPreview({root,port=4589,dataDir,loadAi=true,liveReload=false}) {
   let key='',model='';
   if(loadAi){
     const envFile=path.join(root,'.env.local');if(fs.existsSync(envFile))process.loadEnvFile(envFile);
@@ -56,6 +56,7 @@ export async function startLocalPreview({root,port=4589,dataDir,loadAi=true}) {
       if(req.headers.host!==new URL(origin).host)return plain(403,'Host non valido per l’anteprima locale.');
       const url=new URL(req.url,origin),method=req.method||'GET';
       if(!['GET','HEAD'].includes(method)&&req.headers.origin!==origin)return plain(403,'Apri l’anteprima sullo stesso indirizzo locale.');
+      if(liveReload&&url.pathname==='/__local/revision')return plain(200,String(fs.statSync(path.join(root,'dist/server/index.js')).mtimeMs));
       if(url.pathname==='/__local/status')return plain(200,'MeteoSocial local preview');
       if(url.pathname==='/signin-with-chatgpt'){
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});
@@ -78,6 +79,7 @@ export async function startLocalPreview({root,port=4589,dataDir,loadAi=true}) {
       const outgoing=new Headers(response.headers);outgoing.delete('content-length');outgoing.set('Cache-Control','no-store');
       let body=Buffer.from(await response.arrayBuffer());
       if(outgoing.get('content-type')?.includes('text/html'))body=Buffer.from(body.toString('utf8').replace(/<body([^>]*)>/,(_,attributes)=>'<body'+attributes+'>'+localBanner));
+      if(liveReload&&outgoing.get('content-type')?.includes('text/html'))body=Buffer.from(body.toString('utf8').replace('</body>',`<script>let revision;setInterval(async()=>{try{const r=await fetch('/__local/revision',{cache:'no-store'});if(!r.ok)return;const next=await r.text();if(revision&&next!==revision)location.reload();revision=next}catch{}},1500)</script></body>`));
       res.writeHead(response.status,Object.fromEntries(outgoing));res.end(method==='HEAD'?undefined:body);
     }catch(e){plain(500,'Errore nell’anteprima locale. Controlla i file del progetto.');console.error('Local preview error:',e.name)}
   });
