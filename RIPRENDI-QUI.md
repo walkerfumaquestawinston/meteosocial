@@ -1,3 +1,11 @@
+## 22 settembre 2026 — Versione 85 pubblicata: Atlante locale
+
+Sites conferma pubblicazione riuscita il 2026-09-22T05:41:41.288303Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Nuova composizione inchiostro/lime, meteo locale sempre visibile, dettagli progressivi con prossimo cambio e ore, menu Strumenti e selettore fenomeni mobile. Vedi docs/MAPPA-ATLANTE-LOCALE.md.
+
+Runtime Sites 1537c33d918bea43c975347eb43f6316193ef2df e GitHub d6ed5aa42e42d928a1c07b911192b2788de343ff condividono albero ec8ddc4704297611e7a93c68987e42c862991b9a. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_927c5247657881919721c9db37ad7657; deployment appgdep_6ab214b6cf648191b677e1e71939aca0. Build e 65 suite attive superate; GitHub Actions 35691503317 riuscita. Browser locale desktop, 390 e 320 px; dettagli, orari e strumenti verificati. Anteprima 4595 allineata. Nessun test su dispositivo fisico.
+
+Continuare ramo codex/weather-scenery-20260922, PR draft #21. Le note successive sono solo documentazione, sincronizzate in entrambi i repository senza nuovo deploy. Il contatore al secondo resta distinto dalla frequenza effettiva dei dati meteo. Pubblicazione con build remota: gli script locali del plugin Sites non sono disponibili in questa sessione.
+
 ## 22 settembre 2026 — Atlante locale, revisione pronta
 
 Meteo della località sempre visibile, prossimo cambio e dettaglio orario nella scheda apribile, menu Strumenti e nuova composizione inchiostro/lime. Sei fenomeni in un selettore leggibile sul telefono. Fonte, fuso e stati dei dati restano espliciti. Build e 65 suite attive superate. Dettagli: docs/MAPPA-ATLANTE-LOCALE.md. Ultima pubblicazione confermata: v84; attendere la nota di esito del rilascio.
