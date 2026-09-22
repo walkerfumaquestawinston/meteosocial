@@ -1,4 +1,10 @@
 import {esc} from './weather-tools.js';
+export function providerBrief(place,data){
+ if(!data||!['available','stale'].includes(data.status))return '';
+ const fmt=(v,u='')=>Number.isFinite(v)?v.toLocaleString('it-IT',{maximumFractionDigits:1})+u:'—';
+ const stamp=new Date(data.observedAt).toLocaleTimeString('it-IT',{timeZone:data.timezone,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+ return `<div class="map-brief" data-state="${data.status==='available'?'ready':'stale'}"><div class="map-brief-location"><span class="map-brief-kicker">IL METEO QUI · WEATHERAPI</span><h2>${esc(place.name)}</h2><span class="map-brief-condition">${esc(data.condition)}</span></div><strong class="map-brief-temperature">${fmt(data.temperature,'°')}</strong><div class="map-brief-metrics"><span><small>Percepita</small><b>${fmt(data.feelsLike,'°')}</b></span><span><small>Vento medio</small><b>${fmt(data.wind,' km/h')}</b></span><span><small>${esc(data.timezone)}</small><b class="map-brief-time">${data.status==='stale'?'Dato precedente':'Dato'} · ${esc(stamp)}</b></span></div></div>`;
+}
 export function providerMarkup(data){
  if(!data||data.status==='not-configured')return '';
  if(data.status==='unavailable')return '<p class="field-note">WeatherAPI non disponibile. Le previsioni Open-Meteo restano separate qui sotto.</p>';

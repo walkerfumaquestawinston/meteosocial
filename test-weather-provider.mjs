@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {providerMarkup} from './dist/map-provider.js';
+import {providerMarkup,providerBrief} from './dist/map-provider.js';
 let calls=0,quotaCalls=0,fail=false,epoch=Date.now()/1000;
 const api=vm.runInNewContext(fs.readFileSync('server/weather-provider.js','utf8')+';({weatherProviderCurrent})',{
  Date,Intl,URLSearchParams,globeSnapshot:async(e,key,fn,ttl)=>{assert.equal(ttl,60000);return fn();},
@@ -11,7 +11,7 @@ const api=vm.runInNewContext(fs.readFileSync('server/weather-provider.js','utf8'
 const place={key:'35.68,139.69'};
 assert.equal((await api.weatherProviderCurrent({},place)).status,'not-configured');assert.equal(calls,0);
 let data=await api.weatherProviderCurrent({WEATHERAPI_KEY:'test-only'},place);
-assert.equal(data.status,'available');assert.equal(data.temperature,0);assert.equal(data.wind,null);assert.equal(data.pm25,0);assert.equal(quotaCalls,1);
+assert.equal(data.status,'available');assert.ok(providerBrief({name:'Tokyo'},data).includes('WEATHERAPI'));assert.equal(providerBrief({name:'Tokyo'},{status:'not-configured'}),'');assert.equal(data.temperature,0);assert.equal(data.wind,null);assert.equal(data.pm25,0);assert.equal(quotaCalls,1);
 assert.ok(!JSON.stringify(data).includes('test-only'));
 let html=providerMarkup(data);assert.ok(html.includes('&lt;script&gt;'));assert.ok(!html.includes('<script>'));assert.ok(html.includes('Asia/Tokyo'));assert.ok(html.includes('0°'));
 epoch-=7200;data=await api.weatherProviderCurrent({WEATHERAPI_KEY:'test-only'},place);assert.equal(data.status,'stale');assert.ok(providerMarkup(data).includes('DATO PRECEDENTE'));

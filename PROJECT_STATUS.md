@@ -1,3 +1,11 @@
+## 22 settembre 2026 — WeatherAPI Starter attivo, versione 86 pubblicata
+
+Account WeatherAPI verificato: Starter, 7 USD fatturati. WEATHERAPI_KEY salvata come segreto runtime Sites (revisione 8); nessun valore in Git o nel browser dell’app. Endpoint pubblico provato per Roma e Tokyo: status available, timestamp e metriche reali. Pannello WeatherAPI verificato nel browser pubblico.
+
+Sites runtime 9a3a1cf9b3033c8e2161e0ac1c31688a08e9137b e GitHub 3cccb047173e2555bdc66f03261f5861a873f3c1 condividono tree c2b9a2566c96d2c9c3b2e7ec5b30e08e48c8756b. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_69a51dbb7bd48191adbbf0d7794763f3; attivazione riuscita 2026-09-22T06:17:55.628135Z, deployment appgdep_6ab21d7c22f48191b458df177cb89d56. Build e 67 suite superate; CI 35693930681 riuscita. Build remota Sites perché gli script di packaging del plugin non sono disponibili.
+
+Limite ancora osservato: il recupero server dei comuni Open-Meteo restituisce 503; il ripiego nel browser mostra campioni recenti (08:15 verificato), ma non tutti i punti ricevono dati. Il pannello previsionale conserva una copia precedente esplicita se la fonte non risponde. Non dichiarare risolti i problemi upstream o tutta la mappa alimentata da WeatherAPI. Revisione successiva pronta per dare priorità al meteo WeatherAPI nella testata locale. Vedi docs/MAPPA-DATI-RECENTI.md.
+
 ## 22 settembre 2026 — Mappa affiancata e freschezza, revisione pronta
 
 Corretto il caso riprodotto del catalogo italiano vecchio che prevaleva sul campione recente. La vista chiede al massimo 24 comuni visibili, con cache condivisa, invece del catalogo completo da 500. Orari mancanti/futuri o più vecchi di 30 minuti non alimentano colori/riepiloghi correnti. Mappa e pannello affiancati sul desktop, due aree visibili sul telefono. Orologio, validità del modello ed età sono separati. Build e 66 suite superate. Dettagli: docs/MAPPA-DATI-RECENTI.md. Ultima pubblicazione confermata v85; attendere nota di esito.

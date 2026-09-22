@@ -47,3 +47,7 @@ Il pannello della mappa aggiunge condizioni attuali, temperatura percepita, vent
 Cache condivisa di un minuto per località e limite server globale di 3.000 chiamate/ora (massimo teorico 2.232.000 in 31 giorni, esclusi usi della stessa chiave fuori da questa app). Mancanza chiave, errori/quota e cache precedente non bloccano le previsioni. Non dichiarare l’integrazione attiva o verificata sul fornitore fino alla configurazione e prova con una vera chiave. Nessuna promessa di stazione vicina o misure al secondo.
 
 Documentazione: https://www.weatherapi.com/docs/ e https://www.weatherapi.com/pricing.aspx . Test dedicato con risposte simulate per chiave assente, quota, zero/mancante, fusi, dati vecchi/futuri, escape e assenza di segreti negli errori.
+
+## Attivazione completata
+
+Il proprietario ha acquistato Starter; confermato nel dashboard del fornitore. Segreto configurato in Sites revisione 8 e applicato alla versione 86. Endpoint reale provato per Roma e Tokyo; pannello pubblico verificato. La nota precedente descrive lo stato prima dell’acquisto. La testata locale dà ora priorità ai dati WeatherAPI disponibili; dettagli/previsioni conservano la propria attribuzione.
