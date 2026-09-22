@@ -1,3 +1,11 @@
+## 22 settembre 2026 — Versione 84 pubblicata: mappa chiara
+
+Sites conferma pubblicazione riuscita il 2026-09-22T05:16:10.940140Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Sei fenomeni leggibili, Fonti e orari, contatore del controllo al secondo e ritorno Ultimo nel radar. Nessuna misura meteo al secondo dichiarata.
+
+Runtime Sites 2751529c47eced84691f14becbd21f0a6693ed84 e GitHub 432dbf8d5423bbf59651e320149cd48f8c0153fd condividono albero 83b7b90dc811ee85ada2c1974f21d19d12c4d25a. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_c8bd8a537c30819188e1804ed763bbf3; deployment appgdep_6ab20ebc75888191a27aeedf369907ef. Build e 64 suite superate; GitHub Actions 35689787051 riuscita. Browser desktop, 390 e 320 px, selezione fenomeni, pannello fonti e radar storico verso ultimo quadro. Anteprima locale 4595 allineata; nessun test su telefono fisico.
+
+Continuare sul ramo codex/weather-scenery-20260922, PR draft #21. Dettagli e idee successive: docs/MAPPA-CHIARA.md. Queste note sono solo documentazione e vengono sincronizzate senza ulteriore deploy.
+
 ## 22 settembre 2026 — Mappa chiara, rilascio in preparazione
 
 Contatore del controllo al secondo, Fonti e orari, sei fenomeni leggibili e comando Ultimo per il radar. Frequenze reali delle fonti preservate: nessuna misura meteo al secondo. Build e 64 suite superate. Dettagli: docs/MAPPA-CHIARA.md. Ultima versione pubblicata confermata: 83; attendere la nota di esito per il nuovo rilascio.
