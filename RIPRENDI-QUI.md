@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Mappa chiara, rilascio in preparazione
+
+Contatore del controllo al secondo, Fonti e orari, sei fenomeni leggibili e comando Ultimo per il radar. Frequenze reali delle fonti preservate: nessuna misura meteo al secondo. Build e 64 suite superate. Dettagli: docs/MAPPA-CHIARA.md. Ultima versione pubblicata confermata: 83; attendere la nota di esito per il nuovo rilascio.
+
 ## 22 settembre 2026 — Versione 83 pubblicata: mappa e neve
 
 Pubblicazione riuscita il 2026-09-22T03:25:20Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Controllo fonti ogni minuto, orari reali distinti, nuovo livello Neve, radar più leggero e contesto IA ampliato. Dettagli: docs/MAPPA-NEVE-MINUTO.md.

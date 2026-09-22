@@ -19,3 +19,33 @@
 }
 
 @media(max-width:360px){.mappa{--mobile-field-top:286px}.mappa-alto{grid-template-rows:44px 96px 40px 20px auto}.mappa-contatori{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.mappa .mappa-pillola{flex-direction:row;gap:5px}.mappa .mappa-strumenti{top:340px}.mappa .mappa-pannello{top:286px}}
+
+/* A single live status; provenance remains one tap away. */
+.mappa-live-bar{grid-column:2;grid-row:4;display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--signal-surface,#142238);color:var(--signal-ink,#eef6fc);border:1px solid var(--signal-line,#425671);border-radius:10px;padding:0 8px;min-width:0}
+.mappa-live-bar .mappa-freshness{font-size:14px;line-height:1.35;border:0;padding:6px 0;background:transparent;font-variant-numeric:tabular-nums}
+.mappa #mappa-fonti{font-size:14px;min-height:44px;padding:6px 8px;flex-shrink:0;color:inherit;background:transparent;border:0;text-decoration:underline;text-underline-offset:3px}
+.mappa .mappa-pillola>b,.mappa .mappa-pillola small{display:none}
+.mappa .mappa-pillola strong{font-size:14px}
+html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola strong{font-size:14px!important}
+.mappa-source-list{margin:20px 0;display:grid;gap:8px;font-size:16px;line-height:1.5}
+.mappa-source-list dt{font-weight:700;margin-top:12px}.mappa-source-list dd{margin:0;font-variant-numeric:tabular-nums}
+.mappa #mappa-radar-latest{font-size:14px;min-height:44px;padding:6px 8px}
+.mappa .mappa-radar-heading strong,.mappa .mappa-radar-heading a,.mappa .mappa-radar-timeline p{font-size:12px}
+@media(max-width:920px){
+ .mappa-live-bar{grid-column:1;grid-row:4;min-height:44px}
+ .mappa .mappa-stato{display:none}
+ .mappa-alto{grid-template-rows:44px 60px 44px minmax(44px,auto)}
+ .mappa{--mobile-field-top:228px}
+ .mappa .mappa-strumenti{top:286px}.mappa .mappa-pannello{top:228px}
+ .mappa .mappa-pillola strong{font-size:14px}
+ .mappa .mappa-subtools button{font-size:14px;min-height:44px}
+ .mappa .field-mobile-handle{font-size:14px;min-height:48px}
+}
+@media(max-width:600px){
+ .mappa-contatori{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .mappa .mappa-pillola{flex-direction:row;gap:5px}
+ .mappa-alto{grid-template-rows:44px 96px 44px minmax(44px,auto)}
+ .mappa{--mobile-field-top:264px}
+ .mappa .mappa-strumenti{top:322px}.mappa .mappa-pannello{top:264px}
+ .mappa-live-bar .mappa-freshness{font-size:13px}.mappa #mappa-fonti{font-size:13px}
+}

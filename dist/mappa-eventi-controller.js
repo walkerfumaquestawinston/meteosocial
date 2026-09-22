@@ -1,4 +1,4 @@
-import {MAP_REFRESH_MS,sourceStatus} from './map-live-status.js';
+import {MAP_REFRESH_MS,sourceStatus,checkStatus,elapsedLabel,modelTime} from './map-live-status.js';
 import {createFreshCache} from './map-fresh-cache.js';
 import {createFieldDesk} from './map-field-desk.js';
 import {FIELD_MODES} from './map-field-core.js';
@@ -27,10 +27,10 @@ const weatherIcon=c=>isStorm(c)?'ϟ':c>=71&&c<=77?'❄':c>=51?'☂':c>1?'☁':'�
 export function createMappaEventi(ctx) {
   const esc=ctx.esc, $=s=>document.querySelector(s);
   let fieldDesk;
-  let L,map,markers,selectionMarker,timer,refreshTimer,alive=false,revision=0,panelRevision=0,searchRevision=0;
+  let L,map,markers,selectionMarker,timer,refreshTimer,clockTimer,alive=false,revision=0,panelRevision=0,searchRevision=0;
   let mode='temperature',showEvents=false,selected=null,world=[],towns=[],readings=new Map(),events=[],hail=[];
   let weatherState='loading',townState='loading',hailState='loading',eventState='idle',updated=null,selectedAt=0,townRequest=0;
-  let paletteChanged,loadTask=null,checkedAt=0;
+  let paletteChanged,loadTask=null,checkedAt=0,sourcesOpen=false;
   let cityLabels,labelsFrame=0,showCityNames=true,overviewOpen=false;
   const cache=createFreshCache(); let focusedBeforePanel=null,radar=null,radarState={enabled:false,frames:[],status:'idle'},aiHistory=[],aiPlaceKey='';
   try {const saved=localStorage.getItem('meteosocial:weather-map:mode');if(MODES.some(x=>x.id===saved))mode=saved;} catch {}
@@ -42,7 +42,7 @@ export function createMappaEventi(ctx) {
       <form id="mappa-cerca" class="mappa-cerca" role="search"><span aria-hidden="true">${mapIcon("search")}</span><label class="sr-only" for="mappa-cerca-testo">Cerca città nel mondo</label><input id="mappa-cerca-testo" type="search" placeholder="Cerca una città nel mondo…" maxlength="100" autocomplete="off"><button type="submit" aria-label="Cerca città">${mapIcon("arrow")}</button></form>
       <div class="mappa-contatori" role="group" aria-label="Fenomeno da esplorare">${MODES.map(m=>`<button class="mappa-pillola" data-livello="${m.id}" aria-label="${m.name}" aria-pressed="${mode===m.id}" style="--layer:${m.color}"><span class="mappa-pillola-icona" aria-hidden="true">${mapIcon(m.id)}</span><span><strong><span class="mode-full">${m.name}</span><span class="mode-short" aria-hidden="true">${m.id==='temperature'?'Temp.':m.name}</span></strong><small>${m.hint}</small></span><b data-conteggio="${m.id}">—</b></button>`).join('')}</div>
       <div class="mappa-stato"><span class="mappa-dot" aria-hidden="true"></span><span id="mappa-stato-testo" role="status">Carico i dati meteo…</span><button id="mappa-guida">Guida ↗</button></div>
-      <div id="mappa-freshness" class="mappa-freshness" aria-label="Orari delle fonti">Controllo automatico ogni minuto · dati secondo la fonte</div><div class="mappa-subtools"><button id="mappa-radar-toggle" aria-pressed="false"><span aria-hidden="true">${mapIcon("radar")}</span> Radar pioggia <b>OFF</b></button><span id="mappa-radar-badge">Ultime 2 ore</span><button id="mappa-city-names" aria-pressed="true" title="Mostra o nascondi i nomi delle città">Aa <span>Città</span></button></div>
+      <div class="mappa-live-bar"><span id="mappa-freshness" class="mappa-freshness" aria-live="off">Controllo le fonti…</span><button id="mappa-fonti" aria-expanded="false" aria-controls="mappa-pannello">Fonti e orari</button></div><div class="mappa-subtools"><button id="mappa-radar-toggle" aria-pressed="false"><span aria-hidden="true">${mapIcon("radar")}</span> Radar pioggia <b>OFF</b></button><span id="mappa-radar-badge">Ultime 2 ore</span><button id="mappa-city-names" aria-pressed="true" title="Mostra o nascondi i nomi delle città">Aa <span>Città</span></button></div>
     </div>
     <section id="mappa-field" class="mappa-field" aria-label="Osservatorio meteo locale"></section>
     <div class="mappa-pulse is-compact" id="mappa-pulse" aria-label="Confronto nella zona visibile"></div>
@@ -57,7 +57,7 @@ export function createMappaEventi(ctx) {
     </div>
     <button class="mappa-reading" id="mappa-selected" hidden></button>
     <div class="mappa-basso">
-      <div id="mappa-radar-timeline" class="mappa-radar-timeline" hidden><div class="mappa-radar-heading"><strong>RADAR PIOGGIA</strong><span id="mappa-radar-note" role="status"></span><a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer ↗</a></div><div class="mappa-radar-track"><button id="mappa-radar-play" aria-label="Riproduci radar">▶</button><time id="mappa-radar-time">—</time><label class="sr-only" for="mappa-radar-range">Orario del radar</label><input id="mappa-radar-range" type="range" min="0" max="0" value="0" disabled><span>Ultimo</span><button id="mappa-radar-retry" aria-label="Aggiorna radar">↻</button></div><p>Immagini recenti, non previsioni. Copertura variabile: una zona vuota non esclude pioggia.</p></div>
+      <div id="mappa-radar-timeline" class="mappa-radar-timeline" hidden><div class="mappa-radar-heading"><strong>RADAR PIOGGIA</strong><span id="mappa-radar-note" role="status"></span><a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer ↗</a></div><div class="mappa-radar-track"><button id="mappa-radar-play" aria-label="Riproduci radar">▶</button><time id="mappa-radar-time">—</time><label class="sr-only" for="mappa-radar-range">Orario del radar</label><input id="mappa-radar-range" type="range" min="0" max="0" value="0" disabled><button id="mappa-radar-latest" aria-label="Torna all’ultimo quadro radar">Ultimo</button><button id="mappa-radar-retry" aria-label="Aggiorna radar">↻</button></div><p>Immagini recenti, non previsioni. Copertura variabile: una zona vuota non esclude pioggia.</p></div>
       <div class="mappa-legenda" id="mappa-legenda"></div>
       <details class="mappa-ai-dock map-help"><summary>Chiedi una spiegazione a Lente IA</summary><div id="mappa-ai-suggestions" class="mappa-ai-suggestions" aria-label="Domande suggerite"></div><form class="mappa-ia" id="mappa-ia"><span class="mappa-ia-marchio">${mapIcon("ai")}<span>LENTE <small>IA</small></span></span><label class="sr-only" for="mappa-ia-testo">Chiedi all’IA del luogo selezionato</label><input id="mappa-ia-testo" type="text" maxlength="700" placeholder="Leggi la zona insieme a Lente…" autocomplete="off"><button id="mappa-ia-invia" type="submit" aria-label="Invia domanda all’IA">${mapIcon("arrow")}</button></form><div id="mappa-ai-context" class="mappa-ai-context"></div></details>
       <p class="mappa-attribuzioni"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> · <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a><span> · Catalogo comuni derivato ISTAT · NASA EONET</span></p>
@@ -76,7 +76,7 @@ export function createMappaEventi(ctx) {
     const note=state.status==='loading'?'Caricamento…':state.status==='error'?'Fonte non disponibile. Riprova.':state.status==='partial'?'Alcune immagini non disponibili':state.status==='tiles'?'Carico la vista…':state.age>25?`Ultimo quadro di ${state.age} min fa`:'Sequenza recente';
     $('#mappa-radar-note').textContent=note;$('#mappa-radar-badge').textContent=state.enabled?note:'Ultime 2 ore';
     const range=$('#mappa-radar-range');range.max=Math.max(0,state.frames.length-1);range.value=state.index||0;range.disabled=state.frames.length<2;scheduleLabels();
-    const time=state.time?clock(state.time*1000):'—';$('#mappa-radar-time').textContent=time;range.setAttribute('aria-valuetext',time+' · orario del quadro radar');renderFreshness();
+    const time=state.time?clock(state.time*1000):'—';$('#mappa-radar-time').textContent=time;range.setAttribute('aria-valuetext',time+' · orario del quadro radar');renderFreshness();$('#mappa-radar-latest').disabled=!state.frames.length||state.index===state.frames.length-1;
     $('#mappa-radar-play').textContent=state.playing?'Ⅱ':'▶';$('#mappa-radar-play').setAttribute('aria-label',state.playing?'Pausa radar':'Riproduci radar');$('#mappa-radar-play').disabled=state.frames.length<2;
   }
   function renderSuggestions(){
@@ -133,8 +133,25 @@ export function createMappaEventi(ctx) {
     if(!selected)return;const place={...selected},at=selectedAt;
     try{const d=await pointWeather(place,true);if(alive&&token===revision&&at===selectedAt){selected={...place,current:d.current,refreshFailed:false};draw();}}catch{if(alive&&token===revision&&at===selectedAt){selected={...place,refreshFailed:true};renderFreshness();}}
   }
-  async function load(){if(!alive||!map)return;if(loadTask)return loadTask;const token=revision;const task=Promise.allSettled([loadSelected(token),loadWeather(token),loadTowns(token),loadHail(token),loadEvents(token)]).finally(()=>{if(loadTask===task)loadTask=null;if(alive&&token===revision){checkedAt=Date.now();renderFreshness();}});loadTask=task;return task;}
-  function renderFreshness(){const slot=$('#mappa-freshness');if(!slot)return;const info=sourceStatus({checkedAt,current:selected?.current,radar:radarState});slot.textContent=info.checked+' · ogni minuto | '+info.model+(selected?.refreshFailed?' · aggiornamento fallito':'')+(radarState.enabled?' | '+info.radar:'');slot.title='Orari delle fonti convertiti nel fuso del dispositivo. Il controllo ogni 60 secondi non cambia l’orario dei dati. Modello, radar e osservazioni hanno frequenze diverse.';}
+  async function load(){if(!alive||!map)return;if(loadTask)return loadTask;const token=revision;const task=Promise.allSettled([loadSelected(token),loadWeather(token),loadTowns(token),loadHail(token),loadEvents(token)]).finally(()=>{if(loadTask===task)loadTask=null;if(alive&&token===revision){checkedAt=Date.now();renderFreshness();}});loadTask=task;renderFreshness();return task;}
+  function renderFreshness(){
+    const slot=$('#mappa-freshness');if(!slot)return;
+    const failed=selected?.refreshFailed||['error','stale','partial'].includes(weatherState)||['error','stale'].includes(townState)||hailState==='error'||(radarState.enabled&&['error','partial'].includes(radarState.status));
+    const status=checkStatus({checkedAt,checking:!!loadTask,failed,outdated:!!selected?.current&&sourceStatus({current:selected.current}).stale,offline:navigator.onLine===false});
+    slot.textContent=status.label;slot.dataset.tone=status.tone;
+    if(sourcesOpen){
+      const info=sourceStatus({checkedAt,current:selected?.current,radar:radarState});
+      const model=$('#mappa-source-model'),check=$('#mappa-source-check'),frame=$('#mappa-source-radar');
+      if(check)check.textContent=status.label;
+      if(model)model.textContent=info.model+(selected?.current?' · '+elapsedLabel(modelTime(selected.current)):'')+(selected?.refreshFailed?' · recupero fallito':'');
+      if(frame)frame.textContent=info.radar+(radarState.status==='error'?' · recupero fallito':'');
+    }
+  }
+  function sourcePanel(){
+    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · Open-Meteo</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · RainViewer</dt><dd id="mappa-source-radar"></dd></dl><p>Il contatore cambia ogni secondo. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Le condizioni attuali sono stime di modello a passi di 15 minuti. Le previsioni orarie hanno una cache fino a 15 minuti. Il radar pubblico espone quadri ogni 10 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
+    sourcesOpen=true;$('#mappa-fonti')?.setAttribute('aria-expanded','true');renderFreshness();
+    $('#mappa-source-refresh').onclick=()=>$('#mappa-aggiorna')?.click();
+  }
 
   function scheduleLabels(){cancelAnimationFrame(labelsFrame);labelsFrame=requestAnimationFrame(()=>{if(alive)drawCityLabels();});}
   function labelText(p){
@@ -225,6 +242,7 @@ export function createMappaEventi(ctx) {
     slot.innerHTML=mode==='neve'?'<span>❄ Neve fresca · modello</span><small>cm nell’intervallo indicato · tocca un punto. Zero punti non esclude neve.</small>':mode==='temperature'?'<span>Temperatura · °C</span><div class="mappa-scala"></div><div class="mappa-scale-values"><span>−10</span><span>0</span><span>10</span><span>20</span><span>30</span><span>40+</span></div>':mode==='vento'?'<span>Vento al suolo · km/h</span><div class="mappa-scala wind"></div><div class="mappa-scale-values"><span>0</span><span>20</span><span>40</span><span>60+</span></div><small>Frecce = direzione verso cui soffia</small>':mode==='pioggia'?'<span class="mappa-key rain">● Punti: pioggia da modello</span><small>Tocca per quantità e intervallo · radar sovrapposto</small>':mode==='grandine'?'<span class="mappa-key hail">◇ Grandine segnalata</span><small>Community · ultime 2 ore · non verificata</small>':'<span class="mappa-key storm">ϟ M · modello / C · community</span><small>Viola: modello · ambra: osservazioni. Nessun sensore di scariche</small>';
   }
   function panel(title,html,focus=true){
+    sourcesOpen=false;$('#mappa-fonti')?.setAttribute('aria-expanded','false');
     const origin=document.activeElement;fieldDesk?.close();
     const p=$('#mappa-pannello');if(!p)return;panelRevision++;
     if(p.hidden)focusedBeforePanel=origin;
@@ -232,7 +250,7 @@ export function createMappaEventi(ctx) {
     $('#mappa-pannello-chiudi').onclick=closePanel;
     if(focus)$('#mappa-pannello-titolo').focus({preventScroll:true});
   }
-  function closePanel(){const p=$('#mappa-pannello');if(p)p.hidden=true;$('.mappa')?.classList.remove('has-panel');panelRevision++;searchRevision++;scheduleLabels();const target=(focusedBeforePanel?.id&&document.getElementById(focusedBeforePanel.id))||focusedBeforePanel;const visible=target?.isConnected&&target.getClientRects().length&&getComputedStyle(target).visibility!=='hidden';if(visible)target.focus({preventScroll:true});else if($('#field-expand')?.getClientRects().length)$('#field-expand').focus({preventScroll:true});}
+  function closePanel(){sourcesOpen=false;$('#mappa-fonti')?.setAttribute('aria-expanded','false');const p=$('#mappa-pannello');if(p)p.hidden=true;$('.mappa')?.classList.remove('has-panel');panelRevision++;searchRevision++;scheduleLabels();const target=(focusedBeforePanel?.id&&document.getElementById(focusedBeforePanel.id))||focusedBeforePanel;const visible=target?.isConnected&&target.getClientRects().length&&getComputedStyle(target).visibility!=='hidden';if(visible)target.focus({preventScroll:true});else if($('#field-expand')?.getClientRects().length)$('#field-expand').focus({preventScroll:true});}
   const sourceTime=k=>k?.time?`${String(k.time).replace('T',' ')} UTC`:'orario del modello non disponibile';
   const pointWeather=(p,force=false)=>cached('point:'+p.latitude.toFixed(3)+':'+p.longitude.toFixed(3),async()=>{
         const q=new URLSearchParams({latitude:p.latitude,longitude:p.longitude,current:CURRENT,timezone:'GMT',forecast_days:'1'});
@@ -276,7 +294,7 @@ export function createMappaEventi(ctx) {
     if($('#mappa-list-compare'))$('#mappa-list-compare').onclick=()=>comparePanel(s);
     $('#mappa-pannello-corpo').querySelectorAll('[data-point]').forEach(b=>b.onclick=()=>mode==='grandine'?hailPanel(rows[+b.dataset.point]):selectPlace(rows[+b.dataset.point]));
   }
-  function guide(){panel('La mappa, in 20 secondi',`<ol class="mappa-guide"><li><b>Scegli cosa vedere.</b> Scegli temperatura, pioggia, neve, grandine, vento o temporali. Il pulsante Radar pioggia sovrappone immagini recenti a qualsiasi livello.</li><li><b>Esplora e tocca una città.</b> I nomi restano disponibili anche senza dati meteo; avvicinati per vederne altri. Città attiva o nasconde le etichette. I numeri dei livelli sono campioni di modello nella vista; in Grandine il conteggio riguarda le osservazioni nel raggio scelto.</li><li><b>Esplora un’ora.</b> Tocca una tessera nell’osservatorio per confrontare temperatura, percepita, pioggia e raffiche. Lente può spiegare esattamente quell’ora. In Pioggia cerchiamo due ore consecutive con al massimo 0,2 mm e 30% di probabilità per ora; non è una garanzia di asciutto.</li><li><b>Leggi le voci dal posto.</b> Ogni livello ha osservazioni pubbliche con posizione approssimata e scadenza di due ore. In Grandine scegli 25, 50, 100 o 150 km: i cerchi indicano distanza, non traiettorie. Trova punti coperti cerca edifici e parcheggi entro 5 km dalla località selezionata; accesso e disponibilità vanno verificati.</li><li><b>Chiedi a Lente.</b> Seleziona una località, poi scrivi nella barra Lente. L’IA riceve dati meteo e nome del luogo; il server esclude coordinate, autori e media dall’invio a OpenAI.</li></ol><h3>Ogni minuto: cosa significa?</h3><p>Controlliamo le fonti ogni 60 secondi mentre la mappa è visibile. Il controllo non è l’ora della misura: leggi separatamente l’orario del modello e del quadro radar. Le previsioni orarie e i campioni di modello possono restare identici tra due controlli. Le richieste già in corso non vengono duplicate.</p><h3>Neve, senza equivoci</h3><p>Neve fresca: centimetri nell’intervallo indicato. Neve al suolo: spessore stimato dal modello. Zero termico: quota dell’aria a 0 °C, non quota neve. Osservazioni: racconti delle persone non verificati.</p><h3>Leggere bene le fonti</h3><p>Temperature, pioggia, vento e temporali: modello Open-Meteo. Radar: RainViewer, copertura variabile; non identifica grandine. Grandine: osservazioni delle persone, ultime 2 ore. Fulmini: non disponiamo di una rete di rilevamento delle singole scariche. I comuni italiani più piccoli possono non avere dati.</p><p>Usa Riproduci e il cursore per scorrere i quadri radar delle ultime 2 ore. L’orario si riferisce al quadro composito; le misure al suo interno possono avere orari diversi. La mappa non certifica aree sicure e non calcola un arrivo affidabile della grandine.</p><button class="mappa-primary" id="mappa-guide-detail">Apri radar e dettaglio ↗</button>`);$('#mappa-guide-detail').textContent='Mostra il radar';$('#mappa-guide-detail').onclick=()=>{closePanel();radar?.setEnabled(true);};}
+  function guide(){panel('La mappa, in 20 secondi',`<ol class="mappa-guide"><li><b>Scegli cosa vedere.</b> Scegli temperatura, pioggia, neve, grandine, vento o temporali. Il pulsante Radar pioggia sovrappone immagini recenti a qualsiasi livello.</li><li><b>Esplora e tocca una città.</b> I nomi restano disponibili anche senza dati meteo; avvicinati per vederne altri. Città attiva o nasconde le etichette. Ogni pulsante mostra un fenomeno. Fonti e orari distingue controllo, modello e radar; Ultimo riporta al quadro radar più recente.</li><li><b>Esplora un’ora.</b> Tocca una tessera nell’osservatorio per confrontare temperatura, percepita, pioggia e raffiche. Lente può spiegare esattamente quell’ora. In Pioggia cerchiamo due ore consecutive con al massimo 0,2 mm e 30% di probabilità per ora; non è una garanzia di asciutto.</li><li><b>Leggi le voci dal posto.</b> Ogni livello ha osservazioni pubbliche con posizione approssimata e scadenza di due ore. In Grandine scegli 25, 50, 100 o 150 km: i cerchi indicano distanza, non traiettorie. Trova punti coperti cerca edifici e parcheggi entro 5 km dalla località selezionata; accesso e disponibilità vanno verificati.</li><li><b>Chiedi a Lente.</b> Seleziona una località, poi scrivi nella barra Lente. L’IA riceve dati meteo e nome del luogo; il server esclude coordinate, autori e media dall’invio a OpenAI.</li></ol><h3>Ogni minuto: cosa significa?</h3><p>Controlliamo le fonti ogni 60 secondi mentre la mappa è visibile. Il controllo non è l’ora della misura: leggi separatamente l’orario del modello e del quadro radar. Le previsioni orarie e i campioni di modello possono restare identici tra due controlli. Le richieste già in corso non vengono duplicate.</p><h3>Neve, senza equivoci</h3><p>Neve fresca: centimetri nell’intervallo indicato. Neve al suolo: spessore stimato dal modello. Zero termico: quota dell’aria a 0 °C, non quota neve. Osservazioni: racconti delle persone non verificati.</p><h3>Leggere bene le fonti</h3><p>Temperature, pioggia, vento e temporali: modello Open-Meteo. Radar: RainViewer, copertura variabile; non identifica grandine. Grandine: osservazioni delle persone, ultime 2 ore. Fulmini: non disponiamo di una rete di rilevamento delle singole scariche. I comuni italiani più piccoli possono non avere dati.</p><p>Usa Riproduci e il cursore per scorrere i quadri radar delle ultime 2 ore. L’orario si riferisce al quadro composito; le misure al suo interno possono avere orari diversi. La mappa non certifica aree sicure e non calcola un arrivo affidabile della grandine.</p><button class="mappa-primary" id="mappa-guide-detail">Apri radar e dettaglio ↗</button>`);$('#mappa-guide-detail').textContent='Mostra il radar';$('#mappa-guide-detail').onclick=()=>{closePanel();radar?.setEnabled(true);};}
   function contextSummary(){
     const s=summary();const info=[];
     if(mode==='neve')info.push(`${s.snow.length} località con neve indicata dal modello; non misure osservate. Neve fresca in cm nell’intervallo, non spessore al suolo.`);
@@ -323,7 +341,7 @@ export function createMappaEventi(ctx) {
     navigator.geolocation.getCurrentPosition(p=>{if(!alive||life!==revision)return;selectPlace({name:'La mia zona',latitude:p.coords.latitude,longitude:p.coords.longitude,source:'gps'});},()=>{if(alive&&life===revision)notify('Posizione non disponibile. Puoi cercare una città.');},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
   }
   function keydown(e){if(e.key==='Escape')closePanel();}
-  function visibility(){if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)radar?.refresh();}}
+  function visibility(){renderFreshness();if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)radar?.refresh();}}
   async function bind(){
     const host=$('#mappa-tela');if(!host||map)return;alive=true;const life=++revision;
     let geographicData;try{[L,geographicData]=await preload();}catch{notify('Mappa non disponibile. Ricarica la pagina.');return;}
@@ -364,6 +382,8 @@ export function createMappaEventi(ctx) {
     radar=createAtlasRadar({L,map,onChange:renderRadar});
     const place=ctx.get().place;if(validPlace(place)){selected={...place,current:ctx.get().weather?.current};map.setView([place.latitude,place.longitude],5,{animate:false});$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
     $('#mappa-zona').onclick=()=>{const p=ctx.get().place;if(validPlace(p))selectPlace(p);else $('#mappa-cerca-testo').focus();};
+    $('#mappa-fonti').onclick=()=>sourcesOpen?closePanel():sourcePanel();
+    $('#mappa-radar-latest').onclick=()=>radar.seek(radarState.frames.length-1);
     $('#mappa-radar-toggle').onclick=()=>radar.setEnabled(!radarState.enabled);
     $('#mappa-radar-play').onclick=()=>radar.play();$('#mappa-radar-range').oninput=e=>radar.seek(Number(e.target.value));$('#mappa-radar-retry').onclick=()=>radar.refresh(true);
     map.on('moveend',()=>{draw();clearTimeout(timer);timer=setTimeout(()=>loadTowns(revision),400);});
@@ -375,9 +395,10 @@ export function createMappaEventi(ctx) {
     $('#mappa-eventi').onclick=()=>{showEvents=!showEvents;$('#mappa-eventi').setAttribute('aria-pressed',String(showEvents));if(showEvents){loadEvents(revision).then(()=>{if(eventState==='error')notify('Catalogo NASA non disponibile.');});}draw();};
     $('#mappa-aggiorna').onclick=async e=>{const button=e.currentTarget;button.disabled=true;cache.clear();fieldDesk?.refresh();if(radarState.enabled)radar.refresh(true);notify('Aggiorno le fonti…');try{await load();}finally{if(button.isConnected)button.disabled=false;}};
     document.addEventListener('keydown',keydown);document.addEventListener('visibilitychange',visibility);
+    clockTimer=setInterval(()=>{if(!document.hidden)renderFreshness();},1000);
     refreshTimer=setInterval(()=>{if(!document.hidden){load();fieldDesk?.sync(selected,mode);if(radarState.enabled)radar.refresh(true);}},MAP_REFRESH_MS);draw();if(mode==='pioggia')radar.setEnabled(true);void load();
 
   }
-  function dispose(){if(paletteChanged)document.removeEventListener('meteosocial:phase',paletteChanged);paletteChanged=null;alive=false;loadTask=null;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);fieldDesk?.dispose();fieldDesk=null;radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
+  function dispose(){if(paletteChanged)document.removeEventListener('meteosocial:phase',paletteChanged);paletteChanged=null;alive=false;loadTask=null;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);clearInterval(clockTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);fieldDesk?.dispose();fieldDesk=null;radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
   return {page,bind,dispose,preload,active:()=>ctx.get().route==='mappa-eventi'};
 }
