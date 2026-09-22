@@ -1,5 +1,14 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Versione 79 pubblicata: Costa di luce
+
+Sites pubblicato con successo il 2026-09-22T02:23:20.274151Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#tendenze . Ora il movimento è più visibile: nuvole, acqua e riflessi misurati in movimento nel browser; costa e faro originali con spazio dedicato su mobile. Nessun nuovo download multimediale o dipendenza, circa 4082 byte gzip per i due sorgenti della scena. Non è una misura FPS/batteria.
+
+Runtime eb0b9d59581d5fcbb6f809ed8ff0d1df6c508455, albero 9736c59683803a4057c8e62e8d0cde654c7148a5 identico al commit GitHub da9a5f84d2c3a34e1bd563f82022997494b0b4b6. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_fb8f1ccd6bdc8191b358e6ada0317e3e; deployment appgdep_6ab1e64b60188191812e129d49629d4e.
+
+Continuare da codex/weather-scenery-20260922, PR https://github.com/walkerfumaquestawinston/meteosocial/pull/21 aggiornata (draft sopra PR #20). Anteprima locale 4595 allineata. Build riuscita, tre suite mirate superate, nessun overflow a 390 px o errore console nel controllo finale. Dettagli in docs/METEO-ANIMATO.md. Queste note solo documentali sono salvate su Sites e GitHub senza ulteriore deploy.
+
+
 ## 22 settembre 2026 — Versione 78 pubblicata: Meteo animato
 
 Pubblicazione Sites riuscita il 2026-09-22T02:14:02.111366Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#tendenze
