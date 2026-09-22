@@ -1,7 +1,7 @@
 // Public Radar-DPC POH. Fixed endpoints, bounded responses, no credentials.
 let dpcHailCached=null,dpcHailPending=null;
 async function dpcHailFetch(url,options={}){
- const response=await fetch(url,{...options,headers:{Origin:'https://scudo-meteo-community.walkerthehate.chatgpt.site',...options.headers},signal:AbortSignal.timeout(15000),redirect:'error'});
+ const response=await fetch(url,{...options,headers:{Origin:'https://scudo-meteo-community.walkerthehate.chatgpt.site',...options.headers},signal:AbortSignal.timeout(15000),redirect:'manual'});
  if(!response.ok)throw Error('Radar-DPC non disponibile');return response;
 }
 function dpcHailDownloadURL(value){
@@ -27,7 +27,7 @@ async function dpcHailProduct(req){
    if(size<8||!((bytes[0]===73&&bytes[1]===73)||(bytes[0]===77&&bytes[1]===77)))throw Error('Formato radar non valido');
    dpcHailCached={time,checkedAt:Date.now(),bytes};
   })().finally(()=>{dpcHailPending=null;});
-  try{await dpcHailPending;}catch{return json({error:'Radar grandine temporaneamente non disponibile. Riprova.',source:'Radar-DPC'},503);}
+  try{await dpcHailPending;}catch(e){console.error('hail_radar_failed',String(e?.message||'unknown').replace(/https?:\/\/\S+/g,'[source]').slice(0,180));return json({error:'Radar grandine temporaneamente non disponibile. Riprova.',source:'Radar-DPC'},503);}
  }
  if(Date.now()-dpcHailCached.time>1800000)return json({error:'Il quadro radar grandine non è recente.'},503);
  return new Response(dpcHailCached.bytes,{headers:{'Content-Type':'image/tiff','Cache-Control':'public,max-age=60','X-Radar-Time':String(dpcHailCached.time),'X-Radar-Source':'Radar-DPC POH','X-Content-Type-Options':'nosniff'}});

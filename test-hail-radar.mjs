@@ -7,12 +7,13 @@ const image={getGeoKeys:()=>({GTModelTypeGeoKey:1,GTRasterTypeGeoKey:1,Geographi
 assert.equal(validateHailImage(image).w,1200);assert.throws(()=>validateHailImage({...image,getWidth:()=>800}));
 const code=fs.readFileSync('server/hail-radar.js','utf8');let calls=0;
 const now=Date.now();
-const context={URL,Date,JSON,Number,Uint8Array,Response,AbortSignal,json:(data,status=200)=>Response.json(data,{status}),fetch:async(url,opts)=>{calls++;assert.equal(opts.redirect,'error');assert.ok(opts.headers.Origin);if(url.includes('findLast'))return Response.json({lastProducts:[{productType:'POH',time:now,period:'PT5M'}]});if(url.includes('downloadProduct'))return Response.json({url:'https://s3-prod-dpc-radar.s3.eu-south-1.amazonaws.com/POH/22-09-2026-07-00.tif?public=signed'});return new Response(new Uint8Array([73,73,42,0,0,0,0,0]));}};
+const context={URL,Date,JSON,Number,Uint8Array,Response,AbortSignal,json:(data,status=200)=>Response.json(data,{status}),fetch:async(url,opts)=>{calls++;assert.equal(opts.redirect,'manual');assert.ok(opts.headers.Origin);if(url.includes('findLast'))return Response.json({lastProducts:[{productType:'POH',time:now,period:'PT5M'}]});if(url.includes('downloadProduct'))return Response.json({url:'https://s3-prod-dpc-radar.s3.eu-south-1.amazonaws.com/POH/22-09-2026-07-00.tif?public=signed'});return new Response(new Uint8Array([73,73,42,0,0,0,0,0]));}};
 const api=vm.runInNewContext(code+';({run:dpcHailProduct,validate:dpcHailDownloadURL})',context);
 for(const url of ['https://evil.test/POH/22-09-2026-07-00.tif','http://s3-prod-dpc-radar.s3.eu-south-1.amazonaws.com/POH/22-09-2026-07-00.tif','https://s3-prod-dpc-radar.s3.eu-south-1.amazonaws.com/VMI/22-09-2026-07-00.tif'])assert.throws(()=>api.validate(url));
 assert.equal((await api.run({method:'POST'})).status,405);
 const responses=await Promise.all([api.run({method:'GET'}),api.run({method:'GET'})]);assert.equal(calls,3);assert.equal(responses[0].headers.get('X-Radar-Time'),String(now));assert.equal((await api.run({method:'GET'})).status,200);assert.equal(calls,3);
 const old=vm.runInNewContext(code+';dpcHailProduct',{...context,fetch:async()=>Response.json({lastProducts:[{productType:'POH',time:now-3600000}]})});assert.equal((await old({method:'GET'})).status,503);
+let redirects=0;const redirect=vm.runInNewContext(code+';dpcHailProduct',{...context,fetch:async()=>{redirects++;return new Response(null,{status:302,headers:{Location:'https://untrusted.test/'}})}});assert.equal((await redirect({method:'GET'})).status,503);assert.equal(redirects,1);
 const layers=new Set(),map={createPane:()=>({style:{}}),removeLayer:l=>layers.delete(l)},L={imageOverlay:()=>({addTo(){layers.add(this);return this}})};
 let state,callsClient=0,release;
 const fetcher=async()=>{callsClient++;return new Response(new Uint8Array([0]),{headers:{'X-Radar-Time':String(now)}})};
