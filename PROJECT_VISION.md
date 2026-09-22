@@ -1,3 +1,16 @@
+## 22 settembre 2026 — Versione 93 pubblicata: previsioni WeatherAPI e consumi
+
+WeatherAPI attivo per /api/forecast: Oggi, Meteo, prossime ore della mappa e Lente. Cache persistente attuale cinque minuti, previsioni quindici; budget condiviso 3.000 richieste/ora e protezione a 2,4M/mese di chiamate dell’app. Non legge il consumo totale dell’account. Mappa limitata a otto luoghi visibili, sequenza interrotta al cambio vista, richieste sospese in background; confronto città caricato solo aprendolo. Nessun abbonamento aggiunto.
+
+Dati specialistici mancanti restano null; orari locali e UTC conservati. Le funzioni secondarie storiche e specialistiche mantengono le proprie fonti Open-Meteo: non dichiarare indipendenza totale. Radar separati e invariati. Dettagli in docs/WEATHERAPI-PREVISIONI.md. Perimetro e stima V1 in docs/PRONTEZZA-V1.md: 3–5 giornate di rifiniture/collaudo più 5–7 giorni di prova, stima condizionata e non esecuzione automatica.
+
+Pubblicazione riuscita 2026-09-22T08:57:36.739352+00:00: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Sites runtime f45a8b24fb8ee35e2abe110fc0e293f4f76916a3 e GitHub d5f179f8eed2ca3cdbd5fced5f5932b2ca698449 condividono tree df04a4ab88d936a94eeea12ef2191cd625826d91. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_3aac1b4105dc8191ae83bf36c65d03e9; deployment appgdep_6ab242b539508191b9e446869e45b237; ambiente 10, pubblico preservato. Workflow Sites apertura/push riusciti, packaging Windows non avviabile: build remota.
+
+70 suite superate; CI 35707431725 riuscita. Verifica funzionale API reali post-attivazione: Roma HTTP 200 WeatherAPI, Europe/Rome, 7 giorni/168 ore, 24,5 °C alle 10:45; Tokyo HTTP 200 WeatherAPI, Asia/Tokyo, 7 giorni/168 ore, 25,7 °C alle 17:45; entrambe offline=false e current available/mapCurrent presente. Sono esempi di verifica, non valori da fissare nell’app. Nessuna chiave esposta. Anteprima 4597 aggiornata nel codice, senza chiave WeatherAPI reale: usa Open-Meteo; percorso pagato verificato da test e API produzione. Nessuna certificazione su telefoni fisici o carico reale.
+
+Ramo codex/weather-scenery-20260922, PR draft #21. Successivi commit di sole note, nessun nuovo deploy richiesto.
+
+
 ## 22 settembre 2026 — Versione 91 pubblicata: interfaccia più leggibile
 
 Restyling senza nuovi abbonamenti: Oggi a due colonne sul desktop, navigazione superiore sulle pagine principali e dock mobile, tipografia e controlli uniformi, dettagli della variazione meteo apribili, Community a due colonne di pulsanti sul telefono. Fonti e orari restano visibili. Home senza hash evita il pre-caricamento MapLibre (937395 byte non compressi); nessun benchmark di velocità dichiarato. Dettagli in docs/DESIGN-FINITURE.md.
