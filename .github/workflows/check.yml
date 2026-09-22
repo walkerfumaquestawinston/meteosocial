@@ -31,6 +31,7 @@ jobs:
       - run: node test-map-weather-source.mjs
       - run: node test-map-field.mjs
       - run: node test-hail-desk.mjs
+      - run: node test-solar-live-map.mjs
       - run: node test-pulse.mjs
       - run: node --experimental-vm-modules test-hail-community.mjs
       - run: node test-network.mjs

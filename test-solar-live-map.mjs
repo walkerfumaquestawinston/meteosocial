@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {skyPhase,skyTheme} from './dist/sky-theme.js';
+import {createFreshCache} from './dist/map-fresh-cache.js';
+const weather={timezone:'Europe/Rome',current:{time:'2026-09-22T12:00',weather_code:0,is_day:1},daily:{time:['2026-09-22'],sunrise:['2026-09-22T07:00'],sunset:['2026-09-22T19:00']}};
+for(const [iso,phase] of [['2026-09-22T02:00:00Z','notte'],['2026-09-22T05:00:00Z','alba'],['2026-09-22T10:00:00Z','giorno'],['2026-09-22T17:00:00Z','tramonto'],['2026-09-22T21:00:00Z','notte']])assert.equal(skyPhase(weather,Date.parse(iso)),phase);
+assert.equal(skyPhase({...weather,timezone:'Asia/Tokyo'},Date.parse('2026-09-22T02:00:00Z')),'giorno');
+assert.equal(skyTheme({...weather,current:{...weather.current,weather_code:63}},Date.parse('2026-09-22T10:00:00Z')),'pioggia');
+assert.equal(skyPhase({...weather,current:{...weather.current,weather_code:63}},Date.parse('2026-09-22T10:00:00Z')),'giorno');
+assert.equal(skyPhase({timezone:'Arctic/Longyearbyen',current:{time:'2026-06-22T00:00',is_day:1}},Date.parse('2026-06-21T22:00:00Z')),'giorno');
+assert.equal(skyPhase({...weather,daily:null},Date.parse('2026-09-22T22:00:00Z')),'notte');
+assert.equal(skyPhase({timezone:'Europe/Rome'},Date.parse('2026-03-29T10:00:00Z')),'giorno');
+let now=0,calls=0;const cache=createFreshCache(()=>now),load=async()=>++calls;
+assert.deepEqual(await Promise.all([cache.read('a',load,60),cache.read('a',load,60)]),[1,1]);
+now=59;assert.equal(await cache.read('a',load,60),1);now=60;assert.equal(await cache.read('a',load,60),2);
+let finish;const pending=cache.read('old',()=>new Promise(resolve=>{finish=resolve}));await Promise.resolve();cache.clear();assert.equal(await cache.read('old',async()=>99),99);finish(3);await pending;assert.equal(await cache.read('old',async()=>100),99);
+await assert.rejects(cache.read('bad',async()=>{throw Error('offline')}));assert.equal(await cache.read('bad',async()=>7),7);
+console.log('Solar phases, timezone/DST, polar fallback, TTL, deduplication, invalidation races and recovery passed.');
