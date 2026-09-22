@@ -55,3 +55,37 @@ html:root body.cielo-design.segnale-design #main .has-weather-scene :is(.weather
 html[data-scene-paused=true] .weather-scene *,html:is(.eco-mode,.reduced-motion,.light-rendering) .weather-scene *,.eco-mode .weather-scene *,.reduced-motion .weather-scene *,.light-rendering .weather-scene *{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){.weather-scene *{animation:none!important}.scene-particles{display:none}}
 @media(max-width:760px){html:root body.cielo-design.segnale-design #main .weather-workspace>.atlas-title{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin-bottom:20px!important}html:root body.cielo-design.segnale-design #main .weather-workspace>.atlas-title h1{font-size:24px!important;line-height:1.2}html:root body.cielo-design.segnale-design #main .weather-workspace>.atlas-title p{display:none}.weather-workspace>.atlas-title .signal-kicker{display:none}}
+/* Costa di luce: give the scenery a visible stage and a recognisable silhouette. */
+html:root body.cielo-design.segnale-design #main .weather-hero.has-weather-scene{min-height:480px}
+.weather-scene{--ridge-far:#62909e;--ridge-near:#2d677b;--shore:#123d53}
+html[data-phase=notte] .weather-scene{--sky-top:#050e2b;--sky-bottom:#246ea7;--ridge-far:#284a75;--ridge-near:#16465f;--shore:#092a42}
+.scene-orb{width:104px;height:104px;right:17%;top:46px}
+.scene-cloud{width:330px;height:130px;border-radius:0;filter:none;background:radial-gradient(ellipse at 28% 60%,#e6effce0 0 21%,transparent 22%),radial-gradient(ellipse at 49% 44%,#f6f8ffe6 0 30%,transparent 31%),radial-gradient(ellipse at 73% 65%,#c1d4eadb 0 23%,transparent 24%);animation:scene-cloud-sail 14s linear -6s infinite alternate;opacity:.7}
+.scene-cloud-two{top:175px;right:2%;width:250px;height:95px;opacity:.45;animation-duration:19s;animation-delay:-12s}
+html[data-phase=notte] .scene-cloud{opacity:.32}
+.weather-scene[data-windy=true] .scene-cloud{animation-duration:8s}
+.scene-horizon{bottom:50px;height:46%;left:28%;width:85%;opacity:.95}
+.scene-water{bottom:65px;height:27%;left:37%;width:73%;background:repeating-linear-gradient(177deg,transparent 0 15px,#b5eaff48 16px,transparent 18px);animation:scene-tide 4s ease-in-out infinite alternate}
+.scene-reflection{right:16%;bottom:95px;width:160px;height:110px;opacity:.65;background:repeating-linear-gradient(0deg,transparent 0 9px,#ffe9ba91 10px,#e2f4ff9c 12px,transparent 14px);clip-path:polygon(42% 0,60% 0,100% 100%,0 100%);animation:scene-reflection 3.8s ease-in-out infinite alternate}
+.scene-lighthouse{position:absolute;width:110px;height:125px;right:5%;bottom:94px;opacity:.95}
+.scene-beacon{right:calc(5% + 39px);bottom:164px;width:95px;height:50px;background:linear-gradient(90deg,transparent,#ffe6aa45);clip-path:polygon(0 0,100% 45%,100% 55%,0 100%);transform-origin:right center;animation:scene-beacon 7s ease-in-out infinite alternate;opacity:.7}
+html[data-phase=giorno] .scene-beacon{display:none}
+.scene-scrim{background:linear-gradient(90deg,#06172aeb,#06172aab 44%,#06172a08 72%),linear-gradient(0deg,#06172ada,transparent 24%)}
+.weather-scene:is([data-condition=rain],[data-condition=storm],[data-condition=snow],[data-condition=fog],[data-condition=overcast]) .scene-reflection{opacity:.16}
+@keyframes scene-cloud-sail{from{transform:translateX(-85px)}to{transform:translateX(65px)}}
+@keyframes scene-tide{from{transform:translateX(-20px)}to{transform:translateX(20px)}}
+@keyframes scene-reflection{from{transform:scaleX(.72) translateX(-7px);opacity:.4}to{transform:scaleX(1.1) translateX(7px);opacity:.7}}
+@keyframes scene-beacon{from{transform:rotate(-12deg);opacity:.3}to{transform:rotate(12deg);opacity:.7}}
+@media(max-width:760px){
+ html:root body.cielo-design.segnale-design #main .has-weather-scene .weather-hero-actions{margin-top:140px}
+ html:root body.cielo-design.segnale-design #main .has-weather-scene .forecast-receipt{margin-top:18px}
+ .scene-orb{width:80px;height:80px;right:10%;top:100px}
+ .scene-cloud{width:230px;height:95px;top:125px;right:-70px;animation-duration:12s}.scene-cloud-two{top:310px;right:0;width:180px;height:70px;animation-duration:17s}
+ .scene-horizon{left:-10%;width:120%;height:210px;bottom:180px}
+ .scene-water{left:-10%;width:120%;bottom:180px;height:110px}
+ .scene-reflection{bottom:195px;right:21%;height:90px;width:105px}
+ .scene-lighthouse{bottom:202px;right:2%;width:82px;height:93px}
+ .scene-beacon{bottom:253px;right:calc(2% + 29px);width:75px;height:35px}
+ .scene-scrim{background:linear-gradient(90deg,#06172abf,#06172a15),linear-gradient(0deg,#06172aed 0 25%,transparent 42%,#06172a12 75%)}
+}
+@media(prefers-reduced-motion:reduce){.weather-scene *{animation:none!important}}
