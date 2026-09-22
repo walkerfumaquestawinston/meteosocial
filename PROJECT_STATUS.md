@@ -1,5 +1,16 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 22 settembre 2026 — Versione 78 pubblicata: Meteo animato
+
+Pubblicazione Sites riuscita il 2026-09-22T02:14:02.111366Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#tendenze
+
+La categoria Meteo ha un paesaggio animato che segue orario locale e condizioni del provider: sole, luna/stelle, nuvole, pioggia, neve, foschia e cielo temporalesco. Movimento ridotto rispettato; nessun flash. Fonte/orario e avvisi offline restano visibili. Dettagli: docs/METEO-ANIMATO.md.
+
+Runtime Sites: faed6f740a6c7b7e1adf977311b121cf00cf7e08; stesso albero 1d6bdacb67453c0b4634a66681ac3b8846c6268d del commit GitHub e088dcd29af32a998e0002af3b6f7bc3b0c902d1. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_23dee68984748191ab53e319f665a2c6; deployment appgdep_6ab1e41e56f48191bc155935ba94948b.
+
+Continuare dal ramo codex/weather-scenery-20260922, PR draft https://github.com/walkerfumaquestawinston/meteosocial/pull/21 sopra PR #20, non da main. Anteprima locale allineata su http://127.0.0.1:4595/#tendenze. Build e cinque suite mirate superate, nessun errore console nel controllo finale. Queste note successive sono solo documentazione, salvate nei due repository senza nuovo deploy. Pubblico e segreti invariati.
+
+
 ## 22 settembre 2026 — Versione 77 pubblicata: Cielo vivo
 
 Sites conferma pubblicazione riuscita il 2026-09-22T02:01:43.998650Z: https://scudo-meteo-community.walkerthehate.chatgpt.site
