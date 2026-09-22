@@ -37,5 +37,6 @@ html body #lente-dialog button[aria-pressed=true]{background:#dceff8!important;c
 html body #lente-dialog .lente-send{background:#165b7b!important;color:#fff!important}
 html body #lente-dialog .lente-send span{color:#fff!important}
 html body #lente-dialog .lente-context-brief{background:#edf4f8!important}
+html:root body.cielo-design .lente-page .lente-context-brief :is(strong,small,p){color:#203d51!important;background:transparent!important}
 
 .lente-context-brief{background:#edf4f8;border:1px solid #cedde8;border-radius:14px;padding:16px;margin-bottom:18px;color:#203d51}.lente-context-brief p{margin:6px 0;font-size:.9rem;line-height:1.5;color:#203d51!important}.lente-context-brief small{display:block;line-height:1.5;color:#486075}.lente-temperature small{max-width:240px;white-space:normal;font-size:.72rem;line-height:1.4}.lente-answer-actions{flex-wrap:wrap}
