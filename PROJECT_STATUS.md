@@ -1,5 +1,38 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 22 settembre 2026 — Versione 76 pubblicata: leggibilità e chiarezza
+
+Pubblicazione Sites confermata riuscita: 2026-09-22T00:47:06.483951+00:00. URL: https://scudo-meteo-community.walkerthehate.chatgpt.site
+
+Versione 76: appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_1d60aff828f88191abcde021e1fbfd48. Deployment: appgdep_6ab1cf9c73f881919a646ed4b65b33ac. Runtime Sites: 2ed938fea7e23e75d0c214a7c8ca131d079081c6. Albero: 49714f6f6ca429d99ebc602c28ba9384a9f38d67, identico al commit GitHub 4c3529645f45c47d8188fadc373a869b21fc6dd9.
+
+GitHub: https://github.com/walkerfumaquestawinston/meteosocial/pull/19, ramo codex/readability-20260922, draft sopra PR #18. Le PR precedenti non sono state unite a main; per proseguire il lavoro usare questo ramo aggiornato. Anteprima live locale allineata: http://127.0.0.1:4595/#home. Il collegamento PWA ?view=giornata mantiene aperto il piano anche dopo il caricamento del profilo; verificato nel browser. Queste note successive sono solo documentazione e non richiedono una nuova versione runtime.
+
+La versione 75 aveva pubblicato le correzioni di contrasto e ingresso; la 76 include anche il collegamento diretto alla giornata. Tutte le modifiche sono salvate online. Nessun servizio di sincronizzazione in background installato. Pubblico e segreti Sites invariati. Le note precedenti "in corso" sono superate da questo esito.
+
+
+## 22 settembre 2026 — Leggibilità e ingresso semplificato
+
+Revisione successiva alla versione 74, su richiesta dell'utente dopo riscontro di testi illeggibili e sovraccarico visivo. L'ingresso senza hash apre Oggi. Tre azioni esplicite: Previsioni, Mappa e radar, Segnala il meteo. Ricerca città diretta; barra inferiore con Segnala. Funzioni aggiuntive e pianificazione restano in sezioni apribili. Lente nella mappa è apribile su richiesta. Dati, fonti e bollettini ufficiali restano disponibili.
+
+Corrette coppie testo/sfondo in Oggi, Meteo, community e controlli mappa nelle fasi solari. I pannelli specialistici storici conservano superfici scure con testo chiaro. Testi e superfici semantiche delle quattro palette superano 4,5:1 (minimi: giorno 4,90; notte 8,18; alba 4,83; tramonto 4,57). Controllo DOM e visivo di giorno/notte su anteprima integrata, desktop e 390 px; corrette anche etichette tagliate. Il controllo DOM è un audit mirato, non una certificazione completa: gradienti e illustrazioni sono verificati visivamente. Nessuna segnalazione di prova pubblicata.
+
+Compilazione completa riuscita con fallback WASM. Superati test-atmosphere, test-feature-routes, test-solar-live-map, test-mappa, test-day-plan e test-community-context. Anteprima live: http://127.0.0.1:4595/. Pubblicazione di questa revisione da confermare tramite stato Sites; numero versione e link GitHub saranno registrati dopo il rilascio.
+
+Preferenza permanente: per ogni aggiornamento completato allineare anteprima locale, sorgente GitHub e pubblicazione Sites. Non è una sincronizzazione automatica in background e non include preferenze del browser o bozze private. Prima di nuovi interventi recuperare sempre la sorgente più recente dello stesso Site. Le note delle precedenti revisioni restano storiche.
+
+
+## 22 settembre 2026 — Versione 74 pubblicata su Sites
+
+Pubblicazione confermata riuscita il 22 settembre 2026 alle 00:23:28 UTC (02:23 in Italia): https://scudo-meteo-community.walkerthehate.chatgpt.site
+
+Include Segnale, osservatorio grandine, tema automatico alba/giorno/tramonto/notte, precaricamento e aggiornamento progressivo della mappa. Compilazione remota Sites riuscita; nessun cambiamento al pubblico del sito o ai segreti. La versione online è utilizzabile dagli altri PC senza avviare il server locale.
+
+Runtime: commit cbf46a5412ed49cd587d2406d0d191fccf7e2907, albero 6c56a5b5064733f032e10da330e72544fe2c28df. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_45332c1ce25881918e56a6df9ad17e8e, deployment appgdep_6ab1ca0f7c948191b9b30dad9c2a36a8. Sorgente riconciliata con e74cf310242672f59677a37a3a31ad0a739339f8, verificata identica alla base GitHub precedente alle modifiche; nessuna sovrascrittura forzata. Queste note successive non cambiano il runtime pubblicato.
+
+Il workflow locale Sites resta incompatibile con le pipe di questa sessione Windows. Il rilascio ha usato il salvataggio sorgente verificato e il fallback di compilazione remota supportato dai tool Sites. Credenziali temporanee solo in memoria/stdin e ambiente del comando, mai salvate. Per gli aggiornamenti successivi recuperare la sorgente Sites attuale prima di modificare. I precedenti avvisi “non pubblicato” sono storici e superati da questa nota.
+
+
 ## 22 settembre 2026 — Ciclo solare e mappa più pronta
 
 Tema automatico attivo per la località scelta: notte, alba (30 minuti prima/dopo), giorno e tramonto (45 minuti prima/dopo). Orari solari e fuso del provider; in assenza di orari validi, flag giorno/notte soltanto se recente, poi fascia oraria approssimata 07–19. Controllo ogni 30 secondi e al ritorno alla scheda. La nuova palette si applica a Oggi, Meteo, intestazione e superfici della mappa; colori dei fenomeni separati.
