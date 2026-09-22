@@ -1,5 +1,16 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Versione 76 pubblicata: leggibilità e chiarezza
+
+Pubblicazione Sites confermata riuscita: 2026-09-22T00:47:06.483951+00:00. URL: https://scudo-meteo-community.walkerthehate.chatgpt.site
+
+Versione 76: appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_1d60aff828f88191abcde021e1fbfd48. Deployment: appgdep_6ab1cf9c73f881919a646ed4b65b33ac. Runtime Sites: 2ed938fea7e23e75d0c214a7c8ca131d079081c6. Albero: 49714f6f6ca429d99ebc602c28ba9384a9f38d67, identico al commit GitHub 4c3529645f45c47d8188fadc373a869b21fc6dd9.
+
+GitHub: https://github.com/walkerfumaquestawinston/meteosocial/pull/19, ramo codex/readability-20260922, draft sopra PR #18. Le PR precedenti non sono state unite a main; per proseguire il lavoro usare questo ramo aggiornato. Anteprima live locale allineata: http://127.0.0.1:4595/#home. Il collegamento PWA ?view=giornata mantiene aperto il piano anche dopo il caricamento del profilo; verificato nel browser. Queste note successive sono solo documentazione e non richiedono una nuova versione runtime.
+
+La versione 75 aveva pubblicato le correzioni di contrasto e ingresso; la 76 include anche il collegamento diretto alla giornata. Tutte le modifiche sono salvate online. Nessun servizio di sincronizzazione in background installato. Pubblico e segreti Sites invariati. Le note precedenti "in corso" sono superate da questo esito.
+
+
 ## 22 settembre 2026 — Versione 74 pubblicata su Sites
 
 Pubblicazione confermata riuscita il 22 settembre 2026 alle 00:23:28 UTC (02:23 in Italia): https://scudo-meteo-community.walkerthehate.chatgpt.site
