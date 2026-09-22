@@ -1,3 +1,4 @@
+import {weatherDescription} from './weather-tools.js';
 import {weatherName,forecastSource} from './weather-tools.js';
 
 // posts.map_lat/map_lon are integer centidegrees, never raw degrees.
@@ -8,7 +9,7 @@ export function postPlace(post) {
 
 // No inferred danger or precise location is sent to an AI model here.
 export function sameSkyTopic(weather) {
-  if (!weather?.current || weather._offline) return null;
+  if (!weather?.current || weather._offline || weather.current.condition_nearby) return null;
   const observed = Number.isFinite(weather.current.time_epoch)?weather.current.time_epoch*1000:Date.parse(weather.current.time+'Z')-Number(weather.utc_offset_seconds||0)*1000;
   if (!Number.isFinite(observed) || Date.now()-observed>7200000 || observed>Date.now()+300000) return null;
   const code = weather.current.weather_code;
@@ -25,7 +26,7 @@ export function communityForecast(weather) {
   if (!Number.isFinite(current?.temperature_2m)) return {temperature:'—',description:'Previsioni in attesa. Puoi già esplorare i racconti.',source:'Dato meteo non disponibile'};
   return {
     temperature:Math.round(current.temperature_2m)+'°',
-    description:weatherName(current.weather_code),
+    description:weatherDescription(current),
     source:`${weather._offline?'Dati salvati · ':''}${forecastSource(weather)} · ${current.time?.replace('T',' ')||'orario non disponibile'}${weather.timezone?' · '+weather.timezone:''}`
   };
 }

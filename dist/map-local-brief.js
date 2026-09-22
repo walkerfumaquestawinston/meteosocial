@@ -1,3 +1,4 @@
+import {weatherDescription} from './weather-tools.js';
 import {forecastSource,forecastSourceURL} from './weather-tools.js';
 import {esc,weatherName} from './weather-tools.js';
 import {localNow} from './day-plan.js';
@@ -14,7 +15,7 @@ export function localBrief(weather,state='ok',now=new Date()){
  const stale=weather._offline||!Number.isFinite(age)||age>30||age < -5||(Number.isFinite(acquired)&&now.getTime()-acquired>90*60000);
  const validStamp=typeof c.time==='string'&&/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/.test(c.time)&&Number.isFinite(Date.parse(c.time+'Z'));
  const stamp=validStamp?c.time.slice(11,16)+(local&&c.time.slice(0,10)!==local.slice(0,10)?' · '+c.time.slice(8,10)+'/'+c.time.slice(5,7):''):'—';
- return {status:state==='error'?'error':stale?'stale':'ready',temperature:value(c.temperature_2m,'°'),rain:Number.isFinite(c.precipitation)&&c.precipitation>=0?value(c.precipitation,' mm'):'—',wind:Number.isFinite(c.wind_speed_10m)&&c.wind_speed_10m>=0?value(c.wind_speed_10m,' km/h'):'—',condition:validCodes.has(c.weather_code)?weatherName(c.weather_code):'Condizione non disponibile',time:(state==='error'?'Recupero fallito · ':stale?'Dato precedente · ':'Stima · ')+stamp,interval:Number.isFinite(c.interval)&&c.interval>0?'Precip. / '+Math.round(c.interval/60)+' min':'Precipitazioni'};
+ return {status:state==='error'?'error':stale?'stale':'ready',temperature:value(c.temperature_2m,'°'),rain:Number.isFinite(c.precipitation)&&c.precipitation>=0?value(c.precipitation,' mm'):'—',wind:Number.isFinite(c.wind_speed_10m)&&c.wind_speed_10m>=0?value(c.wind_speed_10m,' km/h'):'—',condition:validCodes.has(c.weather_code)||c.condition_text?weatherDescription(c):'Condizione non disponibile',time:(state==='error'?'Recupero fallito · ':stale?'Dato precedente · ':'Stima · ')+stamp,interval:Number.isFinite(c.interval)&&c.interval>0?'Precip. / '+Math.round(c.interval/60)+' min':'Precipitazioni'};
 }
 export function briefMarkup(place,weather,state){
  const b=localBrief(weather,state);

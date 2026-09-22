@@ -21,6 +21,8 @@ assert.equal(data.daily.sunset[0].slice(-5),'18:20');assert.equal(data.hourly.we
 assert.equal(adapter.weatherApiCode(1276),95,'thunder is not proof of hail');assert.equal(adapter.weatherApiCode(9999),null);
 assert.equal(fieldHours(data,now)[0].time,first*1000,'epoch respects Tokyo timezone');assert.equal(forecastSource(data),'WeatherAPI');
 const unknown=makeRaw();unknown.current.condition.code=1012;assert.equal(adapter.weatherApiForecast(unknown,place).current.weather_code,null);
+const nearby=makeRaw();nearby.current.condition={code:1063,text:'Piogge sparse nelle vicinanze'};nearby.location.name='Località del fornitore';nearby.location.lat=35.68;nearby.location.lon=139.69;
+const nearData=adapter.weatherApiForecast(nearby,place);assert.equal(nearData.current.condition_text,'Piogge sparse nelle vicinanze');assert.equal(nearData.current.condition_nearby,true);assert.equal(nearData.providerLocation.name,'Località del fornitore');assert.equal(nearData.current.temperature_2m,0,'raw provider temperature unchanged');
 const polar=makeRaw();polar.forecast.forecastday[0].astro.sunrise='No sunrise';assert.equal(adapter.weatherApiForecast(polar,place).daily.sunrise[0],null);
 const changed=JSON.parse(JSON.stringify(data));changed.hourly.temperature_2m[0]=99;
 assert.equal(adapter.forecastChanges({...data,source:'Open-Meteo'},changed,now).length,0);

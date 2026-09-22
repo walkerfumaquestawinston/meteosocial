@@ -13,7 +13,7 @@ function cloudShape(id){
  return `<svg viewBox="0 0 400 160" preserveAspectRatio="none" focusable="false"><defs><linearGradient id="cloud-${id}" x2="0" y2="1"><stop stop-color="var(--cloud-light)"/><stop offset=".5" stop-color="var(--cloud-mid)"/><stop offset="1" stop-color="var(--cloud-shadow)" stop-opacity=".08"/></linearGradient><radialGradient id="cloud-edge-${id}"><stop stop-color="var(--cloud-light)" stop-opacity=".6"/><stop offset="1" stop-color="var(--cloud-light)" stop-opacity="0"/></radialGradient></defs><path fill="url(#cloud-${id})" d="M14 113 C9 95 25 82 44 84 C39 63 62 49 82 58 C89 26 121 16 146 33 C159 1 203 3 223 36 C247 19 280 37 278 64 C304 45 334 61 335 85 C365 74 387 90 387 112 C414 131 358 146 318 140 C272 157 233 140 192 146 C144 153 123 139 92 143 C52 149 3 137 14 113Z"/><ellipse fill="url(#cloud-edge-${id})" cx="164" cy="47" rx="65" ry="42"/><ellipse fill="url(#cloud-edge-${id})" cx="278" cy="87" rx="60" ry="34"/><path fill="var(--cloud-shadow)" opacity=".15" d="M30 117 Q99 104 139 118 T250 118 Q302 104 373 123 Q305 145 232 134 T30 117Z"/></svg>`;
 }
 export function weatherScene(weather){
- const c=weather?.current,condition=sceneCondition(c?.weather_code);
+ const c=weather?.current,condition=c?.condition_nearby?'clouds':sceneCondition(c?.weather_code);
  const windy=Number.isFinite(c?.wind_speed_10m)&&c.wind_speed_10m>=25;
  const precipitation=['rain','storm','snow'].includes(condition);
  const particles=precipitation?Array.from({length:20},(_,i)=>`<i style="--x:${(i*37)%100}%;--delay:-${(i*13)%29/10}s;--duration:${condition==='snow'?5+i%5:.7+(i%4)/10}s"></i>`).join(''):'';

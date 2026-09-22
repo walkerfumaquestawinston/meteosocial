@@ -22,3 +22,5 @@ export function cityReports(posts,city,kind,now=Date.now()){const normalize=s=>S
 
 export const forecastSource=w=>w?.source==='WeatherAPI'?'WeatherAPI':'Open-Meteo';
 export const forecastSourceURL=w=>w?.source==='WeatherAPI'?'https://www.weatherapi.com/':'https://open-meteo.com/';
+
+export const weatherDescription=c=>typeof c?.condition_text==='string'&&c.condition_text.trim()?c.condition_text.slice(0,100):weatherName(c?.weather_code);

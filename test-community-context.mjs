@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {sameSkyTopic,communityForecast,postPlace} from './dist/community-context.js';
 const weather=(code,extra={})=>({current:{weather_code:code,temperature_2m:22,time:new Date().toISOString().slice(0,19)},utc_offset_seconds:0,...extra});
 assert.equal(sameSkyTopic(weather(61)),'Pioggia');
+const nearbyRain=weather(61);nearbyRain.current.condition_nearby=true;assert.equal(sameSkyTopic(nearbyRain),null,'nearby rain does not imply rain at the location');
 assert.equal(sameSkyTopic(weather(71)),'Neve');
 assert.equal(sameSkyTopic(weather(0)),'Cielo sereno');
 assert.equal(sameSkyTopic(weather(96)),null,'model thunderstorm is not a crowd hail observation');

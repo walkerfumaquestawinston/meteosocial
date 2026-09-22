@@ -6,7 +6,7 @@ function weatherApiCode(code){
 }
 function weatherApiValues(v,current=false){
  const num=k=>Number.isFinite(v?.[k])?v[k]:null;
- return {temperature_2m:num('temp_c'),apparent_temperature:num('feelslike_c'),relative_humidity_2m:num('humidity'),wind_speed_10m:num('wind_kph'),wind_direction_10m:num('wind_degree'),wind_gusts_10m:num('gust_kph'),cloud_cover:num('cloud'),weather_code:weatherApiCode(v?.condition?.code),is_day:num('is_day'),visibility:num('vis_km')===null?null:num('vis_km')*1000,precipitation:current?null:num('precip_mm'),precipitation_probability:current?null:num('chance_of_rain'),snowfall:current?null:num('snow_cm'),rain:null,showers:null,snow_depth:null,freezing_level_height:null,surface_pressure:null};
+ return {condition_text:typeof v?.condition?.text==='string'?v.condition.text.slice(0,100):null,condition_nearby:[1063,1066,1069,1072,1087].includes(v?.condition?.code),temperature_2m:num('temp_c'),apparent_temperature:num('feelslike_c'),relative_humidity_2m:num('humidity'),wind_speed_10m:num('wind_kph'),wind_direction_10m:num('wind_degree'),wind_gusts_10m:num('gust_kph'),cloud_cover:num('cloud'),weather_code:weatherApiCode(v?.condition?.code),is_day:num('is_day'),visibility:num('vis_km')===null?null:num('vis_km')*1000,precipitation:current?null:num('precip_mm'),precipitation_probability:current?null:num('chance_of_rain'),snowfall:current?null:num('snow_cm'),rain:null,showers:null,snow_depth:null,freezing_level_height:null,surface_pressure:null};
 }
 function weatherApiForecast(raw,place){
  const days=raw?.forecast?.forecastday,zone=raw?.location?.tz_id,c=raw?.current;
@@ -19,7 +19,7 @@ function weatherApiForecast(raw,place){
  const solar=(d,k)=>{const t=d.astro?.[k],m=typeof t==='string'&&t.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/);if(!m||+m[1]<1||+m[1]>12||+m[2]>59)return null;return d.date+'T'+String(+m[1]%12+(m[3]==='PM'?12:0)).padStart(2,'0')+':'+m[2];};
  const max=(d,k)=>{const n=(d.hour||[]).map(h=>h[k]).filter(Number.isFinite);return n.length?Math.max(...n):null;};
  const daily={time:days.map(d=>d.date),temperature_2m_max:days.map(d=>d.day?.maxtemp_c??null),temperature_2m_min:days.map(d=>d.day?.mintemp_c??null),weather_code:days.map(d=>weatherApiCode(d.day?.condition?.code)),precipitation_probability_max:days.map(d=>max(d,'chance_of_rain')),uv_index_max:days.map(d=>max(d,'uv')),precipitation_sum:days.map(d=>d.day?.totalprecip_mm??null),sunrise:days.map(d=>solar(d,'sunrise')),sunset:days.map(d=>solar(d,'sunset'))};
- return {latitude:place.latitude,longitude:place.longitude,timezone:zone,source:'WeatherAPI',sourceURL:'https://www.weatherapi.com/',current:{...weatherApiValues(c,true),time:local(c.last_updated_epoch*1000),time_epoch:c.last_updated_epoch,interval:null},hourly,daily,_limitations:['Neve al suolo, zero termico e pressione al suolo non disponibili.','Le quantità orarie seguono le fasce WeatherAPI; non sono misure radar.']};
+ return {latitude:place.latitude,longitude:place.longitude,timezone:zone,source:'WeatherAPI',sourceURL:'https://www.weatherapi.com/',providerLocation:{name:String(raw.location.name||'').slice(0,100),region:String(raw.location.region||'').slice(0,100),country:String(raw.location.country||'').slice(0,100),latitude:raw.location.lat??null,longitude:raw.location.lon??null},current:{...weatherApiValues(c,true),time:local(c.last_updated_epoch*1000),time_epoch:c.last_updated_epoch,interval:null},hourly,daily,_limitations:['Neve al suolo, zero termico e pressione al suolo non disponibili.','Le quantità orarie seguono le fasce WeatherAPI; non sono misure radar.']};
 }
 async function weatherProviderBudget(env){
  // One budget for current conditions, forecasts and map points. These count
@@ -31,7 +31,7 @@ async function weatherProviderBudget(env){
 }
 async function weatherProviderForecast(env,place){
  try{
-  const value=await globeSnapshot(env,'weatherapi-forecast-v1:'+place.key,async()=>{
+  const value=await globeSnapshot(env,'weatherapi-forecast-v2:'+place.key,async()=>{
    await weatherProviderBudget(env);
    const raw=await atmoFetch('https://api.weatherapi.com/v1/forecast.json?'+new URLSearchParams({key:env.WEATHERAPI_KEY,q:place.key,days:'7',aqi:'no',alerts:'no',lang:'it'}),1000000);
    return weatherApiForecast(raw,place);

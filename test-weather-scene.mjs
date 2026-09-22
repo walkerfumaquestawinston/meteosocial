@@ -9,5 +9,6 @@ for(const code of [0,2,3,45,63,75,95]){
  assert.ok(!html.includes('undefined'));assert.ok(!/<(?:img|video|iframe|script)/.test(html));
 }
 assert.match(weatherScene(null),/data-condition="unknown"/);
+assert.match(weatherScene({current:{weather_code:61,condition_nearby:true}}),/data-condition="clouds"/,'nearby rain does not paint rain at the selected place');
 assert.match(weatherScene({current:{weather_code:0,wind_speed_10m:24}}),/data-windy="false"/);
 console.log('All WMO scene groups, missing/invalid data, wind threshold, decorative semantics and particle budget passed.');
