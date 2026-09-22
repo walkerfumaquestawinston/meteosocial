@@ -1,0 +1,155 @@
+/* Atlante locale: one geographic canvas, one reading dock, progressive detail. */
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+ --panel:#0c2430;--panel-raised:#173542;--panel-line:#47616b;--panel-ink:#f4f9fa;--panel-muted:#bed0d8;--signature:#dafa82;
+ font-family:Arial,Helvetica,sans-serif;
+ & .mappa-alto{inset:18px 20px auto;grid-template-columns:320px minmax(0,1fr);grid-template-rows:48px 56px 40px;gap:8px 24px}
+ & .mappa-alto::before{display:none}
+ & .mappa-brand{padding:0 14px;background:var(--panel);border-radius:14px;color:var(--panel-ink)}
+ & .mappa-brand strong{font-size:20px;color:var(--panel-ink)!important;letter-spacing:-.7px}
+ & .mappa-brand small{color:var(--signature)!important;font-size:11px;letter-spacing:.15em}
+ & .mappa-brand-symbol{width:30px;height:30px;border:0;background:none;box-shadow:none;color:var(--signature)!important}
+ & .mappa-brand button{background:transparent!important;color:var(--panel-ink)!important}
+ & .mappa-cerca{grid-column:2;max-width:none;background:var(--panel)!important;border:1px solid var(--panel-line)!important;color:var(--panel-ink)!important;border-radius:14px;box-shadow:0 6px 20px #06161d22}
+ & .mappa-cerca input,& .mappa-cerca button{background:transparent!important;color:var(--panel-ink)!important}
+ & .mappa-cerca input::placeholder{color:var(--panel-muted)!important}
+ & .mappa-contatori{grid-column:2;background:var(--panel)!important;border:1px solid var(--panel-line)!important;border-radius:12px}
+ & .mappa-pillola{color:var(--panel-ink)!important;background:transparent!important;justify-content:center}
+ & .mappa-pillola[aria-pressed=true]{background:var(--signature)!important;color:#14252b!important}
+ & .mappa-pillola[aria-pressed=true] .mappa-pillola-icona{color:#14252b!important;filter:none}
+ & .mappa-pillola[aria-pressed=true]::after{display:none}
+ & .mappa-pillola strong{font-size:14px!important;color:var(--panel-ink)!important}
+ & .mappa-pillola[aria-pressed=true] strong{color:#14252b!important}
+ & #mappa-radar-toggle b{color:var(--panel-muted)!important;background:transparent!important}
+ & .mappa-stato{display:none}
+ & .mappa-live-bar{grid-column:2;grid-row:3;background:var(--panel)!important;color:var(--panel-ink)!important;border:1px solid var(--panel-line);border-radius:10px;min-height:40px}
+ & .mappa-freshness{color:var(--panel-ink)!important;font-size:13px}
+ & #mappa-fonti{color:var(--panel-ink)!important;background:transparent!important;min-height:40px;font-size:13px}
+ & .mappa-subtools{grid-column:1;grid-row:2;align-self:start;gap:8px}
+ & .mappa-subtools button{color:var(--panel-ink)!important;background:var(--panel)!important;border:1px solid var(--panel-line)!important;font-size:14px;min-height:48px}
+ & #mappa-radar-toggle[aria-pressed=true]{color:#14252b!important;background:var(--signature)!important;border-color:var(--signature)!important}
+ & #mappa-radar-toggle[aria-pressed=true] span,& #mappa-radar-toggle[aria-pressed=true] b{color:#14252b!important}
+ & #mappa-city-names,& .map-mobile-layer{display:none}
+ & .mappa-field{top:144px!important;left:20px;right:auto;bottom:18px;width:320px;max-height:calc(100% - 162px);border-radius:18px;background:var(--panel)!important;border:1px solid var(--panel-line);box-shadow:0 14px 35px #03151f30;backdrop-filter:none;color:var(--panel-ink)!important;overflow:hidden}
+ & .map-brief{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 8px;flex-shrink:0;padding:20px 18px 16px;border-top:4px solid var(--signature);background:var(--panel)}
+ & .map-brief-kicker{font-size:11px;letter-spacing:.15em;color:var(--signature);font-weight:700}
+ & .map-brief h2{font-size:23px;line-height:1.1;margin:8px 0;letter-spacing:-.5px;color:var(--panel-ink)!important;overflow-wrap:anywhere}
+ & .map-brief-condition{font-size:14px;line-height:1.3;color:var(--panel-muted)}
+ & .map-brief-temperature{font-size:48px;font-weight:500;letter-spacing:-3px;align-self:center;color:var(--signature);font-variant-numeric:tabular-nums}
+ & .map-brief-metrics{display:grid;grid-column:1 / -1;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--panel-line);padding-top:12px}
+ & .map-brief-metrics>span{display:grid;gap:4px}
+ & .map-brief-metrics small{font-size:12px;color:var(--panel-muted)}
+ & .map-brief-metrics b{font-size:17px;font-weight:600;color:var(--panel-ink)}
+ & .map-brief-metrics>span:last-child{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center;gap:6px}
+ & .map-brief-metrics .map-brief-time{font-size:12px;font-weight:400;color:var(--panel-muted)}
+ & .map-brief[data-state=stale],& .map-brief[data-state=error],& .map-brief[data-state=missing]{border-top-color:#ffcd8b}
+ & .field-mobile-handle{display:flex;min-height:46px!important;padding:10px 16px;background:var(--panel-raised)!important;color:var(--panel-ink)!important;border-top:1px solid var(--panel-line)!important;font-size:14px!important;flex-shrink:0}
+ & .field-mobile-handle b{font-size:13px;color:var(--signature)}
+ & .field-content{display:none;min-height:0}
+ & .mappa-field.is-open .field-content{display:flex}
+ & .field-scroll{padding:16px;overflow:auto;flex:1;min-height:0}
+ & .field-eyebrow,& .field-title-row{display:none}
+ & .field-location{font-size:14px;color:var(--panel-muted);margin:0 0 16px}
+ & .field-content .field-actions{background:var(--panel-raised)!important;padding:10px;border-color:var(--panel-line);box-shadow:none}
+ & .field-actions button{font-size:14px!important;min-height:46px;color:var(--panel-ink)!important}
+ & .field-hours-heading{font-size:12px;letter-spacing:.06em}
+ & .field-hours-heading small,& .field-hour-grid time{font-size:12px}
+ & .field-hour-grid b{font-size:16px}
+ & .map-change{margin:0 0 20px;padding:14px 0 14px 14px;border-left:3px solid var(--signature)}
+ & .map-change>span{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--signature)}
+ & .map-change strong{display:block;margin:10px 0;font-size:20px;line-height:1.2;color:var(--panel-ink)}
+ & .map-change time{display:block;font-size:15px;color:var(--signature)}
+ & .map-change p{font-size:14px;line-height:1.5;color:var(--panel-muted);margin:8px 0}
+ & .map-change small{font-size:12px;color:var(--panel-muted);line-height:1.5}
+ & .mappa-strumenti{top:190px;right:20px;left:auto;bottom:auto;background:var(--panel)!important;border:1px solid var(--panel-line);padding:3px;border-radius:14px;width:48px}
+ & .mappa-strumenti>button{display:none}
+ & .mappa-zoom{display:grid;gap:2px}
+ & .mappa-zoom button{height:44px;min-height:44px;width:40px;color:var(--panel-ink)!important;background:transparent!important;border:0!important}
+ & .mappa-pannello{top:144px!important;bottom:18px;left:20px;right:auto;width:350px;max-height:calc(100% - 162px);height:auto;background:var(--panel)!important;border-color:var(--panel-line);border-radius:18px;color:var(--panel-ink)!important}
+ & .mappa-pannello h2,& .mappa-pannello p,& .mappa-source-list{color:var(--panel-ink)!important}
+ & .mappa-pannello button{color:var(--panel-ink)!important}
+ & .map-tool-grid{display:grid;gap:8px}
+ & .map-tool-grid button{display:flex;align-items:center;gap:14px;min-height:70px;text-align:left;padding:12px;background:var(--panel-raised)!important;border-color:var(--panel-line)!important}
+ & .map-tool-grid b{display:block;font-size:16px;line-height:1.3}
+ & .map-tool-grid small{display:block;font-size:13px;line-height:1.4;margin-top:5px;color:var(--panel-muted)}
+ & .map-tool-grid svg{color:var(--signature)}
+ & .mappa-basso{left:364px;right:80px;bottom:16px;gap:10px}
+ & .mappa-legenda{background:var(--panel)!important;color:var(--panel-ink)!important;border:1px solid var(--panel-line);border-radius:10px;max-width:290px}
+ & .mappa-legenda small{color:var(--panel-muted)!important;line-height:1.4}
+ & .mappa-legenda strong,& .mappa-legenda>span,& .mappa-scale-values span{color:var(--panel-ink)!important}
+ & .mappa-ai-dock,& .mappa-radar-timeline{background:var(--panel)!important;color:var(--panel-ink)!important;border:1px solid var(--panel-line);border-radius:14px}
+ & .mappa-ai-dock summary{font-size:14px;min-height:44px;padding:12px}
+ & .mappa-radar-timeline{padding:12px}
+ & .mappa-radar-timeline button{color:var(--panel-ink)!important;background:var(--panel-raised)!important}
+ & .mappa-attribuzioni{margin:0;padding:4px 8px;border-radius:6px;background:var(--panel);color:var(--panel-muted);font-size:11px}
+ & .mappa-attribuzioni a{color:var(--panel-muted)!important}
+ & .mappa-place-label{background:#102b38f2!important;border:1px solid #58717a!important;border-radius:7px!important;box-shadow:0 3px 8px #071b2720;backdrop-filter:none}
+ & .mappa-place-label.is-selected{border:2px solid var(--signature)!important;background:#163947!important}
+ & .mappa-place-name{font-size:13px;color:var(--panel-ink)!important}
+ & .mappa-place-value{color:var(--signature)!important;text-shadow:none!important}
+ & .mappa-tela::after{background:none;box-shadow:none}
+ & :focus-visible{outline:3px solid #f4d777!important;outline-offset:3px}
+}
+@media(min-width:921px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit .mappa-field:not(.is-open){bottom:auto}
+}
+@media(max-width:1100px) and (min-width:921px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit .mappa-pillola{flex-direction:column;gap:3px;padding:4px}
+}
+@media(max-width:920px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+  & .mappa-alto{inset:10px 10px auto;grid-template-columns:minmax(0,1fr);grid-template-rows:44px 52px 36px;gap:6px}
+  & .mappa-brand,& .mappa-contatori{display:none}
+  & .mappa-cerca{grid-column:1;grid-row:1;height:44px}
+  & .mappa-subtools{grid-column:1;grid-row:2;display:grid;grid-template-columns:1fr auto auto;gap:6px}
+  & .map-mobile-layer{display:grid;position:relative;background:var(--panel);border:1px solid var(--panel-line);border-radius:10px;padding:5px 7px;min-width:0;height:52px;box-sizing:border-box}
+  & .map-mobile-layer>span{font-size:10px;letter-spacing:.05em;color:var(--panel-muted)}
+  & .map-mobile-layer select{font-size:14px;font-weight:700;background:var(--panel)!important;color:var(--panel-ink)!important;width:100%;min-width:0;padding:0 2px!important;border:0;height:26px;min-height:0!important;cursor:pointer}
+  & .mappa-subtools button{font-size:13px;padding:7px;min-height:52px;gap:5px;justify-content:center}
+  & .mappa-subtools button svg{width:18px;height:18px}
+  & #mappa-radar-toggle{font-size:0;gap:4px}
+  & #mappa-radar-toggle::after{content:'Radar';font-size:13px;order:1}
+  & #mappa-radar-toggle>b{font-size:9px;order:2}
+  & #mappa-tools-open svg{display:none}
+  & .mappa-live-bar{grid-column:1;grid-row:3;min-height:36px}
+  & #mappa-fonti{min-height:36px;font-size:12px}
+  & .mappa-freshness{font-size:12px}
+  & .mappa-field{top:auto!important;bottom:12px;left:10px;right:10px;width:auto;max-height:calc(100% - 164px);border-radius:16px}
+  & .map-brief{padding:10px 14px 8px;gap:6px;grid-template-columns:minmax(0,1fr) auto}
+  & .map-brief h2{font-size:19px;margin:4px 0;line-height:1.15}
+  & .map-brief-kicker{display:none}
+  & .map-brief-condition{font-size:12px}
+  & .map-brief-temperature{font-size:42px}
+  & .map-brief-metrics{grid-template-columns:1fr 1fr;gap:4px;padding-top:6px}
+  & .map-brief-metrics small,& .map-brief-metrics .map-brief-time{font-size:11px}
+  & .map-brief-metrics b{font-size:14px}
+  & .field-mobile-handle{min-height:44px!important;padding:9px 14px}
+  & .mappa-field.is-open{height:calc(100% - 164px)}
+  & .mappa-field.is-open .map-brief-metrics{display:none}
+  & .mappa-field.is-open .map-brief{padding:10px 14px}
+  & .mappa-field.is-open .map-brief-condition{display:none}
+  & .field-scroll{padding:14px}
+  & .mappa-strumenti{top:170px;right:10px;width:44px;padding:1px;grid-template-columns:1fr}
+  & .mappa-zoom{display:grid}
+  & .mappa-pannello{top:164px!important;left:10px;right:10px;bottom:12px;width:auto;max-height:calc(100% - 176px);padding:16px}
+  & .mappa-basso{left:10px;right:10px;bottom:calc(var(--local-dock-height,200px) + 22px);gap:6px}
+  & .mappa-ai-dock{display:none}
+  & .mappa-legenda{max-width:calc(100% - 54px);width:fit-content;padding:8px 10px;font-size:12px}
+  & .mappa-legenda small{font-size:11px}
+  & .mappa-radar-timeline{padding:8px 10px}
+  & .mappa-radar-heading{display:flex}
+  & .mappa-radar-heading a{display:inline!important;font-size:11px;color:var(--panel-muted)}
+  & .mappa-radar-track{gap:5px}
+  & .mappa-radar-track input{min-width:30px}
+  &.has-radar .mappa-legenda,&.has-field-open .mappa-basso,&.has-panel .mappa-basso{display:none!important}
+  & .leaflet-control-scale{margin:0 0 calc(var(--local-dock-height,200px) + 110px) 10px}
+ }
+}
+@media(max-height:620px) and (max-width:920px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+  & .map-brief-condition,& .map-brief-metrics>span:last-child{display:none}
+  & .map-brief{padding:8px 12px;gap:5px}
+  & .map-brief h2{font-size:16px}
+  & .map-brief-temperature{font-size:32px}
+  & .mappa-legenda{display:none}
+ }
+}

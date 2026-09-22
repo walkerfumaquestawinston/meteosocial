@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Atlante locale, revisione pronta
+
+Meteo della località sempre visibile, prossimo cambio e dettaglio orario nella scheda apribile, menu Strumenti e nuova composizione inchiostro/lime. Sei fenomeni in un selettore leggibile sul telefono. Fonte, fuso e stati dei dati restano espliciti. Build e 65 suite attive superate. Dettagli: docs/MAPPA-ATLANTE-LOCALE.md. Ultima pubblicazione confermata: v84; attendere la nota di esito del rilascio.
+
 ## 22 settembre 2026 — Versione 84 pubblicata: mappa chiara
 
 Sites conferma pubblicazione riuscita il 2026-09-22T05:16:10.940140Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Sei fenomeni leggibili, Fonti e orari, contatore del controllo al secondo e ritorno Ultimo nel radar. Nessuna misura meteo al secondo dichiarata.

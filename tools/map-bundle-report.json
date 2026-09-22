@@ -45,6 +45,7 @@
     "dist/editorial-world.js",
     "dist/map-live-status.js",
     "dist/map-fresh-cache.js",
+    "dist/map-local-brief.js",
     "dist/nearby-tools.js",
     "dist/map-field-core.js",
     "dist/map-visuals.js",
@@ -71,7 +72,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 480725,
+    "dist/app/main.js": 484791,
     "dist/app/sky-postcard-S6FAJZEZ.js": 5122,
     "dist/app/chunk-G4WKHTNL.js": 13566,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,

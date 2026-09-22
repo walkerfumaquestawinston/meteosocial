@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Una mappa dettagliata che si capisce subito
+
+L'utente chiede una mappa molto utile, ricca e riconoscibile, comprensibile senza difficoltà. Dare priorità a luogo, tempo attuale, prossimo cambiamento e azioni esplicite; dettagli progressivi e strumenti secondari raccolti. Identità inchiostro/lime per i pannelli della mappa, cartografia sincronizzata alle fasi solari. Nessuna promessa di perfezione, unicità assoluta o osservazioni al secondo senza fonte. Prima applicazione: docs/MAPPA-ATLANTE-LOCALE.md; pubblicazione indicata nelle note di esito.
+
 ## Direzione attuale: mappa locale — 16 settembre 2026
 
 ## 22 settembre 2026 — Cielo vivo e calendario automatico
