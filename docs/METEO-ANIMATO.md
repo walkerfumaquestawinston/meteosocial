@@ -23,3 +23,9 @@ Verifica browser: trasformazioni delle nuvole, acqua e riflessi diverse fra camp
 Costa di luce ora compare nella scheda principale di Oggi, con firma MeteoSocial, usando lo stesso modulo animato di Meteo. Il rinnovo dei dati e il cambio città rigenerano la scena con il codice meteo corretto; i temi solari, stagionali e festivi restano attivi. Rimosso dalla Home il vecchio elemento immagine decorativo (già nascosto) e il backdrop blur che rendeva il nuovo paesaggio indistinto. Nessun asset multimediale o nuova richiesta di rete. Stato di caricamento ed errore restano espliciti senza inventare condizioni meteo.
 
 Il disegno è originale del progetto, ma non si afferma un’esclusività legale o che non esistano interfacce simili. Controllo visivo della Home mobile e desktop, build e suite atmosfera/scena/avvio/fasi solari.
+
+## Stelle e nuvole più naturali
+
+Stelle distribuite in 29 posizioni irregolari, con tre punti luminosi che scintillano lentamente. Eliminata la griglia ripetuta e il lampeggiamento dell’intero cielo. Due nuvole vettoriali con contorno irregolare, luce superiore, sfumatura e ombra: i gradienti sono statici, si anima soltanto il gruppo. Colori delle nuvole distinti per giorno, notte, alba, tramonto e maltempo. Nessuna texture, video, libreria, WebGL o richiesta di rete aggiunta. Preferenze di movimento ridotto rispettate anche per lo scintillio.
+
+Confermato il comportamento automatico in Oggi e Meteo: fase solare aggiornata ogni 30 secondi, previsione ricaricata ogni 15 minuti mentre la pagina è visibile e al ritorno alla scheda/cambio città. Nessuna animazione simula dati più aggiornati della fonte; restano visibili orario e avviso offline. Non è un benchmark prestazionale su telefoni reali.
