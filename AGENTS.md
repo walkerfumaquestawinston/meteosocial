@@ -15,3 +15,6 @@ Use the latest release notes to distinguish implemented functionality from reque
 The current direction uses media-brand profiles and editorial signatures instead of personal 3D avatars. Preserve stored user data when removing obsolete interfaces. Reuse the existing Site project and public address.
 
 The owner reiterated on 13 September 2026 that the current device is not the primary PC. Preserve cross-device continuity on every update by saving source and release/status documents to this same online project. Do not claim automatic synchronization of folders, browser drafts or local preferences, or remote access to the primary PC: no such connection has been configured.
+
+
+The owner explicitly requested on 22 September 2026 that every completed update be reflected in the local live preview, GitHub source, and the existing Sites publication. Verify each destination and report any incomplete step. This is a release workflow preference, not permission to install an unattended synchronizer or expose local/private data. Follow the readability-first direction: clear entry points and paired foreground/background colors for every solar phase.

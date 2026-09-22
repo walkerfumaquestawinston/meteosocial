@@ -261,46 +261,46 @@ html:root body.cielo-design.segnale-design #main .cielo-weather-stage .forecast-
 html:root body.cielo-design.segnale-design #main .cielo-weather-stage .forecast-receipt p{color:#dedfd2!important}
 html:root body.cielo-design.segnale-design .cielo-art-note{right:18px;bottom:8px;font-size:11px;color:#dee0d3;background:#18211cbf;border-radius:3px;padding:3px 6px}
 html:root body.cielo-design.segnale-design #main .atmo-rain{background:var(--signal-surface)!important;border:0!important;border-left:4px solid #8b9a8a!important;border-radius:0;padding:18px 22px}
-html:root body.cielo-design.segnale-design #main .atmo-rain :is(h2,p,a){color:#343c32!important}
-html:root body.cielo-design.segnale-design #main .hail-entry{border:1px solid #b8baad;border-left:4px solid #b94723;background:#ede7dc!important;color:var(--signal-ink)!important;border-radius:0;padding:18px 22px;min-height:78px}
+html:root body.cielo-design.segnale-design #main .atmo-rain :is(h2,p,a){color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .hail-entry{border:1px solid #b8baad;border-left:4px solid #b94723;background:var(--signal-surface)!important;color:var(--signal-ink)!important;border-radius:0;padding:18px 22px;min-height:78px}
 html:root body.cielo-design.segnale-design #main .hail-entry small{color:var(--signal-muted)}
 html:root body.cielo-design.segnale-design #main .atmo-actions{gap:0;border-block:1px solid var(--signal-line);margin:22px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-html:root body.cielo-design.segnale-design #main .atmo-actions :is(a,button){border:0!important;border-right:1px solid var(--signal-line)!important;background:transparent!important;color:#272e23!important;border-radius:0;font-size:14px;min-height:62px;padding:12px!important}
+html:root body.cielo-design.segnale-design #main .atmo-actions :is(a,button){border:0!important;border-right:1px solid var(--signal-line)!important;background:transparent!important;color:var(--signal-ink)!important;border-radius:0;font-size:14px;min-height:62px;padding:12px!important}
 html:root body.cielo-design.segnale-design #main .atmo-actions>:last-child{border-right:0!important}
 html:root body.cielo-design.segnale-design #main .atmo-panel{background:transparent!important;border:0!important;border-top:2px solid #303b2e!important;border-radius:0;padding:24px 0;box-shadow:none}
 html:root body.cielo-design.segnale-design #main .atmo-panel :is(h2,h3,p,small,a),
-html:root body.cielo-design.segnale-design #main :is(.atmo-tour,.atmo-footer){color:#343c32!important}
+html:root body.cielo-design.segnale-design #main :is(.atmo-tour,.atmo-footer){color:var(--signal-ink)!important}
 html:root body.cielo-design.segnale-design #main .atmo-panel h2{font-size:30px;letter-spacing:-1px;line-height:1.15}
-html:root body.cielo-design.segnale-design #main .atmo-kicker{color:#8f4027;font-size:12px;letter-spacing:.12em}
-html:root body.cielo-design.segnale-design #main .forecast-hours article{background:#e7e6dc;border:0;border-radius:3px;padding:14px 10px;color:#232c22}
-html:root body.cielo-design.segnale-design #main .forecast-hours :is(b,span,time){color:#374132!important}
+html:root body.cielo-design.segnale-design #main .atmo-kicker{color:var(--signal-accent);font-size:12px;letter-spacing:.12em}
+html:root body.cielo-design.segnale-design #main .forecast-hours article{background:var(--signal-surface);border:0;border-radius:3px;padding:14px 10px;color:var(--signal-ink)}
+html:root body.cielo-design.segnale-design #main .forecast-hours :is(b,span,time){color:var(--signal-ink)!important}
 /* Forecast adopts a light instrument sheet, not another copy of the Home card. */
-html:root body.cielo-design.segnale-design #main .weather-hero{background:#e5e6d9!important;border:1px solid #aeb7a2!important;border-radius:4px 36px 4px 4px;padding:30px;box-shadow:none}
+html:root body.cielo-design.segnale-design #main .weather-hero{background:var(--signal-surface)!important;border:1px solid #aeb7a2!important;border-radius:4px 36px 4px 4px;padding:30px;box-shadow:none}
 html:root body.cielo-design.segnale-design #main .weather-hero::before,
 html:root body.cielo-design.segnale-design #main .weather-hero::after{display:none}
-html:root body.cielo-design.segnale-design #main .weather-hero :is(h2,p,.weather-date,.weather-big-temp){color:#273022!important}
+html:root body.cielo-design.segnale-design #main .weather-hero :is(h2,p,.weather-date,.weather-big-temp){color:var(--signal-ink)!important}
 html:root body.cielo-design.segnale-design #main .weather-big-temp{font-size:clamp(88px,12vw,144px);font-weight:600;letter-spacing:-.07em}
-html:root body.cielo-design.segnale-design #main .weather-hero .forecast-receipt{background:transparent!important;border-color:#a8b49d!important;color:#43513b!important;border-radius:0}
-html:root body.cielo-design.segnale-design #main .weather-hero .forecast-receipt p{color:#43513b!important}
+html:root body.cielo-design.segnale-design #main .weather-hero .forecast-receipt{background:transparent!important;border-color:#a8b49d!important;color:var(--signal-ink)!important;border-radius:0}
+html:root body.cielo-design.segnale-design #main .weather-hero .forecast-receipt p{color:var(--signal-ink)!important}
 html:root body.cielo-design.segnale-design #main .weather-hero-actions button{background:#293a29!important;color:#f8f3df!important;border:0;border-radius:4px;font-size:14px}
 html:root body.cielo-design.segnale-design #main .forecast-tabs{display:flex;gap:0;padding:0;border-bottom:2px solid #b1b7a6;margin:26px 0;background:none!important;border-radius:0}
-html:root body.cielo-design.segnale-design #main .forecast-tabs button{flex:1;min-height:52px;background:transparent!important;color:#56604e!important;border:0;border-bottom:3px solid transparent;border-radius:0;font-size:14px;white-space:normal}
-html:root body.cielo-design.segnale-design #main .forecast-tabs button[aria-pressed=true]{background:none!important;color:#932f0e!important;border-bottom:3px solid #bc481e!important;font-weight:750}
-html:root body.cielo-design.segnale-design #main :is(.weather-source,.weather-links,.weather-compare){color:#4b5545!important}
-html:root body.cielo-design.segnale-design #main .weather-links a{color:#7d351c!important}
+html:root body.cielo-design.segnale-design #main .forecast-tabs button{flex:1;min-height:52px;background:transparent!important;color:var(--signal-muted)!important;border:0;border-bottom:3px solid transparent;border-radius:0;font-size:14px;white-space:normal}
+html:root body.cielo-design.segnale-design #main .forecast-tabs button[aria-pressed=true]{background:none!important;color:var(--signal-accent)!important;border-bottom:3px solid #bc481e!important;font-weight:750}
+html:root body.cielo-design.segnale-design #main :is(.weather-source,.weather-links,.weather-compare){color:var(--signal-muted)!important}
+html:root body.cielo-design.segnale-design #main .weather-links a{color:var(--signal-accent)!important}
 /* Social shares the paper canvas; original media and hazard semantics are preserved. */
-html:root body.cielo-design.segnale-design #main .community-heading{border-color:#b7b9ab;color:#252d23!important}
-html:root body.cielo-design.segnale-design #main .community-heading h1{color:#252d23!important;font-weight:650;letter-spacing:-.05em}
-html:root body.cielo-design.segnale-design #main .community-heading :is(p,.community-kicker){color:#5b6254!important}
+html:root body.cielo-design.segnale-design #main .community-heading{border-color:#b7b9ab;color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .community-heading h1{color:var(--signal-ink)!important;font-weight:650;letter-spacing:-.05em}
+html:root body.cielo-design.segnale-design #main .community-heading :is(p,.community-kicker){color:var(--signal-muted)!important}
 html:root body.cielo-design.segnale-design #main .community-compose{background:#253629!important;border:0!important;border-radius:4px 24px 4px 4px}
 html:root body.cielo-design.segnale-design #main .community-compose button:last-child{background:#f28b57!important;color:#272c1c!important;border-color:#f28b57!important}
-html:root body.cielo-design.segnale-design #main .community-hub .network-tabs button{color:#59624f!important}
-html:root body.cielo-design.segnale-design #main .community-hub .network-tabs button[aria-pressed=true]{color:#9b3816!important;border-bottom-color:#bd481e!important}
+html:root body.cielo-design.segnale-design #main .community-hub .network-tabs button{color:var(--signal-muted)!important}
+html:root body.cielo-design.segnale-design #main .community-hub .network-tabs button[aria-pressed=true]{color:var(--signal-accent)!important;border-bottom-color:#bd481e!important}
 html:root body.cielo-design.segnale-design #main .community-hub .network-post{border-radius:4px 20px 4px 4px!important;border-color:#737f69!important;background:#24352c!important}
 html:root body.cielo-design.segnale-design #main .community-hub .text-moment{background:#334938!important}
-html:root body.cielo-design.segnale-design #main :is(.community-live>summary,.community-filter-row summary,.network-status){color:#525c49!important}
+html:root body.cielo-design.segnale-design #main :is(.community-live>summary,.community-filter-row summary,.network-status){color:var(--signal-muted)!important}
 html:root body.cielo-design.segnale-design #main .community-rail>section{border-color:#a9b29f}
-html:root body.cielo-design.segnale-design #main .community-rail>section :is(h2,p){color:#424d38!important}
+html:root body.cielo-design.segnale-design #main .community-rail>section :is(h2,p){color:var(--signal-ink)!important}
 /* Map stays a dark observation surface. Dock clears the bottom of its controls. */
 html.mappa-eventi-view body.cielo-design.segnale-design{background:#07141c!important}
 html.mappa-eventi-view body.cielo-design.segnale-design .signal-nav{bottom:max(10px,env(safe-area-inset-bottom))!important}
@@ -362,10 +362,62 @@ html:root[data-phase] body.cielo-design.segnale-design #main :is(.day-plan,.atmo
 html:root[data-phase="alba"] body.segnale-design .cielo-atmosphere{filter:sepia(.5) hue-rotate(320deg)}
 html:root[data-phase="tramonto"] body.segnale-design .cielo-atmosphere{filter:sepia(.65) hue-rotate(335deg)}
 html:root[data-phase="notte"] body.segnale-design .cielo-atmosphere{filter:brightness(.65) saturate(.75)}
-html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-cerca,.mappa-pillola,.mappa-field,.mappa-pannello,.mappa-strumenti,.mappa-legenda,.mappa-ia,.mappa-ai-suggestions button){background:var(--signal-paper)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important}
-html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-cerca input,.mappa-pillola strong,.mappa-field h2,.mappa-field h3,.mappa-field p,.mappa-ia input,.mappa-pannello h2){color:var(--signal-ink)!important}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-cerca,.mappa-pillola,.mappa-strumenti,.mappa-legenda,.mappa-ia,.mappa-ai-suggestions button){background:var(--signal-paper)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-cerca input,.mappa-pillola strong,.mappa-ia input){color:var(--signal-ink)!important}
 @media(prefers-reduced-motion:reduce){html:root[data-phase] body.cielo-design.segnale-design{transition:none}}
 
 html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main :is(.mappa,.mappa-tela){background:var(--signal-surface)!important;color:var(--signal-ink)!important}
 html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa::before{background:linear-gradient(var(--signal-paper),transparent)!important}
-html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-brand strong,.mappa-brand small,.mappa-stato,.mappa-ai-context,.mappa-country-name,.mappa-pannello p){color:var(--signal-ink)!important}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-brand strong,.mappa-brand small,.mappa-stato,.mappa-ai-context,.mappa-country-name){color:var(--signal-ink)!important}
+
+/* Clear entry points and paired surfaces across all solar phases. */
+html:root body.cielo-design.segnale-design #main .atmo-intro{color:var(--signal-muted);font-size:17px;line-height:1.6;max-width:650px;margin:-8px 0 22px}
+html:root body.cielo-design.segnale-design #main .atmo-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border:0;margin:0 0 24px}
+html:root body.cielo-design.segnale-design #main .atmo-actions a{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;gap:6px;background:var(--signal-surface)!important;border:1px solid var(--signal-line)!important;border-radius:12px;min-height:88px;padding:16px!important;text-decoration:none}
+html:root body.cielo-design.segnale-design #main .atmo-actions strong{font-size:18px;color:var(--signal-ink)}
+html:root body.cielo-design.segnale-design #main .atmo-actions small{font-size:14px;color:var(--signal-muted);line-height:1.4}
+html:root body.cielo-design.segnale-design #main :is(.atmo-heading,.atlas-title) h1{font-size:clamp(32px,4.5vw,52px)!important;line-height:1.15;letter-spacing:-.035em}
+html:root body.cielo-design.segnale-design .cielo-weather-stage{min-height:0;border-radius:16px}
+html:root body.cielo-design.segnale-design #main .cielo-weather-stage .atmo-weather{min-height:210px;padding:24px!important}
+html:root body.cielo-design.segnale-design #main .atmo-temperature{font-size:clamp(76px,9vw,106px)!important}
+html:root body.cielo-design.segnale-design #main .atmo-more{border-block:1px solid var(--signal-line);padding:18px 0;margin:16px 0;color:var(--signal-ink)}
+html:root body.cielo-design.segnale-design #main .atmo-more>summary{cursor:pointer;min-height:44px;align-content:center;font-size:18px;font-weight:650;color:var(--signal-ink)}
+html:root body.cielo-design.segnale-design #main .atmo-orbit-link{background:var(--signal-surface)!important;border:1px solid var(--signal-line)!important;color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .atmo-orbit-link :is(b,small,span){color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .atmo-panel{border-top-color:var(--signal-line)!important}
+html:root body.cielo-design.segnale-design #main .atmo-footer a{color:var(--signal-accent)!important}
+html:root body.cielo-design.segnale-design .map-help>summary{cursor:pointer;list-style-position:inside;padding:12px 16px;background:#172c38;color:#f1f5f7;border:1px solid #657b88;border-radius:12px;font-size:14px}
+html:root body.cielo-design.segnale-design .map-help[open]>summary{margin-bottom:8px}
+@media(max-width:600px){
+ html:root body.cielo-design.segnale-design #main .atmo-actions{gap:8px;grid-template-columns:1fr}
+ html:root body.cielo-design.segnale-design #main .atmo-actions a{min-height:64px;padding:12px 16px!important;gap:2px}
+ html:root body.cielo-design.segnale-design #main .atmo-actions strong{font-size:16px}
+ html:root body.cielo-design.segnale-design #main .atmo-actions small{font-size:13px}
+ html:root body.cielo-design.segnale-design #main .atmo-intro{font-size:15px}
+ html:root body.cielo-design.segnale-design #main .atmo-panel h2{font-size:24px;letter-spacing:-.5px}
+}
+
+html:root body.cielo-design.segnale-design #main .community-hub :is(.community-live,.network-filter-drawer){color:var(--signal-ink)!important;background:var(--signal-paper)!important}
+html:root body.cielo-design.segnale-design #main .community-hub :is(.community-live,.network-filter-drawer) :is(h2,p,label){color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .community-hub .network-empty{background:var(--signal-surface)!important;border-color:var(--signal-line)!important}
+html:root body.cielo-design.segnale-design #main .community-hub .network-empty :is(h2,p){color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .atmo-heading>button{max-width:none;min-width:max-content}
+html:root body.cielo-design.segnale-design #main :is(.forecast-hours article,.day-plan-results article,.daily-question){background:var(--signal-surface)!important;color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .atmo-rain>span{color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .atmo-alert .atmo-kicker{color:#ffb28f!important}
+html:root body.cielo-design.segnale-design #main [data-home-extras] a{color:var(--signal-accent)!important}
+html:root body.cielo-design.segnale-design #main .community-hub :is(.quick-report-panel,.sky-invitation){background:var(--signal-surface)!important;color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .community-hub :is(.community-live a,.community-rail a,.community-kicker){color:var(--signal-accent)!important}
+html:root body.cielo-design.segnale-design #main .daily-question :is(.daily-kicker,summary){color:var(--signal-ink)!important}
+html:root body.cielo-design.segnale-design #main .community-hub :is(.community-forecast,.community-same) .community-kicker{color:#ffb28f!important}
+html:root body.cielo-design.segnale-design #main .community-live summary{color:var(--signal-ink)!important}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa .mappa-pillola[aria-pressed=true]{box-shadow:inset 0 -3px var(--signal-accent)!important}
+html:root body.cielo-design.segnale-design #main .mappa-cerca input{border:0!important;box-shadow:none!important}
+/* Secondary tools retain their dark cards until their own surface is migrated. */
+html:root body.cielo-design.segnale-design #main:not([data-page="home"]):not([data-page="tendenze"]):not([data-page="community"]):not([data-page="mappa-eventi"]){--signal-paper:#0d1821;--signal-ink:#f2eee5;--signal-muted:#becbd3;--signal-surface:#1d2c38;--signal-line:#536574;--signal-accent:#ffb28f}
+
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa-alto::before{background:linear-gradient(var(--signal-paper) 65%,transparent)}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-cerca button,.mappa-strumenti button,.mappa-subtools button,.mappa-stato button){background:var(--signal-paper)!important;color:var(--signal-ink)!important}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-subtools b,.mappa-pillola small,.mappa-pillola>b,.mappa-legenda span,.mappa-legenda small,.mappa-ia-marchio span,.mappa-ia-marchio small,.mappa-attribuzioni a,.leaflet-control-scale-line){color:var(--signal-ink)!important;text-shadow:none}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa input::placeholder{color:var(--signal-muted)!important;opacity:1}
+html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa .leaflet-control-scale-line{background:var(--signal-paper);border-color:var(--signal-ink)}
