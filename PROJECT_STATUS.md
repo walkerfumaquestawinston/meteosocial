@@ -1,3 +1,13 @@
+## 22 settembre 2026 — Versione 90 pubblicata: radar grandine gratuito e tema automatico
+
+Radar-DPC POH Italia integrato gratuitamente, con probabilità, fonte, licenza e orario reale del quadro; aggiornamento nominale 5 minuti, copertura non uniforme e ritardo possibile. Non è conferma a terra né radar mondiale. Tema automatico giorno/notte per cartografia e pannelli, opzioni manuali in Strumenti, indice dei sei livelli e più spazio radar sul telefono.
+
+Sites runtime 4ad7ed3100104ed8ddde48c7b9547a5551aabf0b e GitHub f1c0e1a320cc220ef6825df9c7902d0714d404dc condividono tree a85eb03d441f58ba18182e3b80b7d2b017d98cc7. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_53b0d1a594b081918f531d064fd5a259; deployment appgdep_6ab2316aede08191abc10fc7a3771a09 riuscito 2026-09-22T07:43:42.483704Z, ambiente revisione 10. Build remota: il nuovo workflow Sites locale è stato tentato, ma non avvia il comando di preparazione su questo host Windows.
+
+Build e 69 suite passate nella revisione completa; test radar e build ripetuti dopo la correzione, CI finale 35700696862 riuscita. v89 pubblicata ma endpoint radar rispondeva 503: v90 cambia redirect da error a manual, rifiutando comunque tutte le risposte non 2xx, e aggiunge diagnostica senza URL firmati. Endpoint pubblico verificato 200 image/tiff, 322324 byte, quadro 09:35 CEST. Anteprima 4597 e verifiche desktop, 390 e 320 px; tema chiaro/scuro e ripristino Automatico. Nessuna certificazione meteorologica o su dispositivi fisici. Limite Open-Meteo precedente ancora presente, indipendente dal radar.
+
+Continuare ramo codex/weather-scenery-20260922 e PR draft #21. Dettagli in docs/RADAR-GRANDINE-TEMA.md. Successivi commit di note non richiedono un nuovo deploy. Nessun abbonamento aggiunto.
+
 ## 22 settembre 2026 — Radar grandine gratuito e mappa giorno/notte, revisione pronta
 
 Richiesta più recente: radar grandine gratuito (supera la breve preferenza a pagamento). Collegato Radar-DPC POH Italia, senza nuovo abbonamento, separato dalle osservazioni della community. Tema automatico cartografia e pannelli, con opzioni manuali negli Strumenti e indice dei livelli. Ultima pubblicazione confermata 88; attendere nota di esito. Dettagli e limiti in docs/RADAR-GRANDINE-TEMA.md.
