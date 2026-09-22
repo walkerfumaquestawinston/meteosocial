@@ -28,13 +28,15 @@ export function createAtlasRadar({L,map,onChange,fetcher=fetch}) {
   }
   async function refresh(force=false){
     if(!alive||!enabled)return;if(busy)return busy;
-    if(!force&&frames.length&&Date.now()-loadedAt<300000){show();return;}
-    status='loading';emit();
+    if(!force&&frames.length&&Date.now()-loadedAt<60000){if(!layer)show();else emit();return;}
+    const previousStatus=status,previousTime=frames[index]?.time,followLatest=!frames.length||index===frames.length-1;status='loading';emit();
     busy=(async()=>{
       try{
         const r=await fetcher('https://api.rainviewer.com/public/weather-maps.json',{signal:AbortSignal.any([abort.signal,AbortSignal.timeout(15000)])});
         if(!r.ok)throw Error();const next=atlasRadarFrames(await r.json());if(!next.length)throw Error();
-        if(!alive)return;frames=next;index=frames.length-1;loadedAt=Date.now();pause();if(enabled)show();
+        if(!alive)return;const unchanged=frames.length===next.length&&frames.every((f,i)=>f.time===next[i].time&&f.url===next[i].url);loadedAt=Date.now();
+        if(unchanged&&layer){status=previousStatus==='error'?'ready':previousStatus;emit();return;}
+        frames=next;index=followLatest?frames.length-1:Math.max(0,frames.findIndex(f=>f.time===previousTime));if(enabled)show();
       }catch{if(alive){status='error';pause();if(!frames.length)remove();emit();}}
       finally{busy=null;}
     })();return busy;

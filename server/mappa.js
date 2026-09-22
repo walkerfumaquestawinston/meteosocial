@@ -169,12 +169,13 @@ async function mappaMeteoDati(env) {
           Number.isFinite(c.wind_direction_10m) ? Math.round(c.wind_direction_10m) : null,
           Number.isFinite(c.interval) && c.interval > 0 ? c.interval : null,
           typeof c.time === 'string' ? c.time : null,
+          Number.isFinite(c.snowfall) && c.snowfall >= 0 ? c.snowfall : null,
         ];
       }).filter(Boolean);
     }));
     const dati = gruppi.flat();
     return {
-      campi: ['istat', 't', 'mm', 'codice', 'vento', 'direzione', 'intervalloSecondi', 'oraUTC'],
+      campi: ['istat', 't', 'mm', 'codice', 'vento', 'direzione', 'intervalloSecondi', 'oraUTC', 'neveCm'],
       dati,
       chiesti: scelti.length,
       updated: Date.now(),

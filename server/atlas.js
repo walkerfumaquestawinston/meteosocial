@@ -32,7 +32,7 @@ async function atlasApi(req,env,url){
 // Bounded community observations, separated from model values and radar pixels.
 async function fieldReports(req,env,url){
  const latText=url.searchParams.get('lat'),lonText=url.searchParams.get('lon'),lat=Number(latText),lon=Number(lonText),radius=Number(url.searchParams.get('radius')||150),layer=url.searchParams.get('layer');
- const kinds={temperature:'Temperatura',pioggia:'Pioggia',grandine:'Grandine',vento:'Vento',fulmini:'Fulmini'};
+ const kinds={temperature:'Temperatura',pioggia:'Pioggia',neve:'Neve',grandine:'Grandine',vento:'Vento',fulmini:'Fulmini'};
  if(!latText?.trim()||!lonText?.trim()||!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>85||Math.abs(lon)>180||![25,50,100,150].includes(radius)||!Object.hasOwn(kinds,layer))fail(400,'Scegli un livello, una zona valida e un raggio fino a 150 km.');
  const user=await identity(req),now=Date.now(),center={lat:Math.round(lat*100)/100,lon:Math.round(lon*100)/100},span=(radius+2)/110.574,lonSpan=Math.min(180,(radius+2)/(111.32*Math.max(.01,Math.cos((Math.abs(center.lat)+span)*Math.PI/180))));
  const args=[kinds[layer],now-7200000,now,now,(center.lat-span)*100,(center.lat+span)*100,center.lon*100,lonSpan*100,center.lon*100,(360-lonSpan)*100];

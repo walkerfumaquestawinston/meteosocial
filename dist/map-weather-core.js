@@ -1,5 +1,11 @@
 // Shared rules for rendering, accessible lists and the AI's visible-area summary.
 export const isStorm = code => [95, 96, 99].includes(code);
+export const isSnow = code => [71,73,75,77,85,86].includes(code);
+export function snowReading(current){
+ const amount=current?.snowfall;
+ if(Number.isFinite(amount)&&amount>=0)return {amount,indicated:amount>0||isSnow(current.weather_code)};
+ return isSnow(current?.weather_code)?{amount:null,indicated:true}:null;
+}
 export const hailLabel = size => ({under1:'Meno di 1 cm','1to2':'Da 1 a 2 cm','2to4':'Da 2 a 4 cm',over4:'Oltre 4 cm'})[size] || 'Dimensione non dichiarata';
 export const precipitationLabel = interval => Number.isFinite(interval) && interval > 0 ? `mm / ${Math.round(interval / 60)} min` : 'mm · intervallo non disponibile';
 export const validPlace = p => !!p && Number.isFinite(p.latitude) && Number.isFinite(p.longitude) && Math.abs(p.latitude) <= 90 && Math.abs(p.longitude) <= 180;
@@ -13,7 +19,7 @@ export function insideViewport(p, bounds) {
 }
 export function weatherPoints(world, towns, readings, selected) {
   const points = towns.map(c => ({name:c[1],country_code:'IT',province:c[2],latitude:c[3],longitude:c[4],
-    current:readings.has(c[0]) ? (()=>{const r=readings.get(c[0]);return {temperature_2m:r[1],precipitation:r[2],weather_code:r[3],wind_speed_10m:r[4],wind_direction_10m:r[5],interval:r[6],time:r[7]};})() : null}));
+    current:readings.has(c[0]) ? (()=>{const r=readings.get(c[0]);return {temperature_2m:r[1],precipitation:r[2],weather_code:r[3],wind_speed_10m:r[4],wind_direction_10m:r[5],interval:r[6],time:r[7],snowfall:r[8]};})() : null}));
   const result = [];
   // Prefer the chosen location and then the more detailed Italian catalog.
   for (const p of [selected, ...points, ...world]) {
@@ -28,6 +34,7 @@ export function visibleSummary(points, bounds) {
   const sorted = [...visible].sort((a,b)=>a.current.temperature_2m-b.current.temperature_2m);
   return {points:visible,cold:sorted[0]||null,hot:sorted.at(-1)||null,
     rain:visible.filter(p=>Number.isFinite(p.current.precipitation)&&p.current.precipitation>0),
+    snow:visible.filter(p=>snowReading(p.current)?.indicated),
     storms:visible.filter(p=>isStorm(p.current.weather_code))};
 }
 export function mapAIRequest(place, question, summary, layer='temperatura', history=[]) {

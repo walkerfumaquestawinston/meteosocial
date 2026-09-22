@@ -25,7 +25,7 @@ export function weatherAge(current, now=Date.now()) {
 }
 
 const overlaps=(a,b,gap=5)=>a.left<b.right+gap&&a.right>b.left-gap&&a.top<b.bottom+gap&&a.bottom>b.top-gap;
-export function arrangeCityLabels(candidates, viewport, reserved=[]) {
+export function arrangeCityLabels(candidates, viewport, reserved=[],limit=80) {
   const placed=[],occupied=[...reserved];
   const ranked=candidates.filter(c=>Number.isFinite(c.x)&&Number.isFinite(c.y)&&Number.isFinite(c.width)&&c.width>0)
     .map((c,i)=>({...c,order:i})).sort((a,b)=>Number(!!b.selected)-Number(!!a.selected)||(b.priority||0)-(a.priority||0)||a.order-b.order);
@@ -38,7 +38,7 @@ export function arrangeCityLabels(candidates, viewport, reserved=[]) {
       if(box.left<6||box.top<6||box.right>viewport.width-6||box.bottom>viewport.height-6||occupied.some(b=>overlaps(box,b)))continue;
       placed.push({...p,dx,dy,width:w,height:h,box});occupied.push(box);break;
     }
-    if(placed.length>=80)break;
+    if(placed.length>=limit)break;
   }
   return placed;
 }

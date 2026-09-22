@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Mappa e neve pronte per la pubblicazione
+
+Controllo fonti ogni minuto, orari distinti, radar senza ricreare immagini invariate, livello Neve e contesto Lente IA ampliato. Build e 63 suite superate. Dettagli e limiti: docs/MAPPA-NEVE-MINUTO.md. Pubblicazione in corso; la sezione precedente descrive la v82.
+
 # MeteoSocial — riprendi da qui
 
 ## 22 settembre 2026 — Versione 82 pubblicata: Il prossimo cambio

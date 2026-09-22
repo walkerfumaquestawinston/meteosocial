@@ -54,7 +54,7 @@ html:root[data-holiday]:not([data-holiday=""]) body.cielo-design.segnale-design 
 html:root[data-festive-tone=natale] body.cielo-design.segnale-design .cielo-weather-stage{border-image:none;border-right:3px solid #eaa3a6}
 html:root body.cielo-design.segnale-design #main .mappa{font-size:14px}
 html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola{border-radius:0!important}
-html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola strong{font-size:14px!important}
+html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola strong{font-size:var(--map-tab-size,14px)!important}
 html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola[aria-pressed=true]{box-shadow:inset 0 -3px var(--signal-accent)!important}
 html:root body.cielo-design.segnale-design #main .mappa-stato{font-size:12px}
 html:root body.cielo-design.segnale-design #main .mappa .mappa-field{top:170px!important;bottom:auto;max-height:calc(100% - 190px);width:290px;border-radius:14px}
