@@ -1,5 +1,14 @@
 # MeteoSocial — stato pubblico del progetto
 
+## 22 settembre 2026 — Versione 80 pubblicata: Costa di luce anche in Oggi
+
+Pubblicazione riuscita il 2026-09-22T02:30:41.772715Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . L’ingresso Oggi mostra lo stesso paesaggio animato di Meteo con firma visiva MeteoSocial. Tolti l’immagine decorativa nascosta e il vecchio backdrop blur. La scena si rinnova con i dati/città; gli stati di caricamento ed errore restano espliciti.
+
+Runtime 96d6b75b5ccd068a77be0812b28fc80556d05bb2; albero d575ef68ff0ca6c07f1208075c2b4be87b8cfa56 identico al commit GitHub 94eb8ad56e897d3630629e69cad1d70783804150. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_c9b136dc509c81919422a7603d04630d; deployment appgdep_6ab1e8133e74819186e7cbaada721d0c.
+
+Continuare dal ramo codex/weather-scenery-20260922 e PR draft https://github.com/walkerfumaquestawinston/meteosocial/pull/21, sopra PR #20. Anteprima 4595 allineata. Build e quattro suite mirate superate; Home controllata su desktop e a 390px, una sola scena, animazione attiva e nessun overflow. Note solo documentali salvate su entrambi i repository senza ulteriore deploy. Dettagli: docs/METEO-ANIMATO.md.
+
+
 ## 22 settembre 2026 — Versione 79 pubblicata: Costa di luce
 
 Sites pubblicato con successo il 2026-09-22T02:23:20.274151Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#tendenze . Ora il movimento è più visibile: nuvole, acqua e riflessi misurati in movimento nel browser; costa e faro originali con spazio dedicato su mobile. Nessun nuovo download multimediale o dipendenza, circa 4082 byte gzip per i due sorgenti della scena. Non è una misura FPS/batteria.
