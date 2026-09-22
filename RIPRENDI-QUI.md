@@ -1,5 +1,13 @@
 # MeteoSocial — riprendi da qui
 
+## 22 settembre 2026 — Il prossimo cambio: rilascio pronto
+
+Oggi presenta sei fasce orarie e un riepilogo del primo cambiamento previsto, con fonte, motivazione e limiti espliciti. Nessuna nuova richiesta dati o dipendenza. La scena mobile è più compatta; la cache iniziale rinvia i moduli secondari; GitHub Actions esegue tutte le suite attive. Dettagli, criteri e prossime tappe in docs/PROSSIMO-CAMBIO.md.
+
+Sorgente sul ramo locale codex/sites-release-20260922; GitHub continua sul ramo codex/weather-scenery-20260922 e PR #21, senza ulteriori PR sovrapposte. Pubblicazione Sites e SHA da confermare nelle note successive. Usare il ramo aggiornato, non main GitHub. Anteprima locale: http://127.0.0.1:4595/#home .
+
+
+
 ## 22 settembre 2026 — Versione 81 pubblicata: stelle e nuvole naturali
 
 Sites riuscito il 2026-09-22T02:39:46.201214Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . Stelle irregolari con tre punti scintillanti, nuvole vettoriali con sfumature e ombre. Entrambe le sezioni Oggi/Meteo seguono orario locale e codici meteo; verificati notte, pioggia diurna senza stelle e nuvole calde al tramonto. Sole/luna nascosti nel maltempo, riflessi attenuati. Nessun video o nuovo asset scaricato, circa 6 KB gzip per i sorgenti scena.

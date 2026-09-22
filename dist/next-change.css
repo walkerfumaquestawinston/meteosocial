@@ -1,0 +1,16 @@
+.next-change{margin:0 0 24px;padding:24px;border:1px solid var(--signal-line);border-radius:22px;background:var(--signal-surface);color:var(--signal-ink);overflow:hidden}
+.next-change .next-change-head,.next-change .next-change-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.next-change .next-change-head{font-size:11px;font-weight:750;letter-spacing:.12em;color:var(--signal-accent)}
+body.cielo-design #main .next-change h2{font-size:clamp(23px,3vw,32px);line-height:1.16;color:var(--signal-ink);margin:18px 0 10px}
+body.cielo-design #main .next-change p{color:var(--signal-muted);font-size:15px;line-height:1.55;max-width:70ch}
+body.cielo-design #main .next-change .next-change-event{color:var(--signal-accent);font-weight:750;margin:0}
+.next-change-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));padding:0;margin:24px 0;list-style:none}
+.next-change-track li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;min-width:0;padding:10px 4px;border-top:2px solid var(--signal-line)}
+.next-change-track li[data-change]{border-top-color:var(--signal-accent);background:var(--signal-paper);border-radius:0 0 12px 12px}
+.next-change-track time{font-size:13px;font-weight:650}.next-change-track strong{font-size:24px}.next-change-track span:not(.next-change-dot),.next-change-track small{font-size:12px;color:var(--signal-muted);overflow-wrap:anywhere}
+.next-change-dot{width:15px;height:15px;border:2px solid currentColor;border-radius:50%;color:var(--signal-accent)}
+.next-change-dot[data-sky=rain],.next-change-dot[data-sky=storm]{border-radius:2px 50% 50%;transform:rotate(45deg);background:currentColor}
+.next-change-dot[data-sky=cloud],.next-change-dot[data-sky=fog]{width:23px;height:11px;border-radius:10px}.next-change-dot[data-sky=snow]{border-radius:2px;transform:rotate(45deg)}
+.next-change .next-change-foot a{min-height:44px;display:inline-flex;align-items:center;font-weight:650;color:var(--signal-accent)}
+.next-change details{border-top:1px solid var(--signal-line);margin-top:10px;padding-top:14px;color:var(--signal-muted);font-size:13px}.next-change summary{cursor:pointer;min-height:32px}
+@media(max-width:600px){.next-change{padding:18px}.next-change .next-change-head{font-size:10px}.next-change-track{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:12px}.next-change-track li{padding:8px 3px}.next-change .next-change-foot{gap:4px 16px}}

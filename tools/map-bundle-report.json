@@ -30,6 +30,7 @@
     "dist/local-map-weather.js",
     "dist/local-map.js",
     "dist/hail-tools.js",
+    "dist/next-change.js",
     "dist/weather-scene.js",
     "dist/atmosphere-core.js",
     "dist/places.js",
@@ -69,9 +70,9 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 467404,
-    "dist/app/sky-postcard-CCVWZVDI.js": 5122,
-    "dist/app/chunk-T77WGJBQ.js": 13559,
+    "dist/app/main.js": 472052,
+    "dist/app/sky-postcard-S6FAJZEZ.js": 5122,
+    "dist/app/chunk-G4WKHTNL.js": 13566,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,
     "dist/app/leaflet-PMPOHTNZ.js": 149405,
     "dist/app/citta-mondo-DBT2DYAT.js": 61,
