@@ -1,6 +1,10 @@
-## 22 settembre 2026 — MapTiler pronto per pubblicazione
+## 22 settembre 2026 — Versione 88 pubblicata, MapTiler Flex attivo
 
-Prova cartografia integrata, chiave browser ristretta configurata e stile personalizzato salvato nell’account. 68 suite passate. Ultima versione pubblicata confermata 87; attendere nota di esito. Dettagli: docs/MAPPA-MAPTILER.md.
+Cartografia personalizzata MeteoSocial · Atlante chiaro attiva, con pannello meteo affiancato e ripiego automatico alla base alternativa. Piano Flex e fattura Paid verificati; limite extra 0 USD autorizzato e salvato. Dettagli in docs/MAPPA-MAPTILER.md.
+
+Sites runtime db97019a0eeb776b902b09f8aa84eadef25dcedb e GitHub f3762a960817cfb4830acb85433540f63950c991 condividono tree bef5842797860f0e6370c2e82a682915dde235af. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_7dffeaf1dd348191a4400e346b436969; deployment appgdep_6ab22556bac88191907c173112f78e41 riuscito 2026-09-22T06:52:10.525530Z, ambiente revisione 10. Build remota per assenza degli script di packaging Sites.
+
+Build e 68 suite passate; CI 35696626602 riuscita. Controlli visivi desktop, 390px e 320px; logo mobile corretto. Mappa personalizzata verificata sul sito pubblico, WeatherAPI locale 13,6 °C con dato 08:45. Resta il limite noto Open-Meteo: aggiornamento indisponibile e città precedenti marcate Da aggiornare. Nessuna promessa di dati meteo ogni secondo. Anteprima cartografica locale 4596 senza segreto WeatherAPI. Successivi commit documentano la pubblicazione e non richiedono nuovo deploy.
 
 ## 22 settembre 2026 — Versione 87 pubblicata, WeatherAPI in primo piano
 
