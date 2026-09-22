@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import {calendarTheme,easterDate,applyCalendarTheme} from './dist/calendar-theme.js';
+import {SEASON_DATES} from './dist/season-dates.js';
+const get=(iso,extra={})=>calendarTheme({at:Date.parse(iso),...extra});
+assert.equal(get('2026-09-23T00:04:59Z').season,'estate');
+assert.equal(get('2026-09-23T00:05:00Z').season,'autunno');
+assert.equal(get('2026-09-23T00:05:00Z',{latitude:-33}).season,'primavera');
+assert.equal(get('2026-12-21T20:50:00Z').season,'inverno');
+assert.equal(get('2040-12-31T12:00:00Z').season,'inverno');
+assert.equal(get('2050-06-20T12:00:00Z').season,'neutro');
+assert.equal(easterDate(2026),'2026-04-05');
+assert.equal(easterDate(2027),'2027-03-28');
+assert.equal(easterDate(2038),'2038-04-25');
+assert.equal(get('2026-04-05T12:00:00Z').holiday.id,'pasqua');
+assert.equal(get('2026-04-06T12:00:00Z').holiday.id,'pasquetta');
+assert.equal(get('2026-04-07T12:00:00Z').holiday,null);
+assert.equal(get('2026-12-24T23:00:00Z').holiday.id,'natale');
+assert.equal(get('2026-12-24T22:59:59Z').holiday.id,'vigilia');
+assert.equal(get('2026-12-26T23:00:00Z').holiday,null);
+assert.equal(get('2026-12-31T23:00:00Z').holiday.id,'capodanno');
+assert.equal(get('2026-12-25T12:00:00Z',{country:'US'}).holiday,null);
+assert.equal(get('2026-12-24T23:00:00Z',{timezone:'America/New_York'}).holiday.id,'vigilia');
+assert.equal(get('2026-03-29T01:00:00Z').civil,'2026-03-29');
+assert.equal(get('2026-02-28T23:00:00Z').civil,'2026-03-01');
+assert.equal(get('2028-02-28T23:00:00Z').civil,'2028-02-29');
+assert.equal(get('2026-12-25T12:00:00Z',{timezone:'invalid'}).timezone,'Europe/Rome');
+assert.throws(()=>calendarTheme({at:NaN}),RangeError);
+for(let year=2026;year<=2040;year++)for(const [i,iso] of SEASON_DATES[year].entries()){
+ assert.equal(get(iso).season,['primavera','estate','autunno','inverno'][i]);
+ assert.notEqual(calendarTheme({at:Date.parse(iso)-1}).season,get(iso).season);
+}
+// Repeated updates remove a finished holiday and repaint labels without reload.
+const label={textContent:''},day={textContent:''};
+globalThis.document={documentElement:{dataset:{}},querySelectorAll:s=>s==='[data-calendar-label]'?[label]:[day]};
+applyCalendarTheme({timezone:'Europe/Rome'},{latitude:42,country_code:'IT'},Date.parse('2026-12-25T12:00:00Z'));
+assert.equal(document.documentElement.dataset.holiday,'natale');
+assert.equal(label.textContent,'Buon Natale');
+applyCalendarTheme({timezone:'Europe/Rome'},{latitude:42,country_code:'IT'},Date.parse('2026-12-27T12:00:00Z'));
+assert.equal(document.documentElement.dataset.holiday,'');
+assert.equal(document.documentElement.dataset.festiveTone,'');
+assert.equal(label.textContent,'Inverno');
+delete globalThis.document;
+console.log('Calendar: season instants 2026–2040, hemispheres, holidays, Easter, timezone, DST, leap year and live cleanup passed.');

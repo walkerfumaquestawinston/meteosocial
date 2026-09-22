@@ -1,5 +1,25 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Versione 77 pubblicata: Cielo vivo
+
+Sites conferma pubblicazione riuscita il 2026-09-22T02:01:43.998650Z: https://scudo-meteo-community.walkerthehate.chatgpt.site
+
+Versione: appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_5fd56b3219008191a9e518d83516afb5. Deployment: appgdep_6ab1e14060b48191a6eda8f56161a131. Runtime Sites: 20c53b8357e4485eb8edb24c30fd080e816c029c. Albero 70895d94fb16d177de6a67a8d433d0a1e67073c1 identico al commit GitHub 1c07535b88b4d29e014b7c85919eab74841cf2de.
+
+GitHub: https://github.com/walkerfumaquestawinston/meteosocial/pull/20, draft sul ramo codex/calendar-design-20260922, sopra PR #19. Per continuare usare questo ramo, non main. Anteprima locale allineata: http://127.0.0.1:4595/#home. Calendario automatico, nuovo layout e controlli documentati in docs/DESIGN-CIELO-VIVO.md. Le note successive al runtime sono solo documentazione e vengono salvate su entrambi i repository senza ulteriore pubblicazione.
+
+Esito verificato: 58 suite attive superate; 5 contratti storici ritirati e identificati. Compilazione completa riuscita; controllo finale calendario/palette/avvio superato dopo correzione della transizione. Nessuna modifica a pubblico, segreti o dati utente Sites. Questa conferma supera le note precedenti di pubblicazione in corso.
+
+
+## 22 settembre 2026 — Cielo vivo e calendario automatico
+
+Nuova revisione pronta: Oggi più compatto, meteo in primo piano, navigazione uniforme e osservatorio mappa apribile. Stagioni astronomiche automatiche con effemeridi USNO 2026–2040, festività italiane secondo la data locale, Pasqua/Pasquetta calcolate. Il calendario aggiorna accenti e dettagli entro 30 secondi, insieme ai temi alba/giorno/tramonto/notte. Corretta anche la transizione sfondo/testo. Dettagli e limiti: docs/DESIGN-CIELO-VIVO.md.
+
+Compilazione completa riuscita. 58 suite attive superate, zero fallimenti; 5 contratti storici esplicitamente ritirati. 240 coppie di colori testo/sfondo superano 4,5:1 (minimo 5,44). Verificati Oggi mobile, ricerca e comandi mappa, anteprime dimostrative Natale e autunno/alba. Non è una certificazione di assenza di ogni bug.
+
+Ramo GitHub previsto: codex/calendar-design-20260922, sopra codex/readability-20260922. Per riprendere usare il ramo più recente, non main. Pubblicazione da confermare nelle note di esito che verranno aggiunte a rilascio riuscito. Anteprima: http://127.0.0.1:4595/#home. Le note precedenti sono storiche.
+
+
 ## 22 settembre 2026 — Versione 76 pubblicata: leggibilità e chiarezza
 
 Pubblicazione Sites confermata riuscita: 2026-09-22T00:47:06.483951+00:00. URL: https://scudo-meteo-community.walkerthehate.chatgpt.site
