@@ -27,3 +27,15 @@ dialog.lente-sheet{padding:0;border:1px solid #d7e4f1;border-radius:var(--r-card
    restano tutte visibili e leggibili, senza scorrimento nascosto. */
 .lente-modebar{flex-wrap:wrap}
 .lente-modebar button{flex:1 1 auto;min-width:0;padding-inline:8px}
+
+/* Keep text/background pairs independent from the underlying map/community theme. */
+html body #lente-dialog{background:#f6f8fb!important;color:#203d51!important}
+html body #lente-dialog :is(p,small,strong,b,span,label,h2,summary){color:#203d51!important;background:transparent!important;text-shadow:none!important}
+html body #lente-dialog :is(.lente-sheet-top,.lente-sheet-heading,.lente-composer,.lente-message.answer){background:#fff!important;color:#203d51!important}
+html body #lente-dialog :is(button,textarea){background:#fff!important;color:#203d51!important;border-color:#a8bdcc!important}
+html body #lente-dialog button[aria-pressed=true]{background:#dceff8!important;color:#163f5a!important}
+html body #lente-dialog .lente-send{background:#165b7b!important;color:#fff!important}
+html body #lente-dialog .lente-send span{color:#fff!important}
+html body #lente-dialog .lente-context-brief{background:#edf4f8!important}
+
+.lente-context-brief{background:#edf4f8;border:1px solid #cedde8;border-radius:14px;padding:16px;margin-bottom:18px;color:#203d51}.lente-context-brief p{margin:6px 0;font-size:.9rem;line-height:1.5;color:#203d51!important}.lente-context-brief small{display:block;line-height:1.5;color:#486075}.lente-temperature small{max-width:240px;white-space:normal;font-size:.72rem;line-height:1.4}.lente-answer-actions{flex-wrap:wrap}

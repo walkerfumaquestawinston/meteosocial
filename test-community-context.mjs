@@ -17,4 +17,11 @@ assert.deepEqual(postPlace({city:'San Benedetto del Tronto',map_lat:4296,map_lon
 assert.deepEqual(postPlace({city:'Equatore',map_lat:0,map_lon:0}),{name:'Equatore',latitude:0,longitude:0});
 assert.equal(postPlace({map_lat:null,map_lon:null}),null);
 assert.equal(postPlace({map_lat:9001,map_lon:0}),null);
-console.log('15 community-context checks passed');
+const paid=weather(61,{source:'WeatherAPI',timezone:'Asia/Tokyo'});paid.current.time='2026-09-22T18:00';paid.current.time_epoch=Date.now()/1000;
+assert.equal(sameSkyTopic(paid),'Pioggia','WeatherAPI epoch overrides local wall time without UTC offset');
+assert.match(communityForecast(paid).source,/WeatherAPI.*Asia\/Tokyo/);
+paid.current.time_epoch-=10800;assert.equal(sameSkyTopic(paid),null,'old provider observations excluded');
+paid.current.time_epoch=Date.now()/1000+3600;assert.equal(sameSkyTopic(paid),null,'future provider observations excluded');
+assert.doesNotMatch(communityForecast(null).source,/Open-Meteo|WeatherAPI/,'missing data has no invented attribution');
+assert.match(communityForecast(weather(0)).source,/Open-Meteo/,'legacy source remains supported');
+console.log('Community context checks passed, including paid source, timezone, stale and future data.');
