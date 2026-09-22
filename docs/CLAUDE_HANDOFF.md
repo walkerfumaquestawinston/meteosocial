@@ -1,5 +1,14 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Ciclo solare e mappa più pronta
+
+Tema automatico attivo per la località scelta: notte, alba (30 minuti prima/dopo), giorno e tramonto (45 minuti prima/dopo). Orari solari e fuso del provider; in assenza di orari validi, flag giorno/notte soltanto se recente, poi fascia oraria approssimata 07–19. Controllo ogni 30 secondi e al ritorno alla scheda. La nuova palette si applica a Oggi, Meteo, intestazione e superfici della mappa; colori dei fenomeni separati.
+
+Componenti cartografici precaricati dopo l'avvio; meteo selezionato caricato in parallelo alle altre fonti e dati della località disponibili subito quando già presenti. Evitata la ricostruzione della mappa alla risposta tardiva del profilo. Aggiornamento visibile ogni minuto, cache meteo 2 minuti e osservazioni generali 1 minuto; pannello locale entro 2 minuti. Richieste duplicate condivise e risposte vecchie dopo svuotamento cache non ripristinate. Radar con tempi propri del provider. Nessuna garanzia di latenza zero o dati in tempo reale oltre la frequenza delle fonti.
+
+Build Windows riuscita. Superati test-solar-live-map, test-mappa (58 controlli), test-atlas-radar, test-map-weather-source, test-map-field e test-hail-desk (18 controlli). Browser: Home notturna leggibile, navigazione Mappa, cartografia e radar visibili. Alba/tramonto e altri fusi verificati nei test deterministici, non su dispositivi fisici. Anteprima live: http://127.0.0.1:4595/#home. Sites ancora non pubblicato.
+
+
 ## 22 settembre 2026 — Compilazione Windows e anteprima live risolte
 
 Il compilatore nativo restituisce EPERM avviando il processo con pipe in questa sessione. `build.mjs` usa ora esbuild-wasm 0.28.2 nello stesso processo soltanto in caso di EPERM (oppure METEOSOCIAL_COMPILER=wasm). Non vengono modificati permessi Windows o protezioni. La verifica sintattica dei moduli usa output ereditato. Dipendenza bloccata nel lockfile.

@@ -1,3 +1,4 @@
+import {createFreshCache} from './map-fresh-cache.js';
 import {createFieldDesk} from './map-field-desk.js';
 import {FIELD_MODES} from './map-field-core.js';
 import {normalizzaEventiNasa,abbinaMeteoCitta,mappaColore} from './mappa-eventi.js';
@@ -27,8 +28,9 @@ export function createMappaEventi(ctx) {
   let L,map,markers,selectionMarker,timer,refreshTimer,alive=false,revision=0,panelRevision=0,searchRevision=0;
   let mode='temperature',showEvents=false,selected=null,world=[],towns=[],readings=new Map(),events=[],hail=[];
   let weatherState='loading',townState='loading',hailState='loading',eventState='idle',updated=null,selectedAt=0,townRequest=0;
+  let paletteChanged;
   let cityLabels,labelsFrame=0,showCityNames=true,overviewOpen=false;
-  const cache=new Map(); let focusedBeforePanel=null,radar=null,radarState={enabled:false,frames:[],status:'idle'},aiHistory=[],aiPlaceKey='';
+  const cache=createFreshCache(); let focusedBeforePanel=null,radar=null,radarState={enabled:false,frames:[],status:'idle'},aiHistory=[],aiPlaceKey='';
   try {const saved=localStorage.getItem('meteosocial:weather-map:mode');if(MODES.some(x=>x.id===saved))mode=saved;} catch {}
 
   function page(){return `<section class="mappa" data-mode="${mode}" style="--accent:${MODES.find(m=>m.id===mode).color}" aria-label="Atlante meteo interattivo">
@@ -87,11 +89,9 @@ export function createMappaEventi(ctx) {
     document.querySelectorAll('[data-livello]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.livello===mode)));closePanel();draw();renderSuggestions();
     if(mode==='pioggia')radar?.setEnabled(true);
   }
-  async function cached(key,load,ttl=300000){
-    const previous=cache.get(key);if(previous?.promise)return previous.promise;
-    if(previous&&Date.now()-previous.at<ttl)return previous.value;
-    const record={};record.promise=load().then(value=>{cache.set(key,{value,at:Date.now()});if(cache.size>60){const old=[...cache].find(([k,v])=>k!==key&&!v.promise);if(old)cache.delete(old[0]);}return value;}).catch(e=>{cache.delete(key);throw e;});cache.set(key,record);return record.promise;
-  }
+  const cached=(key,load,ttl=120000)=>cache.read(key,load,ttl);
+  let preparation;
+  const preload=()=>preparation||(preparation=Promise.all([import('./assets/leaflet.js'),import('./map-land.js')]).catch(error=>{preparation=null;throw error}));
   async function worldData(){
     return readWeatherSnapshot(()=>ctx.api('atlas/world'),async()=>{
       const {CITTA_MONDO}=await import('./citta-mondo.js');const groups=[];
@@ -121,13 +121,17 @@ export function createMappaEventi(ctx) {
     if(token===revision)draw();
   }
   async function loadHail(token){
-    try{const d=await cached('hail',()=>ctx.api('atlas/hail-map'));if(!alive||token!==revision)return;hail=(d.posts||[]).filter(p=>Number.isFinite(p.map_lat)&&Number.isFinite(p.map_lon)).map(p=>({...p,latitude:p.map_lat/100,longitude:p.map_lon/100})).filter(validPlace);hailState='ok';}catch{if(token===revision)hailState='error';}if(token===revision)draw();
+    try{const d=await cached('hail',()=>ctx.api('atlas/hail-map'),60000);if(!alive||token!==revision)return;hail=(d.posts||[]).filter(p=>Number.isFinite(p.map_lat)&&Number.isFinite(p.map_lon)).map(p=>({...p,latitude:p.map_lat/100,longitude:p.map_lon/100})).filter(validPlace);hailState='ok';}catch{if(token===revision)hailState='error';}if(token===revision)draw();
   }
   async function loadEvents(token){
     if(!showEvents)return;
     try{const d=await cached('events',async()=>{try{return await ctx.api('atlas/events');}catch{const r=await fetch('https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=300',{signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();return {events:normalizzaEventiNasa(await r.json()),direct:true};}});if(!alive||token!==revision)return;events=d.events||[];eventState=d.stale?'stale':'ok';}catch{if(token===revision)eventState='error';}if(token===revision)draw();
   }
-  async function load(){if(!alive||!map)return;const token=revision;await Promise.allSettled([loadWeather(token),loadTowns(token),loadHail(token),loadEvents(token)]);}
+  async function loadSelected(token){
+    if(!selected)return;const place={...selected},at=selectedAt;
+    try{const d=await pointWeather(place);if(alive&&token===revision&&at===selectedAt){selected={...place,current:d.current};draw();}}catch{}
+  }
+  async function load(){if(!alive||!map)return;const token=revision;await Promise.allSettled([loadSelected(token),loadWeather(token),loadTowns(token),loadHail(token),loadEvents(token)]);}
 
   function scheduleLabels(){cancelAnimationFrame(labelsFrame);labelsFrame=requestAnimationFrame(()=>{if(alive)drawCityLabels();});}
   function labelText(p){
@@ -186,7 +190,7 @@ export function createMappaEventi(ctx) {
     const counts={temperature:s.points.length,pioggia:s.rain.length,grandine:mode==='grandine'?fieldDesk?.count():visibleReports().length,vento:s.points.filter(p=>windReading(p.current)).length,fulmini:s.storms.length};
     for(const m of MODES){const c=$('[data-conteggio="'+m.id+'"]');if(c)c.textContent=(counts[m.id]==null||(m.id==='grandine'?hailState==='error':!s.points.length&&['error','loading'].includes(weatherState)))?'—':counts[m.id];}
     const date=updated?new Date(updated).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'orario non disponibile';
-    const state=weatherState==='loading'?'Carico i dati meteo…':weatherState==='error'?'Meteo non disponibile · città esplorabili':weatherState==='stale'?'Dati precedenti del '+date:weatherState==='partial'?'Copertura parziale · Open-Meteo':'Open-Meteo · aggiornato '+clock(updated)+(weatherState==='direct'?' · fonte diretta':'');
+    const state=weatherState==='loading'?'Carico i dati meteo…':weatherState==='error'?'Meteo non disponibile · città esplorabili':weatherState==='stale'?'Dati precedenti del '+date:weatherState==='partial'?'Copertura parziale · Open-Meteo · '+date:'Open-Meteo · aggiornato '+clock(updated)+(weatherState==='direct'?' · fonte diretta':'');
     $('.mappa')?.classList.toggle('has-stale-weather',weatherState==='stale'||weatherState==='error');
     notify(mode==='grandine'?(hailState==='error'?'Segnalazioni non disponibili':'Segnalazioni community · ultime 2 ore'):state+(townState==='error'?' · comuni senza meteo':''));
     renderPulse(s);renderLegend();renderSuggestions();renderSelected();fieldDesk?.sync(selected,mode);scheduleLabels();
@@ -311,10 +315,10 @@ export function createMappaEventi(ctx) {
     navigator.geolocation.getCurrentPosition(p=>{if(!alive||life!==revision)return;selectPlace({name:'La mia zona',latitude:p.coords.latitude,longitude:p.coords.longitude,source:'gps'});},()=>{if(alive&&life===revision)notify('Posizione non disponibile. Puoi cercare una città.');},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
   }
   function keydown(e){if(e.key==='Escape')closePanel();}
-  function visibility(){if(!document.hidden)load();}
+  function visibility(){if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)radar?.refresh();}}
   async function bind(){
     const host=$('#mappa-tela');if(!host||map)return;alive=true;const life=++revision;
-    let geographicData;try{[L,geographicData]=await Promise.all([import('./assets/leaflet.js'),import('./map-land.js')]);}catch{notify('Mappa non disponibile. Ricarica la pagina.');return;}
+    let geographicData;try{[L,geographicData]=await preload();}catch{notify('Mappa non disponibile. Ricarica la pagina.');return;}
     if(!alive||life!==revision||!host.isConnected)return;
     const {atlasLand,atlasBorders,atlasRegions}=geographicData;
     map=L.map(host,{preferCanvas:true,zoomControl:false,attributionControl:false,worldCopyJump:true,minZoom:2,maxZoom:16}).setView([43,13],5);
@@ -327,6 +331,11 @@ export function createMappaEventi(ctx) {
       geography.addLayer(L.geoJSON(atlasLand,{pane:'atlas-geography',coordsToLatLng:c=>L.latLng(c[1],c[0]+offset),interactive:false,style:{color:'#3e626e',weight:1,fillColor:'#101f29',fillOpacity:1,smoothFactor:1}}));
       geography.addLayer(L.geoJSON(atlasBorders,{pane:'atlas-geography',coordsToLatLng:c=>L.latLng(c[1],c[0]+offset),interactive:false,style:{color:'#668088',weight:.8,opacity:.35,dashArray:'3 4',smoothFactor:1}}));
     }
+    paletteChanged=()=>{
+      const dark=document.documentElement.dataset.phase==='notte';
+      geography.eachLayer(layer=>layer.setStyle?.({color:dark?'#668088':'#788a82',fillColor:dark?'#101f29':'#d7ddce'}));
+    };
+    paletteChanged();document.addEventListener('meteosocial:phase',paletteChanged);
     const regionLabels=L.layerGroup().addTo(map);
     const renderRegions=()=>{
       regionLabels.clearLayers();const zoom=map.getZoom();if(zoom>=7)return;
@@ -345,7 +354,7 @@ export function createMappaEventi(ctx) {
     map.on('resize',()=>{renderSelected();scheduleLabels();});
     $('#mappa-city-names').onclick=()=>{showCityNames=!showCityNames;$('#mappa-city-names').setAttribute('aria-pressed',String(showCityNames));scheduleLabels();};
     radar=createAtlasRadar({L,map,onChange:renderRadar});
-    const place=ctx.get().place;if(validPlace(place)){selected={...place};map.setView([place.latitude,place.longitude],5,{animate:false});$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
+    const place=ctx.get().place;if(validPlace(place)){selected={...place,current:ctx.get().weather?.current};map.setView([place.latitude,place.longitude],5,{animate:false});$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
     $('#mappa-zona').onclick=()=>{const p=ctx.get().place;if(validPlace(p))selectPlace(p);else $('#mappa-cerca-testo').focus();};
     $('#mappa-radar-toggle').onclick=()=>radar.setEnabled(!radarState.enabled);
     $('#mappa-radar-play').onclick=()=>radar.play();$('#mappa-radar-range').oninput=e=>radar.seek(Number(e.target.value));$('#mappa-radar-retry').onclick=()=>radar.refresh(true);
@@ -358,9 +367,9 @@ export function createMappaEventi(ctx) {
     $('#mappa-eventi').onclick=()=>{showEvents=!showEvents;$('#mappa-eventi').setAttribute('aria-pressed',String(showEvents));if(showEvents){loadEvents(revision).then(()=>{if(eventState==='error')notify('Catalogo NASA non disponibile.');});}draw();};
     $('#mappa-aggiorna').onclick=async e=>{const button=e.currentTarget;button.disabled=true;cache.clear();fieldDesk?.refresh();notify('Aggiorno le fonti…');try{await load();}finally{if(button.isConnected)button.disabled=false;}};
     document.addEventListener('keydown',keydown);document.addEventListener('visibilitychange',visibility);
-    refreshTimer=setInterval(()=>{if(!document.hidden){load();if(radarState.enabled)radar.refresh();}},300000);draw();if(mode==='pioggia')radar.setEnabled(true);await load();
-    if(alive&&life===revision&&selected&&!selected.current){const place={...selected},at=selectedAt;try{const d=await pointWeather(place);if(alive&&life===revision&&at===selectedAt){selected={...place,current:d.current};draw();}}catch{}}
+    refreshTimer=setInterval(()=>{if(!document.hidden){load();fieldDesk?.sync(selected,mode);if(radarState.enabled)radar.refresh();}},60000);draw();if(mode==='pioggia')radar.setEnabled(true);void load();
+
   }
-  function dispose(){alive=false;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);fieldDesk?.dispose();fieldDesk=null;radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
-  return {page,bind,dispose,active:()=>ctx.get().route==='mappa-eventi'};
+  function dispose(){if(paletteChanged)document.removeEventListener('meteosocial:phase',paletteChanged);paletteChanged=null;alive=false;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);fieldDesk?.dispose();fieldDesk=null;radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
+  return {page,bind,dispose,preload,active:()=>ctx.get().route==='mappa-eventi'};
 }
