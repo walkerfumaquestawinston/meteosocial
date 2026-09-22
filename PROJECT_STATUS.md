@@ -1,3 +1,14 @@
+## 22 settembre 2026 — Versione 92 pubblicata: mappa e orari più chiari
+
+Barra del livello compatta con fonte e orario reale; etichette aggiuntive solo per località selezionata e valori recenti pertinenti; pannello Adesso, previsioni, territorio e fonte apribile. Stati vuoti compatti, un solo anello del raggio grandine. Dettagli: docs/MAPPA-LETTURA.md.
+
+Open-Meteo ha risposto HTTP 429 (limite giornaliero) nella richiesta diagnostica diretta. Aggiunto backoff alle acquisizioni previsioni per singolo Worker, almeno 15 minuti: non ripristina la quota e non copre ogni percorso meteo. WeatherAPI e radar restano separati. Nessuna promessa al secondo.
+
+Pubblicazione riuscita 2026-09-22T08:32:35.190924+00:00: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Sites runtime 15e4dbc4fd6b3d0cc68a65599addbcea59c6b61c e GitHub 0cacb352731c556addac62668a40fa6c2a6d4b09 condividono tree c7593d427d103279cb02900705c74993bd9c24df. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_9099012d67108191956a10a9e1c51739; deployment appgdep_6ab23cde98a4819180f872a3192cd7cc; ambiente 10, pubblico preservato. Workflow Sites: apertura e push riusciti, packaging Windows non avviabile; build remota usata.
+
+Build e 69 suite superate; test aggiuntivo 429 nella suite cronologia riuscito. CI 35705061317 riuscita. Anteprima 4597 verificata desktop e 390 px, radar e ricerca Tokyo, cartografia caricata. Nessuna nuova verifica browser produzione per completare il rilascio. Ramo codex/weather-scenery-20260922 e PR draft #21. Commit successivi di sole note, nessun nuovo deploy necessario.
+
+
 ## 22 settembre 2026 — Versione 91 pubblicata: interfaccia più leggibile
 
 Restyling senza nuovi abbonamenti: Oggi a due colonne sul desktop, navigazione superiore sulle pagine principali e dock mobile, tipografia e controlli uniformi, dettagli della variazione meteo apribili, Community a due colonne di pulsanti sul telefono. Fonti e orari restano visibili. Home senza hash evita il pre-caricamento MapLibre (937395 byte non compressi); nessun benchmark di velocità dichiarato. Dettagli in docs/DESIGN-FINITURE.md.
