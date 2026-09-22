@@ -1,72 +1,36 @@
-// Esegue la suite con i flag giusti e distingue tre esiti.
-//
-// Perché serve: alcuni test usano vm.SourceTextModule, che Node espone solo con
-// --experimental-vm-modules. Lanciati con `node test-x.mjs` fallivano con
-// "vm.SourceTextModule is not a constructor", un errore dell'avvio che sembrava
-// un difetto del prodotto. Altri interrogano moduli ritirati dal bundle
-// (direzione corrente: mappa locale MapLibre): falliscono per scelta di
-// progetto, non per una regressione.
-//
-// Un test che riferisce un modulo ritirato viene messo fra i non pertinenti
-// solo se fallisce. Se passa resta fra i superati: così questa classificazione
-// non può nascondere una regressione su codice ancora consegnato.
-//
-// Uso:
-//   node tools/run-tests.mjs                 tutta la suite
-//   node tools/run-tests.mjs test-hail.mjs   solo i test indicati
-//
-// Uscita 0 se nessun test pertinente fallisce.
-
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { isRetired } from './retired-modules.mjs';
-
-const root = fileURLToPath(new URL('../', import.meta.url));
-const selected = process.argv.slice(2).filter(a => !a.startsWith('-'));
-const verbose = process.argv.includes('--verbose');
-
-const tests = (selected.length ? selected.map(f => path.basename(f)) : fs.readdirSync(root).filter(f => /^test-.+\.mjs$/.test(f))).sort();
-if (!tests.length) { console.error('Nessun test trovato.'); process.exit(1); }
-
-// Moduli ritirati citati dal test, come 'hail.js' o 'assets/three.module.js'.
-function retiredReferences(file) {
-  const source = fs.readFileSync(path.join(root, file), 'utf8');
-  const found = new Set();
-  for (const [, ref] of source.matchAll(/['"`][^'"`]*?((?:assets\/)?[\w.-]+\.(?:js|css|html))['"`]/g)) {
-    if (isRetired(ref)) found.add(ref);
-  }
-  return [...found].sort();
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const selected=process.argv.slice(2).filter(x=>!x.startsWith('-'));
+const verbose=process.argv.includes('--verbose');
+// Reviewed obsolete contracts. Never infer retirement merely from a failing test's imports.
+// Selecting a retired test explicitly, or --include-retired, runs it and reports real failures.
+const retired={
+ 'test-climate.mjs':'richiede il vecchio modulo climate-view nel Worker',
+ 'test-globe-gestures.mjs':'controller del globo sostituito dalla mappa locale',
+ 'test-google3d.mjs':'richiede asset del renderer Google 3D ritirato',
+ 'test-hail-map.mjs':'metadati del vecchio percorso dedicato hail-map',
+ 'test-hail.mjs':'richiede il modulo e il CSS hail ritirati dal Worker'
+};
+const files=(selected.length?selected.map(x=>path.basename(x)):fs.readdirSync(root).filter(x=>/^test-.+\.mjs$/.test(x))).sort();
+if(!files.length)throw Error('Nessun test trovato');
+const passed=[],failed=[],skipped=[];
+for(const file of files){
+ if(retired[file]&&!selected.length&&!process.argv.includes('--include-retired')){skipped.push(file);console.log('  '+file+' · ritirato: '+retired[file]);continue;}
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'meteosocial-test-')),log=path.join(dir,'output.txt');
+ let fd,run,output='';
+ try{
+  fd=fs.openSync(log,'w');
+  run=spawnSync(process.execPath,['--experimental-vm-modules',file],{cwd:root,stdio:['ignore',fd,fd],timeout:180000});
+  fs.closeSync(fd);fd=undefined;output=fs.readFileSync(log,'utf8').trimEnd();
+ }finally{if(fd!==undefined)fs.closeSync(fd);fs.rmSync(log,{force:true});fs.rmdirSync(dir);}
+ if(run.error||run.status!==0){failed.push({file,output:run.error?run.error.message+'\n'+output:output});console.log('  '+file+' · FALLITO');}
+ else{passed.push(file);console.log('  '+file+' · superato');}
+ if(verbose&&output)console.log(output);
 }
-
-const passed = [], failed = [], retiredFailures = [];
-for (const file of tests) {
-  process.stdout.write(`  ${file.padEnd(30)}`);
-  const run = spawnSync(process.execPath, ['--experimental-vm-modules', file], { cwd: root, encoding: 'utf8', timeout: 180000 });
-  if (run.status === 0) { passed.push(file); console.log('superato'); continue; }
-  const refs = retiredReferences(file);
-  const output = ((run.stdout || '') + (run.stderr || '')).trimEnd();
-  if (refs.length) { retiredFailures.push({ file, refs }); console.log('non pertinente · ' + refs.join(', ')); }
-  else { failed.push({ file, output }); console.log('FALLITO'); }
-  if (verbose && output) console.log(output.split('\n').map(l => '      ' + l).join('\n'));
-}
-
-console.log(`\nSuperati: ${passed.length}`);
-if (retiredFailures.length) {
-  console.log(`\nNon pertinenti alla direzione corrente: ${retiredFailures.length}`);
-  console.log('Interrogano moduli conservati in Git ma esclusi dal bundle consegnato.');
-  for (const { file, refs } of retiredFailures) console.log(`  ${file} → ${refs.join(', ')}`);
-  console.log('La classificazione è euristica: un test può citare un modulo ritirato');
-  console.log('e fallire per un altro motivo. Vanno riletti e aggiornati o ritirati,');
-  console.log('non lasciati rossi per sempre. Decisione del coordinatore.');
-}
-if (failed.length) {
-  console.log(`\nFALLITI: ${failed.length}`);
-  for (const { file, output } of failed) {
-    console.log(`\n  ${file}`);
-    console.log((output || '(nessun output)').split('\n').slice(-12).map(l => '    ' + l).join('\n'));
-  }
-  process.exit(1);
-}
-console.log('\nNessun test pertinente fallito.');
+console.log(`\nSuperati: ${passed.length} · Falliti: ${failed.length} · Contratti ritirati: ${skipped.length}`);
+for(const failure of failed)console.error('\n'+failure.file+'\n'+failure.output.split('\n').slice(-16).join('\n'));
+if(failed.length)process.exitCode=1;

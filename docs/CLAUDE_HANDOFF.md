@@ -1,5 +1,14 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Cielo vivo e calendario automatico
+
+Nuova revisione pronta: Oggi più compatto, meteo in primo piano, navigazione uniforme e osservatorio mappa apribile. Stagioni astronomiche automatiche con effemeridi USNO 2026–2040, festività italiane secondo la data locale, Pasqua/Pasquetta calcolate. Il calendario aggiorna accenti e dettagli entro 30 secondi, insieme ai temi alba/giorno/tramonto/notte. Corretta anche la transizione sfondo/testo. Dettagli e limiti: docs/DESIGN-CIELO-VIVO.md.
+
+Compilazione completa riuscita. 58 suite attive superate, zero fallimenti; 5 contratti storici esplicitamente ritirati. 240 coppie di colori testo/sfondo superano 4,5:1 (minimo 5,44). Verificati Oggi mobile, ricerca e comandi mappa, anteprime dimostrative Natale e autunno/alba. Non è una certificazione di assenza di ogni bug.
+
+Ramo GitHub previsto: codex/calendar-design-20260922, sopra codex/readability-20260922. Per riprendere usare il ramo più recente, non main. Pubblicazione da confermare nelle note di esito che verranno aggiunte a rilascio riuscito. Anteprima: http://127.0.0.1:4595/#home. Le note precedenti sono storiche.
+
+
 ## 22 settembre 2026 — Versione 76 pubblicata: leggibilità e chiarezza
 
 Pubblicazione Sites confermata riuscita: 2026-09-22T00:47:06.483951+00:00. URL: https://scudo-meteo-community.walkerthehate.chatgpt.site
