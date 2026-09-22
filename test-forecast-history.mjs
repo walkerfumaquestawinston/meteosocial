@@ -30,5 +30,16 @@ try{
  const duplicate={timezone:'Europe/Rome',hourly:{time:['2026-10-25T02:00','2026-10-25T02:00'],temperature_2m:[1,2]}};
  assert.equal(sandbox.forecastChanges(duplicate,{...duplicate,hourly:{...duplicate.hourly,temperature_2m:[3,4]}},Date.parse('2026-10-24T22:00Z')).length,0,'ambiguous DST valid hours excluded');
  assert.match(forecastStamp(first),/acquisita/);assert.doesNotMatch(forecastReceipt(first),/emessa/);assert.match(forecastReceipt({...second,_provenance:{...second._provenance,lastChange:{...second._provenance.lastChange,changes:[{time:'<script>',fields:['temperature_2m'],before:{temperature_2m:1},after:{temperature_2m:2}}]}}}),/&lt;script&gt;/);
- console.log('PASS: immutable copies, timestamp/cache, future-hour comparisons, stale fallback, validation, concurrency, unavailable storage, pagination, DST, honest labels and escaping.');
+ let limitedCalls=0;
+ globalThis.fetch=async()=>{limitedCalls++;return new Response('{}',{status:429,headers:{'Retry-After':'120'}})};
+ assert.equal((await call('?lat=45&lon=16')).status,503);
+ assert.match((await call('?lat=46&lon=17')).body.error,/limite di richieste/);
+ assert.equal(limitedCalls,1,'429 suspends cross-location retries in this worker');
+ const limitedSaved=(await call('?lat=42.95&lon=13.88')).body;
+ assert.ok(limitedSaved._loadedAt,'previous copy remains available during backoff');
+ now+=16*60000;
+ globalThis.fetch=async()=>{limitedCalls++;return new Response(JSON.stringify(source))};
+ assert.equal((await call('?lat=45&lon=16')).status,200);
+ assert.equal(limitedCalls,2,'source retried after cooldown');
+ console.log('PASS: immutable copies, timestamp/cache, future-hour comparisons, stale fallback, validation, concurrency, unavailable storage, pagination, DST, honest labels, escaping and 429 backoff.');
 }finally{globalThis.fetch=originalFetch;Date.now=originalNow;local.close();rmSync(dir,{recursive:true,force:true})}

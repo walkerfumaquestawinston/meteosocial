@@ -111,3 +111,53 @@ html:root body.cielo-design.segnale-design #main .mappa :is(.mappa-radar-note,.m
 @media(max-width:420px){html:root body.cielo-design.segnale-design #main .home-overview .atmo-weather{grid-template-columns:minmax(0,1fr)!important}html:root body.cielo-design.segnale-design #main .home-overview .weather-art{display:none!important}}
 @media(prefers-reduced-motion:reduce){html:root body.cielo-design.segnale-design *,html:root body.cielo-design.segnale-design *::before,html:root body.cielo-design.segnale-design *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 html:is(.reduced-motion,.eco-mode) body.cielo-design.segnale-design *{transition:none!important}
+
+/* Map reading pass: one compact source strip, place-first details. */
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit {
+ & .map-brief[data-state=missing] .map-brief-metrics,& .map-brief[data-state=loading] .map-brief-metrics{display:none}
+ & .mappa-alto{grid-template-rows:48px 46px 32px;gap:6px}
+ & .mappa-live-bar{min-height:32px;padding:2px 10px;grid-template-columns:auto 1fr auto;gap:8px;border:0;border-radius:8px;background:var(--panel-bg);box-shadow:none}
+ & #mappa-now{font-size:10px;letter-spacing:.07em}
+ & #mappa-data-time{font-size:12px;text-align:left}
+ & #mappa-fonti{grid-column:3;grid-row:1;min-height:28px;font-size:11px;padding:2px 4px}
+ & .mappa-live-bar .mappa-freshness{display:none}
+ & .mappa-strumenti{top:166px}
+ & .mappa-pillola{border-radius:0;padding:6px 4px}
+ & .mappa-place-label{border-radius:18px!important;box-shadow:0 2px 8px #10253118}
+ & .mappa-place-label.is-selected{border-radius:10px!important;border-color:#4aafad!important}
+ & .map-brief{padding:20px;gap:8px;border-top:4px solid #4aafad}
+ & .map-brief-kicker{display:block;font-size:10px;letter-spacing:.12em}
+ & .map-brief h2{font-size:26px;line-height:1.12}
+ & .map-brief-temperature{font-size:48px}
+ & .field-scroll{padding:16px 20px}
+ & .desk-section-title{display:flex;align-items:center;gap:8px;margin:0 0 18px;font-size:17px;color:var(--panel-ink)}
+ & .desk-section-title svg{width:20px;height:20px}
+ & .desk-community{padding:18px 0;border-top:1px solid var(--panel-line);margin-top:20px}
+ & .desk-community h3{font-size:15px;margin:0 0 8px}
+ & .desk-community p{font-size:14px;line-height:1.5;margin:0 0 6px}
+ & .desk-community small{color:var(--panel-muted);font-size:12px}
+ & .desk-source-details{border-top:1px solid var(--panel-line);padding:12px 0;margin-top:12px}
+ & .desk-source-details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:13px;font-weight:700;color:var(--panel-ink)}
+ & .desk-source-details summary::after{content:'+';margin-left:auto;font-size:20px}
+ & .desk-source-details[open] summary::after{content:'−'}
+ & .field-actions{position:sticky;bottom:0;background:var(--panel-bg)}
+ & .mappa-radar-timeline{max-width:540px;padding:10px 12px;border-radius:12px}
+ & .mappa-radar-heading{font-size:11px}
+ & .field-footnote{font-size:11px;line-height:1.5}
+}
+@media(max-width:920px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+  & .mappa-alto{grid-template-rows:44px 44px 30px;gap:4px}
+  & .mappa-live-bar{min-height:30px;gap:5px;padding:2px 6px}
+  & #mappa-now{font-size:9px;letter-spacing:0}
+  & #mappa-data-time{font-size:10px}
+  & #mappa-fonti{font-size:10px;min-height:28px}
+  & .mappa-strumenti{top:140px}
+  & .map-brief{padding:10px 14px;gap:5px}
+  & .map-brief h2{font-size:20px}
+  & .map-brief-temperature{font-size:36px}
+  & .field-scroll{padding:12px 14px}
+  & .desk-section-title{font-size:15px;margin-bottom:12px}
+  & .mappa-radar-timeline{padding:6px 8px}
+ }
+}

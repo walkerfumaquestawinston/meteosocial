@@ -17,7 +17,7 @@ export function localBrief(weather,state='ok',now=new Date()){
 }
 export function briefMarkup(place,weather,state){
  const b=localBrief(weather,state);
- return `<div class="map-brief" data-state="${b.status}"><div class="map-brief-location"><span class="map-brief-kicker">IL METEO QUI</span><h2>${esc(place.name)}</h2><span class="map-brief-condition">${esc(b.condition)}</span></div><strong class="map-brief-temperature">${esc(b.temperature)}</strong><div class="map-brief-metrics"><span><small>${esc(b.interval)}</small><b>${esc(b.rain)}</b></span><span><small>Vento medio</small><b>${esc(b.wind)}</b></span><span><small>Open-Meteo · ${esc(weather?.timezone||'fuso non disponibile')}</small><b class="map-brief-time">${esc(b.time)}</b></span></div></div>`;
+ return `<div class="map-brief" data-state="${b.status}"><div class="map-brief-location"><span class="map-brief-kicker">ADESSO · STIMA</span><h2>${esc(place.name)}</h2><span class="map-brief-condition">${esc(b.condition)}</span></div><strong class="map-brief-temperature">${esc(b.temperature)}</strong><div class="map-brief-metrics"><span><small>${esc(b.interval)}</small><b>${esc(b.rain)}</b></span><span><small>Vento medio</small><b>${esc(b.wind)}</b></span><span><small>Open-Meteo · ${esc(weather?.timezone||'fuso non disponibile')}</small><b class="map-brief-time">${esc(b.time)}</b></span></div></div>`;
 }
 export function changeMarkup(weather,state){
  if(state==='loading'||state==='error')return '';

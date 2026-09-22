@@ -162,10 +162,12 @@ export function createMappaEventi(ctx) {
     const status=checkStatus({checkedAt,checking:!!loadTask,failed,outdated:!!selected?.current&&sourceStatus({current:selected.current}).stale,offline:navigator.onLine===false});
     slot.textContent=status.label;slot.dataset.tone=status.tone;
     const now=new Date(),at=modelTime(selected?.current);
-    $('#mappa-now').textContent='Ora '+now.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    $('#mappa-now').title='Orologio del dispositivo, non orario del dato';
-    $('#mappa-data-time').textContent=at===null?'Meteo: orario non disponibile':'Stima '+clock(at)+' · '+elapsedLabel(at);
-    $('#mappa-data-time').dataset.old=String(at===null||weatherAge(selected?.current).stale);
+    const radarAt=radarState.enabled&&Number.isFinite(radarState.time)?radarState.time*1000:null;
+    $('#mappa-now').textContent=radarState.enabled?(radarKind==='hail'?'RADAR GRANDINE':'RADAR PIOGGIA'):'MODELLO OPEN-METEO';
+    $('#mappa-now').title='Fonte del livello sulla mappa; il meteo locale ha il proprio orario nel pannello';
+    const shownAt=radarState.enabled?radarAt:at;
+    $('#mappa-data-time').textContent=shownAt===null?'Dato del livello non disponibile':clock(shownAt)+' · '+elapsedLabel(shownAt);
+    $('#mappa-data-time').dataset.old=String(shownAt===null||Date.now()-shownAt>30*60000);
     if(sourcesOpen){
       const info=sourceStatus({checkedAt,current:selected?.current,radar:radarState});
       const model=$('#mappa-source-model'),check=$('#mappa-source-check'),frame=$('#mappa-source-radar');
@@ -183,14 +185,14 @@ export function createMappaEventi(ctx) {
     document.querySelectorAll('[data-map-action]').forEach(button=>button.onclick=()=>{const target=document.getElementById(button.dataset.mapAction);closePanel();if(button.dataset.mapAction==='local-details'&&selected)locationPanel(selected);else target?.click();});
   }
   function sourcePanel(){
-    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · Open-Meteo</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · ${radarKind==='hail'?'Radar-DPC POH':'RainViewer'}</dt><dd id="mappa-source-radar"></dd></dl><p>Il contatore cambia ogni secondo. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Le condizioni attuali sono stime di modello a passi di 15 minuti. Le previsioni orarie hanno una cache fino a 15 minuti. RainViewer espone quadri ogni 10 minuti; Radar-DPC POH ha un passo di 5 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
+    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · Open-Meteo</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · ${radarKind==='hail'?'Radar-DPC POH':'RainViewer'}</dt><dd id="mappa-source-radar"></dd></dl><p>L’età del dato cambia ogni secondo; non è una nuova misura. Il pannello Adesso mostra WeatherAPI, quando disponibile, con il suo orario. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Le condizioni attuali sono stime di modello a passi di 15 minuti. Le previsioni orarie hanno una cache fino a 15 minuti. RainViewer espone quadri ogni 10 minuti; Radar-DPC POH ha un passo di 5 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
     sourcesOpen=true;$('#mappa-fonti')?.setAttribute('aria-expanded','true');renderFreshness();
     $('#mappa-source-refresh').onclick=()=>$('#mappa-aggiorna')?.click();
   }
 
   function scheduleLabels(){cancelAnimationFrame(labelsFrame);labelsFrame=requestAnimationFrame(()=>{if(alive){$('.mappa')?.style.setProperty('--local-dock-height',($('#mappa-field')?.offsetHeight||200)+'px');drawCityLabels();}});}
   function labelText(p){
-    const k=p.current;if(!k)return '';if(weatherAge(k).stale)return 'Da aggiornare';
+    const k=p.current;if(!k)return '';if(weatherAge(k).stale)return '';
     if(mode==='temperature')return Number.isFinite(k.temperature_2m)?number(k.temperature_2m)+'°':'';
     if(mode==='vento')return windReading(k)?number(k.wind_speed_10m)+' km/h':'';
     if(mode==='neve'){const snow=snowReading(k);return snow?.amount>0?String(snow.amount)+' cm':snow?.indicated?'Neve · modello':p.selected&&snow?.amount===0?'0 cm':'';}
@@ -206,11 +208,11 @@ export function createMappaEventi(ctx) {
       const r=el.getBoundingClientRect();reserved.push({left:r.left-root.left,right:r.right-root.left,top:r.top-root.top,bottom:r.bottom-root.top});
     }
     const catalog=cityCatalog(allPoints(),[...CITIES.map(c=>({...c,localized:true})),...CITTA_MONDO],towns,selected);
-    const candidates=catalog.filter(p=>insideViewport(p,bounds())).map((p,i)=>{
+    const candidates=catalog.filter(p=>insideViewport(p,bounds())&&(p.selected||labelText(p))).map((p,i)=>{
       const lng=p.longitude+360*Math.round((map.getCenter().lng-p.longitude)/360),xy=map.latLngToContainerPoint([p.latitude,lng]),text=labelText(p);
       return {...p,lng,x:xy.x,y:xy.y,text,width:Math.min(210,Math.max(106,p.name.length*7.2+24,text.length*7+28)),height:p.name.length>25&&text?64:48,priority:p.selected?100000:(text?2000:0)+Math.max(0,500-i)};
     });
-    const limit=map.getZoom()<6?(root.width<600?12:24):(root.width<600?20:40);
+    const limit=map.getZoom()<6?(root.width<600?4:8):(root.width<600?8:16);
     const placed=arrangeCityLabels(candidates,{width:root.width,height:root.height},reserved,limit);
     for(const p of placed){
       const age=weatherAge(p.current),stale=p.current&&(age.stale);
