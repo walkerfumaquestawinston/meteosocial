@@ -106,6 +106,8 @@ export function createMappaEventi(ctx) {
     if(mode==='grandine')chooseRadar('hail');else if(mode==='pioggia')chooseRadar('rain');else if(radarKind==='hail')chooseRadar('rain',false);
   }
   const cached=(key,load,ttl=MAP_REFRESH_MS)=>cache.read(key,load,ttl);
+  const mapSource=()=>paidSource?'WeatherAPI':'Open-Meteo';
+  let paidSource=false,sourceReady=null,visibleRequest=0;
   let preparation;
   const preload=()=>preparation||(preparation=Promise.all([import('./assets/leaflet.js'),import('./map-land.js')]).catch(error=>{preparation=null;throw error}));
   async function worldData(){
@@ -121,13 +123,26 @@ export function createMappaEventi(ctx) {
       return {cities,updated:Date.now(),direct:true,partial:batches.some(r=>r.status==='rejected')};
     });
   }
+  async function loadVisibleWeather(token){
+    const request=++visibleRequest;
+    const candidates=cityCatalog([], [...CITIES,...CITTA_MONDO],towns,selected).filter(p=>insideViewport(p,bounds())).slice(0,8);
+    const rows=[];
+    // Bounded sequential calls: stop spending requests once the view changes.
+    for(const p of candidates){
+      if(!alive||token!==revision||request!==visibleRequest||document.hidden)return;
+      try{const d=await pointWeather(p);rows.push({...p,current:d.current});}catch{}
+    }
+    if(alive&&token===revision&&request===visibleRequest){world=rows;weatherState=rows.length===candidates.length?'ok':rows.length?'partial':'error';updated=Date.now();draw();}
+  }
   async function loadWeather(token){
+    if(paidSource)return loadVisibleWeather(token);
     await Promise.allSettled([
       (async()=>{try{const d=await cached('world',worldData,0);if(!alive||token!==revision)return;world=d.cities||[];updated=d.updated;weatherState=d.stale?'stale':d.partial?'partial':d.direct?'direct':'ok';}catch{if(token===revision)weatherState=world.length?'stale':'error';}if(token===revision)draw();})(),
 
     ]);
   }
   async function loadTownWeather(token){
+    if(paidSource){readings.clear();townState='ok';return loadVisibleWeather(token);}
     const request=++townWeatherRequest,ids=towns.slice(0,24).map(c=>c[0]).sort();
     if(!ids.length){readings.clear();townState='ok';return;}
     try{const d=await cached('town-weather:'+ids.join(','),()=>ctx.api('mappa/meteo?ids='+encodeURIComponent(ids.join(','))),60000);
@@ -155,7 +170,7 @@ export function createMappaEventi(ctx) {
     if(!selected)return;const place={...selected},at=selectedAt;
     try{const d=await pointWeather(place,true);if(alive&&token===revision&&at===selectedAt){selected={...place,current:d.current,refreshFailed:false};draw();}}catch{if(alive&&token===revision&&at===selectedAt){selected={...place,refreshFailed:true};renderFreshness();}}
   }
-  async function load(){if(!alive||!map)return;if(loadTask)return loadTask;const token=revision;const task=Promise.allSettled([loadSelected(token),loadWeather(token),loadTowns(token),loadHail(token),loadEvents(token)]).finally(()=>{if(loadTask===task)loadTask=null;if(alive&&token===revision){checkedAt=Date.now();renderFreshness();}});loadTask=task;renderFreshness();return task;}
+  async function load(){if(!alive||!map||document.hidden)return;if(loadTask)return loadTask;const token=revision;const task=Promise.allSettled([loadSelected(token),...(paidSource?[]:[loadWeather(token)]),loadTowns(token),loadHail(token),loadEvents(token)]).finally(()=>{if(loadTask===task)loadTask=null;if(alive&&token===revision){checkedAt=Date.now();renderFreshness();}});loadTask=task;renderFreshness();return task;}
   function renderFreshness(){
     const slot=$('#mappa-freshness');if(!slot)return;
     const failed=selected?.refreshFailed||['error','stale','partial'].includes(weatherState)||['error','stale'].includes(townState)||hailState==='error'||(radarState.enabled&&['error','partial'].includes(radarState.status));
@@ -163,13 +178,13 @@ export function createMappaEventi(ctx) {
     slot.textContent=status.label;slot.dataset.tone=status.tone;
     const now=new Date(),at=modelTime(selected?.current);
     const radarAt=radarState.enabled&&Number.isFinite(radarState.time)?radarState.time*1000:null;
-    $('#mappa-now').textContent=radarState.enabled?(radarKind==='hail'?'RADAR GRANDINE':'RADAR PIOGGIA'):'MODELLO OPEN-METEO';
+    $('#mappa-now').textContent=radarState.enabled?(radarKind==='hail'?'RADAR GRANDINE':'RADAR PIOGGIA'):(paidSource?'METEO WEATHERAPI':'MODELLO OPEN-METEO');
     $('#mappa-now').title='Fonte del livello sulla mappa; il meteo locale ha il proprio orario nel pannello';
     const shownAt=radarState.enabled?radarAt:at;
     $('#mappa-data-time').textContent=shownAt===null?'Dato del livello non disponibile':clock(shownAt)+' · '+elapsedLabel(shownAt);
     $('#mappa-data-time').dataset.old=String(shownAt===null||Date.now()-shownAt>30*60000);
     if(sourcesOpen){
-      const info=sourceStatus({checkedAt,current:selected?.current,radar:radarState});
+      const info=sourceStatus({checkedAt,current:selected?.current,radar:radarState});if(paidSource)info.model=info.model.replace('Modello:','WeatherAPI:');
       const model=$('#mappa-source-model'),check=$('#mappa-source-check'),frame=$('#mappa-source-radar');
       if(check)check.textContent=status.label;
       if(model)model.textContent=info.model+(selected?.current?' · '+elapsedLabel(modelTime(selected.current)):'')+(selected?.refreshFailed?' · recupero fallito':'');
@@ -185,7 +200,7 @@ export function createMappaEventi(ctx) {
     document.querySelectorAll('[data-map-action]').forEach(button=>button.onclick=()=>{const target=document.getElementById(button.dataset.mapAction);closePanel();if(button.dataset.mapAction==='local-details'&&selected)locationPanel(selected);else target?.click();});
   }
   function sourcePanel(){
-    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · Open-Meteo</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · ${radarKind==='hail'?'Radar-DPC POH':'RainViewer'}</dt><dd id="mappa-source-radar"></dd></dl><p>L’età del dato cambia ogni secondo; non è una nuova misura. Il pannello Adesso mostra WeatherAPI, quando disponibile, con il suo orario. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Le condizioni attuali sono stime di modello a passi di 15 minuti. Le previsioni orarie hanno una cache fino a 15 minuti. RainViewer espone quadri ogni 10 minuti; Radar-DPC POH ha un passo di 5 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
+    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · ${paidSource?'WeatherAPI':'Open-Meteo'}</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · ${radarKind==='hail'?'Radar-DPC POH':'RainViewer'}</dt><dd id="mappa-source-radar"></dd></dl><p>L’età del dato cambia ogni secondo; non è una nuova misura. Il pannello Adesso mostra WeatherAPI, quando disponibile, con il suo orario. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Le condizioni WeatherAPI hanno aggiornamenti della fonte ogni 10–15 minuti; le stime Open-Meteo hanno passi di 15 minuti. Le previsioni orarie hanno una cache fino a 15 minuti. RainViewer espone quadri ogni 10 minuti; Radar-DPC POH ha un passo di 5 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
     sourcesOpen=true;$('#mappa-fonti')?.setAttribute('aria-expanded','true');renderFreshness();
     $('#mappa-source-refresh').onclick=()=>$('#mappa-aggiorna')?.click();
   }
@@ -250,7 +265,7 @@ export function createMappaEventi(ctx) {
     const counts={neve:s.snow.length,temperature:s.points.length,pioggia:s.rain.length,grandine:mode==='grandine'?fieldDesk?.count():visibleReports().length,vento:s.points.filter(p=>windReading(p.current)).length,fulmini:s.storms.length};
     for(const m of MODES){const c=$('[data-conteggio="'+m.id+'"]');if(c)c.textContent=(counts[m.id]==null||(m.id==='grandine'?hailState==='error':!s.points.length&&['error','loading'].includes(weatherState)))?'—':counts[m.id];}
     const date=updated?new Date(updated).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'orario non disponibile';
-    const state=weatherState==='loading'?'Carico i dati meteo…':weatherState==='error'?'Meteo non disponibile · città esplorabili':weatherState==='stale'?'Dati precedenti del '+date:weatherState==='partial'?'Copertura parziale · Open-Meteo · '+date:'Modello · campione acquisito '+clock(updated)+(weatherState==='direct'?' · fonte diretta':'');
+    const state=weatherState==='loading'?'Carico i dati meteo…':weatherState==='error'?'Meteo non disponibile · città esplorabili':weatherState==='stale'?'Dati precedenti del '+date:weatherState==='partial'?'Copertura parziale · '+mapSource()+' · '+date:'Modello · campione acquisito '+clock(updated)+(weatherState==='direct'?' · fonte diretta':'');
     $('.mappa')?.classList.toggle('has-stale-weather',weatherState==='stale'||weatherState==='error');
     notify(mode==='grandine'?(hailState==='error'?'Segnalazioni non disponibili':'Segnalazioni community · ultime 2 ore'):state+(townState==='error'?' · comuni senza meteo':''));
     renderFreshness();renderPulse(s);renderLegend();renderSuggestions();renderSelected();fieldDesk?.sync(selected,mode);scheduleLabels();
@@ -258,7 +273,7 @@ export function createMappaEventi(ctx) {
   function renderSelected(){
     const el=$('#mappa-selected');if(!el)return;el.hidden=!selected;if(!selected)return;
     const p=allPoints().find(x=>Math.abs(x.latitude-selected.latitude)<.08&&Math.abs(x.longitude-selected.longitude)<.08)||selected,k=p.current,age=weatherAge(k);
-    el.innerHTML='<span class="mappa-reading-heading"><small>IL TUO PUNTO NEL MONDO</small>'+mapIcon('arrow')+'</span><b class="mappa-reading-name">'+esc(selected.name)+'</b><span class="mappa-reading-weather"><strong>'+(k?number(k.temperature_2m)+'<small>°</small>':'—')+'</strong>'+weatherArt(k?.weather_code??-1,k?.is_day)+'</span><span class="mappa-reading-meta">'+(k?(age.stale?'Dato precedente · '+esc(age.label):'Open-Meteo · '+esc(sourceTime(k))):'Apri per leggere il meteo')+'</span><span class="mappa-reading-footer"><span>'+mapIcon('pioggia')+(Number.isFinite(k?.precipitation)?esc(String(k.precipitation))+' mm':'—')+'</span><span>'+mapIcon('vento')+(Number.isFinite(k?.wind_speed_10m)?number(k.wind_speed_10m)+' km/h':'—')+'</span></span>';
+    el.innerHTML='<span class="mappa-reading-heading"><small>IL TUO PUNTO NEL MONDO</small>'+mapIcon('arrow')+'</span><b class="mappa-reading-name">'+esc(selected.name)+'</b><span class="mappa-reading-weather"><strong>'+(k?number(k.temperature_2m)+'<small>°</small>':'—')+'</strong>'+weatherArt(k?.weather_code??-1,k?.is_day)+'</span><span class="mappa-reading-meta">'+(k?(age.stale?'Dato precedente · '+esc(age.label):mapSource()+' · '+esc(sourceTime(k))):'Apri per leggere il meteo')+'</span><span class="mappa-reading-footer"><span>'+mapIcon('pioggia')+(Number.isFinite(k?.precipitation)?esc(String(k.precipitation))+' mm':'—')+'</span><span>'+mapIcon('vento')+(Number.isFinite(k?.wind_speed_10m)?number(k.wind_speed_10m)+' km/h':'—')+'</span></span>';
     el.onclick=()=>selectPlace({...selected,current:k},true);
     if(el.offsetHeight){$('#mappa-pulse').style.top=(el.offsetTop+el.offsetHeight+12)+'px';$('#mappa-field')?.style.setProperty('--field-top',(el.offsetTop+el.offsetHeight+12)+'px');}
   }
@@ -267,7 +282,7 @@ export function createMappaEventi(ctx) {
     const m=MODES.find(x=>x.id===mode),winds=s.points.filter(p=>windReading(p.current)).sort((a,b)=>b.current.wind_speed_10m-a.current.wind_speed_10m),count=mode==='grandine'?visibleReports().length:mode==='neve'?s.snow.length:mode==='pioggia'?s.rain.length:mode==='fulmini'?s.storms.length:mode==='vento'?winds.length:s.points.length;
     const detail=mode==='temperature'?'Il contrasto tra le città che stai guardando.':mode==='neve'?'Neve fresca da modello: tocca una città per quantità e intervallo.':mode==='pioggia'?'Punti di previsione e immagini radar, nella stessa vista.':mode==='grandine'?'Osservazioni delle persone nelle ultime 2 ore.':mode==='vento'?'Le frecce mostrano dove soffia il vento al suolo.':'Temporali previsti dal modello meteorologico.';
     slot.classList.toggle('is-compact',!overviewOpen);slot.style.top='';
-    slot.innerHTML=`<button id="mappa-overview-toggle" class="mappa-overview-toggle" aria-expanded="${overviewOpen}"><span>${mapIcon(m.id)} ${m.name}</span><span>${overviewOpen?'Chiudi −':'Riepilogo +'}</span></button><div class="mappa-overview-body" ${overviewOpen?'':'hidden'}><div class="mappa-eyebrow">NELLA VISTA <span>ESPLORA</span></div><div class="mappa-layer-title"><h2>${m.name}</h2><span style="color:${m.color}" aria-hidden="true">${m.icon}</span></div><p>${detail}</p><div class="mappa-sample"><b>${count}</b><span>${mode==='grandine'?'segnalazioni':'località con dati'}<small>nel campione visibile</small></span></div>${mode==='temperature'&&s.cold?`<div class="mappa-contrasto"><button data-extreme="cold"><small>PIÙ FRESCO</small><b>${number(s.cold.current.temperature_2m)}°</b><span>${esc(s.cold.name)}</span></button><button data-extreme="hot"><small>PIÙ CALDO</small><b>${number(s.hot.current.temperature_2m)}°</b><span>${esc(s.hot.name)}</span></button></div>`:mode==='vento'&&winds.length?`<button class="mappa-wind-maximum" id="mappa-max-wind"><span>VENTO PIÙ FORTE NELLA VISTA</span><b>${number(winds[0].current.wind_speed_10m)} <small>km/h</small></b><span>${esc(winds[0].name)} ↗</span></button>`:''}<div class="mappa-sidebar-actions"><button class="mappa-compare" id="mappa-overview-list">${mode==='temperature'&&s.points.length>1?'Confronta le temperature':'Esplora le località'} ↗</button><button id="mappa-overview-ai">✦ Chiedi a Lente</button></div><div class="mappa-source-note"><span>FONTE</span><p>${mode==='grandine'?'Community · segnalazioni non verificate. Nessun punto non significa assenza di rischio.':mode==='fulmini'?'Open-Meteo · previsione, non rilevamento delle singole scariche.':'Open-Meteo · dati di modello. Gli estremi riguardano questo campione, non record climatici.'}</p></div></div>`;
+    slot.innerHTML=`<button id="mappa-overview-toggle" class="mappa-overview-toggle" aria-expanded="${overviewOpen}"><span>${mapIcon(m.id)} ${m.name}</span><span>${overviewOpen?'Chiudi −':'Riepilogo +'}</span></button><div class="mappa-overview-body" ${overviewOpen?'':'hidden'}><div class="mappa-eyebrow">NELLA VISTA <span>ESPLORA</span></div><div class="mappa-layer-title"><h2>${m.name}</h2><span style="color:${m.color}" aria-hidden="true">${m.icon}</span></div><p>${detail}</p><div class="mappa-sample"><b>${count}</b><span>${mode==='grandine'?'segnalazioni':'località con dati'}<small>nel campione visibile</small></span></div>${mode==='temperature'&&s.cold?`<div class="mappa-contrasto"><button data-extreme="cold"><small>PIÙ FRESCO</small><b>${number(s.cold.current.temperature_2m)}°</b><span>${esc(s.cold.name)}</span></button><button data-extreme="hot"><small>PIÙ CALDO</small><b>${number(s.hot.current.temperature_2m)}°</b><span>${esc(s.hot.name)}</span></button></div>`:mode==='vento'&&winds.length?`<button class="mappa-wind-maximum" id="mappa-max-wind"><span>VENTO PIÙ FORTE NELLA VISTA</span><b>${number(winds[0].current.wind_speed_10m)} <small>km/h</small></b><span>${esc(winds[0].name)} ↗</span></button>`:''}<div class="mappa-sidebar-actions"><button class="mappa-compare" id="mappa-overview-list">${mode==='temperature'&&s.points.length>1?'Confronta le temperature':'Esplora le località'} ↗</button><button id="mappa-overview-ai">✦ Chiedi a Lente</button></div><div class="mappa-source-note"><span>FONTE</span><p>${mode==='grandine'?'Community · segnalazioni non verificate. Nessun punto non significa assenza di rischio.':mode==='fulmini'?mapSource()+' · codice meteo, non rilevamento delle singole scariche.':mapSource()+' · campioni meteo. Gli estremi riguardano questo campione, non record climatici.'}</p></div></div>`;
     $('#mappa-overview-toggle').onclick=()=>{overviewOpen=!overviewOpen;renderPulse(summary());renderSelected();scheduleLabels();};
     slot.querySelectorAll('[data-extreme]').forEach(b=>b.onclick=()=>selectPlace(s[b.dataset.extreme],true));
     $('#mappa-overview-list').onclick=()=>mode==='temperature'&&s.points.length>1?comparePanel(s):listPanel();
@@ -290,9 +305,10 @@ export function createMappaEventi(ctx) {
   function closePanel(){sourcesOpen=false;$('#mappa-fonti')?.setAttribute('aria-expanded','false');const p=$('#mappa-pannello');if(p)p.hidden=true;$('.mappa')?.classList.remove('has-panel');panelRevision++;searchRevision++;scheduleLabels();const target=(focusedBeforePanel?.id&&document.getElementById(focusedBeforePanel.id))||focusedBeforePanel;const visible=target?.isConnected&&target.getClientRects().length&&getComputedStyle(target).visibility!=='hidden';if(visible)target.focus({preventScroll:true});else $('#mappa-tools-open')?.focus({preventScroll:true});}
   const sourceTime=k=>modelTime(k)!==null?new Date(modelTime(k)).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}):'orario del modello non disponibile';
   const pointWeather=(p,force=false)=>cached('point:'+p.latitude.toFixed(3)+':'+p.longitude.toFixed(3),async()=>{
+        if(paidSource){const d=await ctx.api('forecast/current?'+new URLSearchParams({lat:p.latitude,lon:p.longitude}));if(!d.mapCurrent||d.status!=='available')throw Error('Meteo non disponibile');return {current:d.mapCurrent};}
         const q=new URLSearchParams({latitude:p.latitude,longitude:p.longitude,current:CURRENT,timezone:'GMT',forecast_days:'1'});
         const r=await fetch('https://api.open-meteo.com/v1/forecast?'+q,{signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error();return r.json();
-      },force?0:MAP_REFRESH_MS);
+      },paidSource?300000:force?0:MAP_REFRESH_MS);
   async function selectPlace(p,move=true){
     if(!validPlace(p)||!alive)return;selected={...p};selectedAt++;const token=selectedAt,life=revision;
     if(move)map.setView([p.latitude,p.longitude],Math.max(7,map.getZoom()),{animate:!matchMedia('(prefers-reduced-motion: reduce)').matches});
@@ -308,7 +324,7 @@ export function createMappaEventi(ctx) {
   }
   function locationPanel(p,focus=true){
     const k=p.current,age=weatherAge(k);
-    panel(p.name,`<p class="mappa-eyebrow">${esc([p.province||p.admin1,p.country||p.country_code].filter(Boolean).join(' · ')||'LOCALITÀ SELEZIONATA')}</p><div class="mappa-location-hero"><strong>${k?number(k.temperature_2m)+'°':'—'}</strong><span aria-hidden="true">${weatherArt(k?.weather_code??-1,k?.is_day)}</span></div><p>${k?(age.stale?'Dato precedente · '+age.label+' · non attuale':'Temperatura da modello · Open-Meteo'):p.unavailable?'Il meteo di questa località non risponde. Riprova più tardi.':'Carico il meteo di questa località…'}</p>${k?`<div class="mappa-metrics"><div><small>NEVE FRESCA · MODELLO</small><b>${Number.isFinite(k.snowfall)?esc(String(k.snowfall)):'—'}</b><small>cm / ${Number.isFinite(k.interval)?Math.round(k.interval/60)+' min':'intervallo non disponibile'}</small></div><div><small>PRECIPITAZIONI</small><b>${Number.isFinite(k.precipitation)?esc(String(k.precipitation)):'—'}</b><small>${precipitationLabel(k.interval)}</small></div><div><small>VENTO</small><b>${number(k.wind_speed_10m)}</b><small>km/h${windReading(k)?.from!==null&&windReading(k)?' · da '+windReading(k).compass:''}</small></div></div><p class="mappa-fonte">Dato valido: ${esc(sourceTime(k))}. ${isStorm(k.weather_code)?'Temporale da modello, non rilevamento di fulmini.':''}</p>`:''}<div class="mappa-actions"><button id="mappa-local-zoom">Centra e ingrandisci ↗</button><button id="mappa-local-ai" class="mappa-primary">✦ Spiegamelo con Lente</button><button id="mappa-local-weather">Previsioni complete ↗</button><button id="mappa-local-community">Community di ${esc(p.name)} ↗</button><button id="mappa-local-radar">Radar e dettaglio ↗</button></div>`,focus);
+    panel(p.name,`<p class="mappa-eyebrow">${esc([p.province||p.admin1,p.country||p.country_code].filter(Boolean).join(' · ')||'LOCALITÀ SELEZIONATA')}</p><div class="mappa-location-hero"><strong>${k?number(k.temperature_2m)+'°':'—'}</strong><span aria-hidden="true">${weatherArt(k?.weather_code??-1,k?.is_day)}</span></div><p>${k?(age.stale?'Dato precedente · '+age.label+' · non attuale':'Meteo locale · '+mapSource()):p.unavailable?'Il meteo di questa località non risponde. Riprova più tardi.':'Carico il meteo di questa località…'}</p>${k?`<div class="mappa-metrics"><div><small>NEVE FRESCA · MODELLO</small><b>${Number.isFinite(k.snowfall)?esc(String(k.snowfall)):'—'}</b><small>cm / ${Number.isFinite(k.interval)?Math.round(k.interval/60)+' min':'intervallo non disponibile'}</small></div><div><small>PRECIPITAZIONI</small><b>${Number.isFinite(k.precipitation)?esc(String(k.precipitation)):'—'}</b><small>${precipitationLabel(k.interval)}</small></div><div><small>VENTO</small><b>${number(k.wind_speed_10m)}</b><small>km/h${windReading(k)?.from!==null&&windReading(k)?' · da '+windReading(k).compass:''}</small></div></div><p class="mappa-fonte">Dato valido: ${esc(sourceTime(k))}. ${isStorm(k.weather_code)?'Temporale da modello, non rilevamento di fulmini.':''}</p>`:''}<div class="mappa-actions"><button id="mappa-local-zoom">Centra e ingrandisci ↗</button><button id="mappa-local-ai" class="mappa-primary">✦ Spiegamelo con Lente</button><button id="mappa-local-weather">Previsioni complete ↗</button><button id="mappa-local-community">Community di ${esc(p.name)} ↗</button><button id="mappa-local-radar">Radar e dettaglio ↗</button></div>`,focus);
     $('#mappa-local-zoom').onclick=()=>{closePanel();map.setView([p.latitude,p.longitude],Math.max(9,map.getZoom()),{animate:!matchMedia('(prefers-reduced-motion: reduce)').matches});};
     $('#mappa-local-ai').onclick=()=>askAI(`Spiega il meteo di ${p.name} e cosa sappiamo del livello ${MODES.find(m=>m.id===mode).name}.`);
     $('#mappa-local-weather').onclick=()=>ctx.openPlace?.(p,'home');
@@ -381,6 +397,10 @@ export function createMappaEventi(ctx) {
   function visibility(){renderFreshness();if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)activeRadar()?.refresh();}}
   async function bind(){
     const host=$('#mappa-tela');if(!host||map)return;alive=true;const life=++revision;
+    sourceReady=ctx.api('forecast/provider').then(d=>{paidSource=d.source==='WeatherAPI';}).catch(()=>{paidSource=true;});
+    await sourceReady;
+    if(!alive||life!==revision||!host.isConnected)return;
+    const sourceLink=document.querySelector('.mappa-attribuzioni a[href="https://open-meteo.com/"]');if(sourceLink&&paidSource){sourceLink.href='https://www.weatherapi.com/';sourceLink.textContent='WeatherAPI';}
     let geographicData;try{[L,geographicData]=await preload();}catch{notify('Mappa non disponibile. Ricarica la pagina.');return;}
     if(!alive||life!==revision||!host.isConnected)return;
     const {atlasLand,atlasBorders,atlasRegions}=geographicData;
@@ -431,7 +451,8 @@ export function createMappaEventi(ctx) {
     $('#mappa-radar-latest').onclick=()=>activeRadar()?.seek(radarState.frames.length-1);
     $('#mappa-radar-toggle').onclick=()=>chooseRadar(mode==='grandine'?'hail':'rain',!radarState.enabled);
     $('#mappa-radar-play').onclick=()=>activeRadar()?.play();$('#mappa-radar-range').oninput=e=>activeRadar()?.seek(Number(e.target.value));$('#mappa-radar-retry').onclick=()=>activeRadar()?.refresh(true);
-    map.on('moveend',()=>{draw();clearTimeout(timer);timer=setTimeout(()=>loadTowns(revision),400);});
+    map.on('movestart',()=>{visibleRequest++;});
+    map.on('moveend',()=>{draw();clearTimeout(timer);timer=setTimeout(()=>{if(!document.hidden)loadTowns(revision);},650);});
     map.on('click',()=>{if($('#mappa-pannello')&&!$('#mappa-pannello').hidden)closePanel();});
     document.querySelectorAll('[data-livello]').forEach(b=>b.onclick=()=>selectMode(b.dataset.livello));
     $('#mappa-cerca').onsubmit=search;$('#mappa-ia').onsubmit=e=>{e.preventDefault();const q=$('#mappa-ia-testo').value.trim();askAI(q||'Spiega il meteo della località selezionata e cosa significa questo livello.');};

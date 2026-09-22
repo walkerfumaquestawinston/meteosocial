@@ -19,3 +19,6 @@ export function parseRadar(data,now=Date.now()){
 }
 export function mercatorV(latitude){const lat=Math.max(-85.05112878,Math.min(85.05112878,latitude))*Math.PI/180;return .5-Math.log(Math.tan(Math.PI/4+lat/2))/(2*Math.PI)}
 export function cityReports(posts,city,kind,now=Date.now()){const normalize=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();return posts.filter(p=>normalize(p.city)===normalize(city)&&(!p.expires||p.expires>now)&&p.created<=now+60000&&p.created>now-(kind==='grandine'?7200000:86400000)&&(kind!=='grandine'||p.kind==='Grandine'))}
+
+export const forecastSource=w=>w?.source==='WeatherAPI'?'WeatherAPI':'Open-Meteo';
+export const forecastSourceURL=w=>w?.source==='WeatherAPI'?'https://www.weatherapi.com/':'https://open-meteo.com/';

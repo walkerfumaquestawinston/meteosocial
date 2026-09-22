@@ -9,7 +9,7 @@ export function installForecastHistory(ctx){
  document.addEventListener('click',async event=>{
  if(!event.target.closest('[data-forecast-history]'))return;
  const {place}=ctx.get(),params=new URLSearchParams({lat:place.latitude,lon:place.longitude});
- ctx.modal('La cronologia del meteo',`<p>Questa è l’ora in cui MeteoSocial ha acquisito i dati di Open-Meteo, non l’ora di emissione del modello. Gli orari sono quelli della località.</p><p>Salviamo una nuova copia durante la consultazione, al massimo ogni 15 minuti. La cronologia inizia dall’attivazione di questa funzione.</p><div id="forecast-history-list" aria-live="polite"><p>Caricamento…</p></div>`,null);
+ ctx.modal('La cronologia del meteo',`<p>Questa è l’ora in cui MeteoSocial ha acquisito i dati della fonte indicata nella previsione, non l’ora di emissione della previsione. Gli orari sono quelli della località.</p><p>Salviamo una nuova copia durante la consultazione, al massimo ogni 15 minuti. La cronologia inizia dall’attivazione di questa funzione.</p><div id="forecast-history-list" aria-live="polite"><p>Caricamento…</p></div>`,null);
  const host=document.querySelector('#forecast-history-list');
  let first=true;
  const load=async before=>{if(!host.isConnected)return;const old=host.querySelector('[data-history-more]');if(old)old.disabled=true;

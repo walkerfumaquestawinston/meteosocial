@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import {providerMarkup,providerBrief} from './dist/map-provider.js';
 let calls=0,quotaCalls=0,fail=false,epoch=Date.now()/1000;
 const api=vm.runInNewContext(fs.readFileSync('server/weather-provider.js','utf8')+';({weatherProviderCurrent})',{
- Date,Intl,URLSearchParams,globeSnapshot:async(e,key,fn,ttl)=>{assert.equal(ttl,60000);return fn();},
+ Date,Intl,URLSearchParams,weatherApiValues:()=>({}),weatherProviderBudget:async()=>{quotaCalls++;},globeSnapshot:async(e,key,fn,ttl)=>{assert.equal(ttl,300000);return fn();},
  quota:async(e,user,type,max)=>{quotaCalls++;assert.equal(max,3000);},
  atmoFetch:async url=>{calls++;if(fail)throw Error('SECRET leaked upstream URL');assert.equal(new URL(url).hostname,'api.weatherapi.com');return {location:{tz_id:'Asia/Tokyo'},current:{last_updated_epoch:epoch,temp_c:0,condition:{text:'<script>bad</script>'},humidity:0,air_quality:{pm2_5:0}}};}
 });
