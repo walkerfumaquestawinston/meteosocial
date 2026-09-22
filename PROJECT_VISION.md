@@ -1,3 +1,7 @@
+## 22 settembre 2026 — Radar grandine gratuito e mappa giorno/notte, revisione pronta
+
+Richiesta più recente: radar grandine gratuito (supera la breve preferenza a pagamento). Collegato Radar-DPC POH Italia, senza nuovo abbonamento, separato dalle osservazioni della community. Tema automatico cartografia e pannelli, con opzioni manuali negli Strumenti e indice dei livelli. Ultima pubblicazione confermata 88; attendere nota di esito. Dettagli e limiti in docs/RADAR-GRANDINE-TEMA.md.
+
 ## 22 settembre 2026 — Cartografia MapTiler
 
 Utente approva integrazione MapTiler e chiede il link per pagare Flex. Conservare mappa e pannello affiancati, stile leggibile con pochi elementi di fondo, etichette meteo in evidenza. Creato Atlante chiaro nel suo account. Fonte cartografica distinta dal meteo.
