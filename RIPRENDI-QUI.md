@@ -1,3 +1,13 @@
+## 22 settembre 2026 — Versione 91 pubblicata: interfaccia più leggibile
+
+Restyling senza nuovi abbonamenti: Oggi a due colonne sul desktop, navigazione superiore sulle pagine principali e dock mobile, tipografia e controlli uniformi, dettagli della variazione meteo apribili, Community a due colonne di pulsanti sul telefono. Fonti e orari restano visibili. Home senza hash evita il pre-caricamento MapLibre (937395 byte non compressi); nessun benchmark di velocità dichiarato. Dettagli in docs/DESIGN-FINITURE.md.
+
+Pubblicazione riuscita 2026-09-22T08:07:40.245148Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . Sites runtime 9d591516076e48096f1bc035e4c86e1a95332756 e GitHub e9f371ab22719476c5604c62c2d6d8cb35a2e558 condividono tree a99980a3a8cbec83d4867ece3ffbf897fbeae8ef. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_38f81f52c45c819189880d560d362ab3; deployment appgdep_6ab236f556d88191ae080a243682d8fb; ambiente 10, audience pubblica preservata. Apertura e push con workflow Sites riusciti; packaging locale non avviabile su Windows, usata build remota.
+
+Build e 69 suite superate, CI 35702914439 riuscita. Ritocchi finali CSS ricompilati; anteprima 4597 verificata desktop, 390 e 320 px, dettaglio cronologia apribile, navigazione e radar con quadro 09:55. Nessuna certificazione WCAG, di prestazioni o su dispositivo fisico. Open-Meteo rimane indisponibile nel controllo locale: il restyling non risolve il problema dei dati, che restano marcati come precedenti. Conferma pubblicazione tramite stato Sites; nessuna nuova verifica browser del sito pubblico richiesta per questo rilascio.
+
+Ramo codex/weather-scenery-20260922, PR draft #21. I successivi commit registrano solo queste note e non richiedono nuovo deploy.
+
 ## 22 settembre 2026 — Versione 90 pubblicata: radar grandine gratuito e tema automatico
 
 Radar-DPC POH Italia integrato gratuitamente, con probabilità, fonte, licenza e orario reale del quadro; aggiornamento nominale 5 minuti, copertura non uniforme e ritardo possibile. Non è conferma a terra né radar mondiale. Tema automatico giorno/notte per cartografia e pannelli, opzioni manuali in Strumenti, indice dei sei livelli e più spazio radar sul telefono.
