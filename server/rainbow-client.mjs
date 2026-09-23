@@ -23,7 +23,8 @@ export function normalizeRainbowWeather(raw,now=Date.now()){
   return {validAt:at*1000,validUntil:(at+3600)*1000,kind:'forecast',temperature:finite(h.temperature),feelsLike:finite(h.feelsLikeTemperature),humidity:percent('humidity'),windKmh:speed('windSpeed'),gustKmh:speed('windGust'),windDirection:finite(h.windDirection),pressureHpa:finite(h.pressure),visibilityMeters:finite(h.visibility),precipitationMm:finite(h.precipitationAmount),precipitationProbability:percent('precipitationChance'),uv:finite(h.uvIndex),condition:typeof h.condition==='string'?h.condition.slice(0,80):null,precipitationType:typeof h.precipitationType==='string'?h.precipitationType.slice(0,30):null};
  }).sort((a,b)=>a.validAt-b.validAt);
  const forThisHour=hourly.find(h=>h.validAt<=now&&now<h.validUntil)||null;
- return {source:'Rainbow Weather',sourceURL:'https://developer.rainbow.ai/',kind:'forecast',issuedAt:generated*1000,latitude:raw.location.lat,longitude:raw.location.lon,stale:now-generated*1000>7200000,forThisHour,hourly};
+ const days=(Array.isArray(raw.timelines.daily)?raw.timelines.daily:[]).filter(d=>finite(d.startTimestamp)!==null&&finite(d.endTimestamp)!==null&&d.endTimestamp>d.startTimestamp).map(d=>({validAt:d.startTimestamp*1000,validUntil:d.endTimestamp*1000,temperatureMin:finite(d.temperatureMin),temperatureMax:finite(d.temperatureMax),precipitationMm:finite(d.precipitationAmount),precipitationProbability:finite(d.precipitationChance),uv:finite(d.uvIndexMax),condition:typeof d.condition==='string'?d.condition.slice(0,80):null})).sort((a,b)=>a.validAt-b.validAt);
+ return {source:'Rainbow Weather',sourceURL:'https://developer.rainbow.ai/',kind:'forecast',issuedAt:generated*1000,latitude:raw.location.lat,longitude:raw.location.lon,stale:now-generated*1000>7200000,forThisHour,hourly,days};
 }
 
 export async function fetchRainbowWeather({key,latitude,longitude,beforeRequest,fetcher=fetch,now=Date.now()}){
@@ -34,7 +35,7 @@ export async function fetchRainbowWeather({key,latitude,longitude,beforeRequest,
  await beforeRequest();
  let response,raw,providerDetail=null;
  try{
-  response=await fetcher(`${ORIGIN}/weather/v1/forecast/${longitude}/${latitude}?forecast_hours=168`,{headers:{'Ocp-Apim-Subscription-Key':key.trim()},signal:AbortSignal.timeout(12000),redirect:'manual'});
+  response=await fetcher(`${ORIGIN}/weather/v1/forecast/${longitude}/${latitude}?forecast_hours=24&forecast_days=7&day_start_hour=0`,{headers:{'Ocp-Apim-Subscription-Key':key.trim()},signal:AbortSignal.timeout(12000),redirect:'manual'});
   if(!response.ok){
    if([400,422].includes(response.status))providerDetail=(await response.text()).replaceAll(key.trim(),'[segreto omesso]').replace(/[A-Za-z0-9_+-]{24,}/g,'[identificativo omesso]').slice(0,400);
    throw Error('Provider unavailable');

@@ -16,6 +16,9 @@ assert.equal(rome.timezone,'Europe/Rome');assert.equal(rome.current.time,'2026-0
 assert.equal(tokyo.timezone,'Asia/Tokyo');assert.equal(tokyo.current.time,'2026-09-23T21:00');
 assert.equal(rome.current.temperature_2m,0);assert.equal(rome.current.surface_pressure,null);assert.equal(rome.current.pressure_msl,1013);
 assert.equal(rome.daily.available_hours[0],10);assert.equal(rome.daily.sunrise[0],null);assert.equal(rome.hourly.time.length,168);
+const future=Date.now()+86400000;
+const providerDays=api.rainbowForecast({...input,days:[{validAt:future,validUntil:future+86400000,temperatureMin:12,temperatureMax:24,precipitationMm:2,precipitationProbability:40,uv:4,condition:'Rain'}]},{latitude:41.9,longitude:12.5});
+assert.equal(providerDays.daily.temperature_2m_min[0],12);assert.equal(providerDays.daily.temperature_2m_max[0],24);assert.equal(providerDays.daily.aggregation,'provider');assert.ok(providerDays.daily.period_start[0]);
 assert.equal(api.rainbowCondition('Hail')[0],null,'hail alone must not fabricate thunder');
 assert.equal(forecastSource(rome),'Rainbow Weather');assert.match(weatherDescription(rome.current),/previsione/);
 assert.throws(()=>api.rainbowForecast({...input,forThisHour:null},{latitude:41.9,longitude:12.5}),/questa ora/);

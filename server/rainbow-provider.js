@@ -11,8 +11,12 @@ function rainbowForecast(data,place){
  const groups=new Map();data.hourly.forEach((h,i)=>{const day=hourly.time[i].slice(0,10);if(!groups.has(day))groups.set(day,[]);groups.get(day).push(h)});
  const days=[...groups].slice(0,7),aggregate=(hs,key,fn)=>{const nums=hs.map(h=>h[key]);return nums.every(Number.isFinite)&&nums.length?fn(nums):null};
  const daily={time:days.map(([d])=>d),temperature_2m_max:days.map(([,h])=>aggregate(h,'temperature',a=>Math.max(...a))),temperature_2m_min:days.map(([,h])=>aggregate(h,'temperature',a=>Math.min(...a))),precipitation_sum:days.map(([,h])=>aggregate(h,'precipitationMm',a=>a.reduce((x,y)=>x+y,0))),precipitation_probability_max:days.map(([,h])=>aggregate(h,'precipitationProbability',a=>Math.max(...a))),uv_index_max:days.map(([,h])=>aggregate(h,'uv',a=>Math.max(...a))),weather_code:days.map(([,hs])=>rainbowCondition([...hs].sort((a,b)=>(b.precipitationMm??0)-(a.precipitationMm??0))[0].condition)[0]),sunrise:days.map(()=>null),sunset:days.map(()=>null),available_hours:days.map(([,hs])=>hs.length)};
+ if(data.days?.length){
+  const ds=data.days.filter(d=>d.validUntil>Date.now()).slice(0,7);
+  if(ds.length)Object.assign(daily,{time:ds.map(d=>local(d.validAt).slice(0,10)),temperature_2m_min:ds.map(d=>d.temperatureMin),temperature_2m_max:ds.map(d=>d.temperatureMax),precipitation_sum:ds.map(d=>d.precipitationMm),precipitation_probability_max:ds.map(d=>d.precipitationProbability),uv_index_max:ds.map(d=>d.uv),weather_code:ds.map(d=>rainbowCondition(d.condition)[0]),sunrise:ds.map(()=>null),sunset:ds.map(()=>null),available_hours:ds.map(()=>null),period_start:ds.map(d=>local(d.validAt)),period_end:ds.map(d=>local(d.validUntil)),aggregation:'provider'});
+ }
  const h=data.forThisHour;if(!h||!Number.isFinite(h.temperature)||data.stale)throw Error('Previsione Rainbow per questa ora non disponibile');
- return {latitude:place.latitude,longitude:place.longitude,timezone:zone,source:'Rainbow Weather',sourceURL:data.sourceURL,kind:'forecast',issuedAt:data.issuedAt,current:{...values(h),time:local(h.validAt),time_epoch:h.validAt/1000,interval:3600,kind:'forecast',issuedAt:data.issuedAt,validUntil:h.validUntil},hourly,daily,_limitations:['La temperatura per questa ora è una previsione, non una misura osservata.','Estremi e totali giornalieri calcolati sulle ore disponibili: oggi e l’ultimo giorno possono essere parziali.','Nubi, alba/tramonto, neve in cm, neve al suolo e zero termico non disponibili da questa fonte.']};
+ return {latitude:place.latitude,longitude:place.longitude,timezone:zone,source:'Rainbow Weather',sourceURL:data.sourceURL,kind:'forecast',issuedAt:data.issuedAt,current:{...values(h),time:local(h.validAt),time_epoch:h.validAt/1000,interval:3600,kind:'forecast',issuedAt:data.issuedAt,validUntil:h.validUntil},hourly,daily,_limitations:['La temperatura per questa ora è una previsione, non una misura osservata.',daily.aggregation==='provider'?'Riepiloghi giornalieri Rainbow: gli intervalli del fornitore sono indicati nella settimana.':'Estremi e totali sulle ore disponibili, con giornate parziali.','Nubi, alba/tramonto, neve in cm, neve al suolo e zero termico non disponibili da questa fonte.']};
 }
 async function rainbowBudget(env){
  await quota(env,'rainbow','weather-calls',100);
@@ -23,7 +27,7 @@ async function rainbowBudget(env){
  if(row.count>5000)fail(429,'Quota Rainbow di protezione raggiunta.');
 }
 async function rainbowProviderForecast(env,place){
- const data=await globeSnapshot(env,'rainbow-weather-v1:'+place.key,()=>fetchRainbowWeather({key:env.RAINBOW_API_KEY,latitude:place.latitude,longitude:place.longitude,beforeRequest:()=>rainbowBudget(env)}),900000);
+ const data=await globeSnapshot(env,'rainbow-weather-v2:'+place.key,()=>fetchRainbowWeather({key:env.RAINBOW_API_KEY,latitude:place.latitude,longitude:place.longitude,beforeRequest:()=>rainbowBudget(env)}),900000);
  if(data.stale)throw Error('Previsione Rainbow precedente');
  // Re-select the current interval even when the source response comes from cache.
  data.forThisHour=data.hourly.find(h=>h.validAt<=Date.now()&&Date.now()<h.validUntil)||null;
