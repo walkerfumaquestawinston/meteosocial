@@ -27,6 +27,6 @@ export function sourceStatus({checkedAt=0,current,radar,now=Date.now()}={}){
  const model=forecast?`Previsione: ${clock(at)}–${clock(current.validUntil)}${expired?' · precedente':''}`:at===null?'Modello: orario non disponibile':`Modello: ${clock(at)}${age>30?' · precedente':age< -5?' · orario futuro da verificare':''}`;
  const frame=Number.isFinite(radar?.time)?radar.time*1000:null;
  return {checked:checkedAt?`Controllo ${clock(checkedAt)}`:'Controllo in corso',model,
- radar:radar?.enabled?(frame?`Radar visualizzato: ${clock(frame)}${now-frame>25*60000?' · quadro precedente':''}`:'Radar: in attesa della fonte'):'Radar: spento',
+ radar:radar?.enabled?(frame?`${radar.source==='Rainbow Weather'?(radar.time>radar.issuedAt?'Previsione Rainbow':'Analisi Rainbow'):'Radar visualizzato'}: ${clock(frame)}${now-frame>25*60000?' · quadro precedente':''}`:'Radar: in attesa della fonte'):'Radar: spento',
  stale:expired};
 }

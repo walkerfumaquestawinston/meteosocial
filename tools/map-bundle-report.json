@@ -47,6 +47,7 @@
     "dist/map-basemap.js",
     "dist/map-live-status.js",
     "dist/map-fresh-cache.js",
+    "dist/rain-nowcast.js",
     "dist/map-provider.js",
     "dist/map-local-brief.js",
     "dist/nearby-tools.js",
@@ -75,7 +76,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 504757,
+    "dist/app/main.js": 512082,
     "dist/app/sky-postcard-YT7MLGUJ.js": 5122,
     "dist/app/chunk-FBI4HGUQ.js": 14011,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,
