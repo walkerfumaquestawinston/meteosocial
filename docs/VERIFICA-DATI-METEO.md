@@ -12,4 +12,6 @@ Errore applicativo accertato: il codice WeatherAPI 1063 (piogge sparse nelle vic
 
 La risposta normalizzata ora conserva anche providerLocation (località abbinata dal fornitore), separata dalle coordinate richieste. Cache provider revisionata per ottenere questi metadati; temperature non corrette, mediate o sostituite arbitrariamente. La differenza di San Benedetto richiede il controllo di questo abbinamento; non dichiarare tutti i dati certificati o il problema di accuratezza risolto solo perché API e test rispondono.
 
+Verifica dopo v96: il fornitore identifica San Benedetto Del Tronto, Marche, Italy, 42.95/13.883; quindi non è emerso un abbinamento alla città sbagliata. Il valore ricevuto resta 15 °C. Roma identifica Rome 41.9/12.483 (26,7 °C), Milano Milan 45.467/9.2 (21,6 °C). La causa meteorologica dello scarto non è accertata: serve una misura contemporanea attendibile o un chiarimento del fornitore. Pagina MeteoNetwork individuata, ma senza timestamp leggibile nel risultato recuperato: non usata come prova attuale.
+
 Le versioni 94 e 95 hanno pubblicato le novità Community/Lente (docs/COMMUNITY-LENTE-V94.md); questa revisione prosegue l'indagine chiesta dall'utente durante il rilascio.

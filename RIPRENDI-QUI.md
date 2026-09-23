@@ -1,3 +1,17 @@
+## 23 settembre 2026 — Valutazione Google Weather e Rainbow
+
+Utente conferma fatturazione Google in Italia e account Rainbow non ancora creato. Prezzi ufficiali e vincoli SEE verificati in docs/GOOGLE-RAINBOW-VALUTAZIONE.md. Nessuna API nuova attivata: produzione ancora v96 WeatherAPI. Non promettere temperature perfette o lavoro locale a PC spento; attività cloud non configurata. Prossimo requisito esterno: account/credenziali Rainbow e Google, da configurare nei segreti del sito, mai in chat.
+
+## 22 settembre 2026 — Versioni 94–96 pubblicate: Community e Lente
+
+Community: filtro Ultime 2 ore e confronto guidato previsioni/racconti. Lente: fonte e orario nel contesto iniziale, domande di seguito In tre punti e Cosa va verificato?, sempre invio manuale. Corrette etichette WeatherAPI, uso UTC in Stesso cielo, focus del pannello, contrasto dialogo e filtri mobile. Dettagli: docs/COMMUNITY-LENTE-V94.md.
+
+Build e 70 suite attive superate; verifica locale desktop/390 px, filtro e domanda preparata senza invio. Nessuna nuova generazione OpenAI reale, nessun post di prova in produzione. Nessun nuovo abbonamento. Anteprima 4597 aggiornata. Non è una certificazione completa del sito o dei telefoni fisici.
+
+Durante il rilascio l’utente ha chiesto di confrontare i dati con altri meteo. v96 conserva testo condizioni WeatherAPI e località abbinata; pioggia nelle vicinanze non diventa più pioggia certa nella descrizione principale/scena. Verificato online: San Benedetto correttamente abbinata (42.95, 13.883), WeatherAPI 15 °C alle 11:15, 3B Meteo previsione 22 °C alle 11. Scarto tra fonti non risolto/certificato; Roma 26,7 °C WeatherAPI contro 26,8 °C iLMeteo. Non sostituire arbitrariamente temperature. Dettagli docs/VERIFICA-DATI-METEO.md.
+
+Pubblicazione v96 riuscita 2026-09-22T09:30:52.229717+00:00: https://scudo-meteo-community.walkerthehate.chatgpt.site . Sites runtime 58a01c708828a3306582dfc56d5a621c5494df13 e GitHub 5d36b331ab4d529cd494f8e6f91ec8dd9f669b9b condividono tree 474f0c4558fd2dd6499403e5ada57aaecc7253f3. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_8b9cac7cb6c88191b50934aa5993d470; deployment appgdep_6ab24a610de8819185ce83478245ef1b; ambiente 10, pubblico preservato. CI 35710571751 riuscita, 70 suite. Packaging Windows non avviabile: build remota. Anteprima 4597 attiva. Ramo codex/weather-scenery-20260922, PR draft #21. Successivi commit solo documentazione.
+
 ## 22 settembre 2026 — Versione 93 pubblicata: previsioni WeatherAPI e consumi
 
 WeatherAPI attivo per /api/forecast: Oggi, Meteo, prossime ore della mappa e Lente. Cache persistente attuale cinque minuti, previsioni quindici; budget condiviso 3.000 richieste/ora e protezione a 2,4M/mese di chiamate dell’app. Non legge il consumo totale dell’account. Mappa limitata a otto luoghi visibili, sequenza interrotta al cambio vista, richieste sospese in background; confronto città caricato solo aprendolo. Nessun abbonamento aggiunto.
