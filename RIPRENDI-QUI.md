@@ -1,3 +1,13 @@
+## 23 settembre 2026 — v103 pubblicata: Nowcast e Tiles Rainbow
+
+Nowcast globale integrato in Meteo e nel pannello Pioggia: fino a 240 minuti, intensità mm/h, tipo e cursore accessibile. Mappa Rainbow: 37 quadri da -2 ore a +4 ore, passo 10 minuti, analisi e previsione esplicite. Adesso torna al quadro di base; RainViewer resta fallback dichiarato. Radar grandine DPC separato. Fonte non aggiornata al secondo; controllo e validità distinti, nessuna emissione nowcast inventata.
+
+Chiave solo server nei segreti esistenti. Nowcast 100 tentativi/ora e 5.000/mese, Tiles (catalogo incluso) 1.500/ora e 30.000/mese della sola app. Cache JSON 5 minuti, tile 30 minuti ove supportata. Nessun nuovo abbonamento o modifica della fatturazione. Non limite complessivo account. Local preview 4597 aggiornata senza chiave reale.
+
+Build e 72 suite attive superate, 5 storiche ritirate; test pertinenti ripetuti dopo rifiniture. CI 35837766567 riuscita. Produzione: Roma e Tokyo restituiscono 240 intervalli reali HTTP 200; PNG base e futuro HTTP 200. Browser verificato su San Benedetto: cursore minuto finale, mappa +240 minuti con immagini visibili; 390 px DOM senza overflow orizzontale. Non certificazione meteo, carico o telefoni fisici. Dettagli docs/RAINBOW-INTEGRAZIONE.md.
+
+v102 introduce integrazione; v103 corregge attribuzione WeatherAPI residua, orario futuro e contrasto legenda/pulsante Adesso. Pubblicazione v103 riuscita 2026-09-23T08:34:21.621770+00:00, ambiente 12, pubblico preservato. Runtime Sites 59357d59f593c8664508363ee73a3351711af725; GitHub 47f72519e5637661796b6f3cc8659b626cac413e; tree 7ea8b9ae42aab12ab96055ff76ce64ba5152e22d. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_2112a5149db88191a09a77aa09098ccb; deployment appgdep_6ab38ed0373c8191b45220246e577389. Build remota per packaging locale non disponibile. PR draft #21 e ramo codex/weather-scenery-20260922; aggiornamenti seguenti solo note, senza deploy aggiuntivo. Le sezioni sotto sono cronologia.
+
 ## 23 settembre 2026 — v101 pubblicata: Rainbow attivo e verificato
 
 Rainbow Weather attivo nei percorsi forecast/current e forecast: 24 ore dettagliate e 7 riepiloghi giornalieri del fornitore, con intervalli conservati. Segreto inserito dall’utente, ambiente Sites 12. Cache 15 minuti; protezione app 100 tentativi/ora e 5.000/mese, non limite complessivo account. Temperatura per l’ora corrente esplicitamente previsionale, non osservazione al secondo. Nowcast e Tiles Rainbow non ancora integrati; radar esistenti invariati.
