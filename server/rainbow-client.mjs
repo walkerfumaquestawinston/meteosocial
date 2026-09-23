@@ -34,7 +34,7 @@ export async function fetchRainbowWeather({key,latitude,longitude,beforeRequest,
  await beforeRequest();
  let response,raw;
  try{
-  response=await fetcher(`${ORIGIN}/weather/v1/forecast/${longitude}/${latitude}?forecast_hours=168`,{headers:{'Ocp-Apim-Subscription-Key':key},signal:AbortSignal.timeout(12000),redirect:'error'});
+  response=await fetcher(`${ORIGIN}/weather/v1/forecast/${longitude}/${latitude}?forecast_hours=168`,{headers:{'Ocp-Apim-Subscription-Key':key.trim()},signal:AbortSignal.timeout(12000),redirect:'manual'});
   if(!response.ok)throw Error('Provider unavailable');
   const body=await response.text();
   if(body.length>1500000)throw Error('Response too large');

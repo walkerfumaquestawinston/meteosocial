@@ -19,7 +19,7 @@ assert.throws(()=>normalizeRainbowWeather({...raw,generatedAtTimestamp:at+7200},
 assert.throws(()=>normalizeRainbowWeather({...raw,timelines:{hourly:[raw.timelines.hourly[0],raw.timelines.hourly[0]]}},now),/Orario/);
 let calls=0,reserved=false;
 const options={key:'fixture-not-a-real-key',latitude:41.9,longitude:12.5,now,beforeRequest:async()=>{reserved=true},fetcher:async(url,init)=>{
- calls++;assert.equal(reserved,true);assert.equal(new URL(url).pathname,'/weather/v1/forecast/12.5/41.9');assert.equal(new URL(url).searchParams.has('token'),false);assert.equal(init.headers['Ocp-Apim-Subscription-Key'],'fixture-not-a-real-key');assert.equal(init.redirect,'error');return new Response(JSON.stringify(raw));
+ calls++;assert.equal(reserved,true);assert.equal(new URL(url).pathname,'/weather/v1/forecast/12.5/41.9');assert.equal(new URL(url).searchParams.has('token'),false);assert.equal(init.headers['Ocp-Apim-Subscription-Key'],'fixture-not-a-real-key');assert.equal(init.redirect,'manual');return new Response(JSON.stringify(raw));
 }};
 assert.equal((await fetchRainbowWeather(options)).forThisHour.temperature,0);
 assert.equal(calls,1);
