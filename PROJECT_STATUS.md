@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Navigazione rinnovata pronta
+
+Barra superiore con località, Lente IA e profilo; cinque destinazioni Oggi/Meteo/Mappa/Community/Segnala con indicatore scorrevole e feedback al clic. Colori ereditati dalla fase solare, movimento ridotto rispettato. Browser desktop/390 px, etichette complete e nessun overflow; build e 74 suite attive superate, 5 ritirate. Nessun nuovo costo o servizio. Dettagli docs/NAVIGAZIONE.md. Ultima pubblicazione v111; aggiornamento in preparazione.
+
 ## 23 settembre 2026 — v111 pubblicata: Home e illustrazioni
 
 Pubblicazione riuscita 2026-09-23T11:16:42.970784+00:00; ambiente 12 e pubblico preservati. Runtime Sites d72a4092c5d91719fca5eb164a77e003c08cd7c6; GitHub e6cc7afa4aa8fcb61cea2ec0cb7c656679746ac8; tree identico 9f6effa4e1ef25c2d849fce302b0a16316a2e55d. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_ab346388241c81918cdb5c6015d0ce2f; deployment appgdep_6ab3b4cec36c81919ba8ecfc433cdab5. CI 35853363063 riuscita. Build e 74 suite attive superate, 5 ritirate; 4 suite mirate ripetute dopo rifiniture. Compilazione remota dopo limite del packaging Windows.
