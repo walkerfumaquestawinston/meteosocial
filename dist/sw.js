@@ -2,7 +2,7 @@
 // private media, authentication redirects or external weather responses.
 importScripts('/offline-store.js');
 const CACHE='meteosocial-shell-v83';
-const APP_FILES=["/app/chunk-TRDDM4C7.js","/app/chunk-UXXUDGCI.js","/app/citta-mondo-DBT2DYAT.js","/app/leaflet-PMPOHTNZ.js","/app/local-map-weather-Q3HDO4XR.js","/app/main.js","/app/map-land-NZXNZGB6.js","/app/sky-postcard-SFOYJFOF.js","/app/style.css"]; // Filled by build.mjs with exact split-bundle paths.
+const APP_FILES=["/app/chunk-FBI4HGUQ.js","/app/chunk-UXXUDGCI.js","/app/citta-mondo-DBT2DYAT.js","/app/leaflet-PMPOHTNZ.js","/app/local-map-weather-Q3HDO4XR.js","/app/main.js","/app/map-land-NZXNZGB6.js","/app/sky-postcard-YT7MLGUJ.js","/app/style.css"]; // Filled by build.mjs with exact split-bundle paths.
 const FILES=['/','/index.html','/offline-store.js','/assets/maplibre-gl.js',...APP_FILES];
 const ESSENTIAL=['/','/index.html','/offline-store.js',...APP_FILES.filter(f=>/^\/app\/(main\.js|style\.css|chunk-[^/]+\.js)$/.test(f))];
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.all(ESSENTIAL.map(async url=>{const r=await fetch(url,{cache:'reload',redirect:'error'});if(!r.ok||r.redirected)throw Error('Shell unavailable');await cache.put(url,r)}))})()));

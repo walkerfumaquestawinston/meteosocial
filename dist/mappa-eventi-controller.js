@@ -397,7 +397,7 @@ export function createMappaEventi(ctx) {
   function visibility(){renderFreshness();if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)activeRadar()?.refresh();}}
   async function bind(){
     const host=$('#mappa-tela');if(!host||map)return;alive=true;const life=++revision;
-    sourceReady=ctx.api('forecast/provider').then(d=>{paidSource=d.source==='WeatherAPI';}).catch(()=>{paidSource=true;});
+    sourceReady=ctx.api('forecast/provider').then(d=>{paidSource=['WeatherAPI','Rainbow Weather'].includes(d.source);}).catch(()=>{paidSource=true;});
     await sourceReady;
     if(!alive||life!==revision||!host.isConnected)return;
     const sourceLink=document.querySelector('.mappa-attribuzioni a[href="https://open-meteo.com/"]');if(sourceLink&&paidSource){sourceLink.href='https://www.weatherapi.com/';sourceLink.textContent='WeatherAPI';}

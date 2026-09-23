@@ -17,6 +17,7 @@ export function cityCatalog(weather, catalog, towns, selected) {
 }
 
 export function weatherAge(current, now=Date.now()) {
+  if(current?.kind==='forecast'&&Number.isFinite(current.validUntil)&&Number.isFinite(current.issuedAt)){const start=current.time_epoch*1000;return {stale:now<start||now>=current.validUntil||now-current.issuedAt>7200000,label:'Previsione per questa ora'};}
   if(typeof current?.time!=='string')return {stale:true,label:'Orario non disponibile'};
   const raw=current.time;const at=Date.parse(/(Z|[+-]\d\d:\d\d)$/.test(raw)?raw:raw+'Z');
   if(!Number.isFinite(at))return {stale:true,label:'Orario non disponibile'};

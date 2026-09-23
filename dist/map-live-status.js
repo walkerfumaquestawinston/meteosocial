@@ -23,9 +23,10 @@ export function modelTime(current){
 export function sourceStatus({checkedAt=0,current,radar,now=Date.now()}={}){
  const clock=t=>new Date(t).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
  const at=modelTime(current),age=at===null?null:Math.floor((now-at)/60000);
- const model=at===null?'Modello: orario non disponibile':`Modello: ${clock(at)}${age>30?' · precedente':age< -5?' · orario futuro da verificare':''}`;
+ const forecast=current?.kind==='forecast',expired=forecast?(now>=current.validUntil||now-current.issuedAt>7200000||now<at):(age===null||age>30||age< -5);
+ const model=forecast?`Previsione: ${clock(at)}–${clock(current.validUntil)}${expired?' · precedente':''}`:at===null?'Modello: orario non disponibile':`Modello: ${clock(at)}${age>30?' · precedente':age< -5?' · orario futuro da verificare':''}`;
  const frame=Number.isFinite(radar?.time)?radar.time*1000:null;
  return {checked:checkedAt?`Controllo ${clock(checkedAt)}`:'Controllo in corso',model,
  radar:radar?.enabled?(frame?`Radar visualizzato: ${clock(frame)}${now-frame>25*60000?' · quadro precedente':''}`:'Radar: in attesa della fonte'):'Radar: spento',
- stale:age===null||age>30||age< -5};
+ stale:expired};
 }

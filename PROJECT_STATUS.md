@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Rainbow collegato, pubblicazione in verifica
+
+RAINBOW_API_KEY salvata personalmente dall’utente nei segreti Sites, revisione 12. Il percorso server dà priorità a Rainbow per previsioni e punti mappa, cache condivisa 15 minuti, protezione 100 richieste/ora e 5.000/mese della sola app. Nessuna promessa di limite complessivo account. Fusi da tz-lookup 6.1.25; stime orarie esplicitamente previsionali, emissione e validità separate, dati assenti null. Giorni aggregati dalle ore disponibili: iniziale/finale parziali dichiarati. Radar RainViewer/DPC e dati specialistici separati. Build e 71 suite superate; test Worker Rainbow ampliato superato. Pubblicazione e prova autenticata ancora da confermare.
+
 ## 23 settembre 2026 — Migrazione Rainbow richiesta, non attiva
 
 Account Rainbow attivo e autorizzazione al trasferimento della chiave ricevuta. Il controllo automatico blocca il passaggio della credenziale attraverso l'output dello strumento: RAINBOW_API_KEY non salvata in Sites. Client server isolato preparato in server/rainbow-client.mjs, test-rainbow.mjs superato con fixture; non incluso nel Worker. Restano credenziale, risposta reale, fusi/giornate locali, quota/cache, integrazione UI e pubblicazione. Dettagli docs/RAINBOW-INTEGRAZIONE.md. Sito pubblico ancora v96 WeatherAPI.

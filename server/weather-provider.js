@@ -1,6 +1,7 @@
 // Paid current conditions are separate from forecast models and radar.
 // The key lives only in Sites runtime secrets, never in browser assets or logs.
 async function weatherProviderCurrent(env,place){
+ if(env.RAINBOW_API_KEY)return rainbowProviderCurrent(env,place);
  if(!env.WEATHERAPI_KEY)return {status:'not-configured'};
  try{
   const data=await globeSnapshot(env,'weatherapi-current-v2:'+place.key,async()=>{

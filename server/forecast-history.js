@@ -27,9 +27,9 @@ async function forecastResponse(env,row,stale=false){
 }
 function forecastSourceURL(place){return 'https://api.open-meteo.com/v1/forecast?'+new URLSearchParams({latitude:place.latitude,longitude:place.longitude,current:'temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,rain,showers,snowfall,surface_pressure,cloud_cover,is_day',hourly:'temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,freezing_level_height,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,relative_humidity_2m,surface_pressure,weather_code,is_day',daily:'temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,uv_index_max,sunrise,sunset,precipitation_sum',forecast_days:'7',timezone:'auto'})}
 async function acquireForecast(env,place){
- let previous=null,storage=true;try{previous=await q(env,'SELECT * FROM forecast_copies WHERE location=? ORDER BY captured DESC LIMIT 1',place.key).first();if(previous&&(JSON.parse(previous.payload).source||'Open-Meteo')===(env.WEATHERAPI_KEY?'WeatherAPI':'Open-Meteo')&&Date.now()>=previous.captured&&Date.now()-previous.captured<FORECAST_INTERVAL)return await forecastResponse(env,previous)}catch{storage=false}
+ let previous=null,storage=true;try{previous=await q(env,'SELECT * FROM forecast_copies WHERE location=? ORDER BY captured DESC LIMIT 1',place.key).first();if(previous&&(JSON.parse(previous.payload).source||'Open-Meteo')===(env.RAINBOW_API_KEY?'Rainbow Weather':env.WEATHERAPI_KEY?'WeatherAPI':'Open-Meteo')&&Date.now()>=previous.captured&&Date.now()-previous.captured<FORECAST_INTERVAL)return await forecastResponse(env,previous)}catch{storage=false}
  let data;try{
-  if(env.WEATHERAPI_KEY){data=await weatherProviderForecast(env,place);}else{
+  if(env.RAINBOW_API_KEY){data=await rainbowProviderForecast(env,place);}else if(env.WEATHERAPI_KEY){data=await weatherProviderForecast(env,place);}else{
   if(Date.now()<forecastRetryAt)throw Error('rate-limit');
   const response=await fetch(forecastSourceURL(place),{signal:AbortSignal.timeout(12000)});
   if(response.status===429){
@@ -54,7 +54,7 @@ async function forecastApi(req,env,url){
  if(url.pathname==='/api/forecast/snapshot'){
  const id=url.searchParams.get('id');if(!/^[a-f0-9-]{36}$/.test(id||''))fail(400,'Copia non valida.');const row=await q(env,'SELECT * FROM forecast_copies WHERE id=?',id).first();if(!row)fail(404,'Copia non trovata.');return json({...forecastSummary(row),location:row.location,source:JSON.parse(row.payload).source||'Open-Meteo',modelIssuedAt:null,data:JSON.parse(row.payload)});
  }
- if(url.pathname==='/api/forecast/provider')return json({source:env.WEATHERAPI_KEY?'WeatherAPI':'Open-Meteo',currentCacheSeconds:300,forecastCacheSeconds:900});
+ if(url.pathname==='/api/forecast/provider')return json({source:env.RAINBOW_API_KEY?'Rainbow Weather':env.WEATHERAPI_KEY?'WeatherAPI':'Open-Meteo',currentCacheSeconds:300,forecastCacheSeconds:900});
  const place=forecastLocation(url);
  if(url.pathname==='/api/forecast/current')return json(await weatherProviderCurrent(env,place));
  if(url.pathname==='/api/forecast/history'){
