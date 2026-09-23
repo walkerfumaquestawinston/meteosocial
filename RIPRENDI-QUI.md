@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v112 pubblicata: barre chiare e animate
+
+Pubblicazione riuscita 2026-09-23T11:28:48.374580+00:00, ambiente 12 e pubblico preservati. Sites runtime 0b09e3cb53e5ed6ac1e1909f87ad0518a992a30b; GitHub 208ea6827a336a055f27f1c09451c2d719df8746; tree identico 676774ae75acf9ca049ce264efbcf01e167c3966. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_8e3b39b329f88191b9aaed5effca3041; deployment appgdep_6ab3b7a20ba88191a77ce555b2827c00. CI 35854531918 riuscita, build e 74 suite attive superate, 5 ritirate. Compilazione remota per limite del confezionamento Windows.
+
+Barra superiore con Località/Lente IA/Profilo e navigazione Oggi/Meteo/Mappa/Community/Segnala. Selettore scorrevole e feedback alla pressione con movimento ridotto rispettato. Browser desktop/390 px: pagine raggiungibili, etichette complete, indicatore allineato, nessun overflow; anteprima 4597 aggiornata. Nessun nuovo costo, post o invio IA. Dettagli docs/NAVIGAZIONE.md. Ramo e PR draft #21 conservati; successivi commit solo note, nessun ulteriore deploy.
+
 ## 23 settembre 2026 — Navigazione rinnovata pronta
 
 Barra superiore con località, Lente IA e profilo; cinque destinazioni Oggi/Meteo/Mappa/Community/Segnala con indicatore scorrevole e feedback al clic. Colori ereditati dalla fase solare, movimento ridotto rispettato. Browser desktop/390 px, etichette complete e nessun overflow; build e 74 suite attive superate, 5 ritirate. Nessun nuovo costo o servizio. Dettagli docs/NAVIGAZIONE.md. Ultima pubblicazione v111; aggiornamento in preparazione.
