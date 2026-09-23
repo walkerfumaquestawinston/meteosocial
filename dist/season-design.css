@@ -47,14 +47,14 @@ html:root body.cielo-design.segnale-design #main .weather-hero{border-radius:24p
 html:root body.cielo-design.segnale-design .shell>nav.signal-nav{background:#101c30f5!important;border:1px solid #5c718e;border-radius:22px!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;padding:7px!important;min-height:76px;box-shadow:0 12px 32px #02061255}
 html:root body.cielo-design.segnale-design .shell>nav.signal-nav>a{min-height:60px;gap:5px;color:#dce5f4!important}
 html:root body.cielo-design.segnale-design .shell>nav.signal-nav>a.active{background:#263b54!important;color:var(--season-dark)!important;box-shadow:inset 0 -3px var(--season-dark)}
-html:root body.cielo-design.segnale-design .shell>nav.signal-nav>a.signal-nav-map{margin-top:0!important;justify-content:center;padding:6px 2px!important;gap:5px;color:#dce5f4!important}
+html:root body.cielo-design.segnale-design .shell>nav.signal-nav>a.signal-nav-map{margin-top:0!important;justify-content:center;padding:6px 2px!important;gap:5px}
 html:root body.cielo-design.segnale-design .signal-nav>a.signal-nav-map>span:first-child{width:24px;height:24px;border:0;border-radius:0;background:none!important;color:inherit;box-shadow:none;outline:none!important}
 /* Festival accents occupy only the decorative edge, never the weather or warning map. */
 html:root[data-holiday]:not([data-holiday=""]) body.cielo-design.segnale-design .cielo-weather-stage{border-top:3px solid var(--season-dark)}
 html:root[data-festive-tone=natale] body.cielo-design.segnale-design .cielo-weather-stage{border-image:none;border-right:3px solid #eaa3a6}
 html:root body.cielo-design.segnale-design #main .mappa{font-size:14px}
 html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola{border-radius:0!important}
-html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola strong{font-size:14px!important}
+html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola strong{font-size:var(--map-tab-size,14px)!important}
 html:root body.cielo-design.segnale-design #main .mappa .mappa-pillola[aria-pressed=true]{box-shadow:inset 0 -3px var(--signal-accent)!important}
 html:root body.cielo-design.segnale-design #main .mappa-stato{font-size:12px}
 html:root body.cielo-design.segnale-design #main .mappa .mappa-field{top:170px!important;bottom:auto;max-height:calc(100% - 190px);width:290px;border-radius:14px}

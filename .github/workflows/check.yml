@@ -19,20 +19,5 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build application before testing
         run: pnpm build
-      - run: node test-daily-question.mjs
-      - run: node test-profession.mjs
-      - run: node test-sky-confirm.mjs
-      - run: node --experimental-vm-modules test-mappa.mjs
-      - run: node --experimental-vm-modules test-map-weather-core.mjs
-      - run: node --experimental-vm-modules test-mappa-diretta.mjs
-      - run: node --experimental-vm-modules test-lente.mjs
-      - run: node --experimental-vm-modules test-atlas-radar.mjs
-      - run: node test-map-city-labels.mjs
-      - run: node test-map-weather-source.mjs
-      - run: node test-map-field.mjs
-      - run: node test-hail-desk.mjs
-      - run: node test-solar-live-map.mjs
-      - run: node test-pulse.mjs
-      - run: node --experimental-vm-modules test-hail-community.mjs
-      - run: node test-network.mjs
-      - run: node test-community-context.mjs
+      - name: Run all active regression suites
+        run: node tools/run-tests.mjs

@@ -1,5 +1,43 @@
 # MeteoSocial — continuità del design Atmosfera
 
+## 22 settembre 2026 — Versione 81 pubblicata: stelle e nuvole naturali
+
+Sites riuscito il 2026-09-22T02:39:46.201214Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . Stelle irregolari con tre punti scintillanti, nuvole vettoriali con sfumature e ombre. Entrambe le sezioni Oggi/Meteo seguono orario locale e codici meteo; verificati notte, pioggia diurna senza stelle e nuvole calde al tramonto. Sole/luna nascosti nel maltempo, riflessi attenuati. Nessun video o nuovo asset scaricato, circa 6 KB gzip per i sorgenti scena.
+
+Runtime afccbbfe41faa95028f2543479714893bfe90a45; albero e8d70d303ca910c5adcf52255508caeef78f73a0 identico al commit GitHub 06342b72dbc46ca764f372eeca12c75baa5e6ffe. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_de57ec53382481919e5332427b1083c7; deployment appgdep_6ab1ea31a94881918adfabdc273ab9c3.
+
+Ramo aggiornato codex/weather-scenery-20260922, PR draft https://github.com/walkerfumaquestawinston/meteosocial/pull/21 sopra PR #20. Anteprima 4595 allineata. Build e quattro suite mirate superate. Fase solare ogni 30 secondi, meteo ogni 15 minuti mentre visibile e al ritorno/cambio città. Le note successive sono solo documentazione e vengono salvate su entrambi i repository senza ulteriore deploy. Dettagli in docs/METEO-ANIMATO.md.
+
+
+## 22 settembre 2026 — Versione 80 pubblicata: Costa di luce anche in Oggi
+
+Pubblicazione riuscita il 2026-09-22T02:30:41.772715Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . L’ingresso Oggi mostra lo stesso paesaggio animato di Meteo con firma visiva MeteoSocial. Tolti l’immagine decorativa nascosta e il vecchio backdrop blur. La scena si rinnova con i dati/città; gli stati di caricamento ed errore restano espliciti.
+
+Runtime 96d6b75b5ccd068a77be0812b28fc80556d05bb2; albero d575ef68ff0ca6c07f1208075c2b4be87b8cfa56 identico al commit GitHub 94eb8ad56e897d3630629e69cad1d70783804150. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_c9b136dc509c81919422a7603d04630d; deployment appgdep_6ab1e8133e74819186e7cbaada721d0c.
+
+Continuare dal ramo codex/weather-scenery-20260922 e PR draft https://github.com/walkerfumaquestawinston/meteosocial/pull/21, sopra PR #20. Anteprima 4595 allineata. Build e quattro suite mirate superate; Home controllata su desktop e a 390px, una sola scena, animazione attiva e nessun overflow. Note solo documentali salvate su entrambi i repository senza ulteriore deploy. Dettagli: docs/METEO-ANIMATO.md.
+
+
+## 22 settembre 2026 — Versione 79 pubblicata: Costa di luce
+
+Sites pubblicato con successo il 2026-09-22T02:23:20.274151Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#tendenze . Ora il movimento è più visibile: nuvole, acqua e riflessi misurati in movimento nel browser; costa e faro originali con spazio dedicato su mobile. Nessun nuovo download multimediale o dipendenza, circa 4082 byte gzip per i due sorgenti della scena. Non è una misura FPS/batteria.
+
+Runtime eb0b9d59581d5fcbb6f809ed8ff0d1df6c508455, albero 9736c59683803a4057c8e62e8d0cde654c7148a5 identico al commit GitHub da9a5f84d2c3a34e1bd563f82022997494b0b4b6. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_fb8f1ccd6bdc8191b358e6ada0317e3e; deployment appgdep_6ab1e64b60188191812e129d49629d4e.
+
+Continuare da codex/weather-scenery-20260922, PR https://github.com/walkerfumaquestawinston/meteosocial/pull/21 aggiornata (draft sopra PR #20). Anteprima locale 4595 allineata. Build riuscita, tre suite mirate superate, nessun overflow a 390 px o errore console nel controllo finale. Dettagli in docs/METEO-ANIMATO.md. Queste note solo documentali sono salvate su Sites e GitHub senza ulteriore deploy.
+
+
+## 22 settembre 2026 — Versione 78 pubblicata: Meteo animato
+
+Pubblicazione Sites riuscita il 2026-09-22T02:14:02.111366Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#tendenze
+
+La categoria Meteo ha un paesaggio animato che segue orario locale e condizioni del provider: sole, luna/stelle, nuvole, pioggia, neve, foschia e cielo temporalesco. Movimento ridotto rispettato; nessun flash. Fonte/orario e avvisi offline restano visibili. Dettagli: docs/METEO-ANIMATO.md.
+
+Runtime Sites: faed6f740a6c7b7e1adf977311b121cf00cf7e08; stesso albero 1d6bdacb67453c0b4634a66681ac3b8846c6268d del commit GitHub e088dcd29af32a998e0002af3b6f7bc3b0c902d1. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_23dee68984748191ab53e319f665a2c6; deployment appgdep_6ab1e41e56f48191bc155935ba94948b.
+
+Continuare dal ramo codex/weather-scenery-20260922, PR draft https://github.com/walkerfumaquestawinston/meteosocial/pull/21 sopra PR #20, non da main. Anteprima locale allineata su http://127.0.0.1:4595/#tendenze. Build e cinque suite mirate superate, nessun errore console nel controllo finale. Queste note successive sono solo documentazione, salvate nei due repository senza nuovo deploy. Pubblico e segreti invariati.
+
+
 ## 22 settembre 2026 — Versione 77 pubblicata: Cielo vivo
 
 Sites conferma pubblicazione riuscita il 2026-09-22T02:01:43.998650Z: https://scudo-meteo-community.walkerthehate.chatgpt.site

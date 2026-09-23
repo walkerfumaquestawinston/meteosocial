@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {postFacts,publicationPreview} from './dist/community-cards.js';
+const facts=postFacts({kind:'<img src=x>',created:Date.UTC(2026,8,23,10)});
+assert.ok(facts.includes('Pubblicato')&&facts.includes('2026-09-23T10:00:00.000Z'));
+assert.ok(facts.includes('Racconto non verificato'));
+assert.ok(!facts.includes('<img'));
+assert.ok(postFacts({created:null}).includes('non disponibile'));
+assert.ok(!postFacts({created:null}).includes('1970'));
+const preview=publicationPreview({city:'<script>',text:'<img src=x onerror=alert(1)>',kind:'Pioggia',photo:'https://private.invalid/image'});
+assert.ok(!preview.includes('<script>')&&!preview.includes('<img'));
+assert.ok(preview.includes('NON ANCORA PUBBLICATO')&&preview.includes('ora dell’osservazione'));
+assert.ok(publicationPreview({photo:'data:image/jpeg;base64,YQ=='}).includes('<img'));
+assert.ok(!publicationPreview({photo:'data:image/svg+xml;base64,YQ=='}).includes('<img'));
+console.log('Community cards: timestamp semantics, missing dates, safe text and photo preview passed.');

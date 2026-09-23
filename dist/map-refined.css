@@ -1,0 +1,142 @@
+/* A quiet map canvas, a compact local desk, and progressive detail. */
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+ --atlas-side:344px;
+ &[data-map-theme=giorno]{--panel:#f8fbfd;--panel-raised:#e8f0f5;--panel-line:#b3c5d0;--panel-ink:#142d41;--panel-muted:#456173;--signature:#146580;--panel-bg:var(--panel)}
+ &[data-map-theme=notte]{--panel:#102432;--panel-line:#496573;--panel-ink:#f1f7fa;--panel-muted:#bed0db;--signature:#83dae4;--panel-bg:var(--panel)}
+ & .mappa-field{border-left:1px solid var(--panel-line);box-shadow:-8px 0 30px #10243812}
+ & .mappa-field :is(.field-actions button,.field-hour-grid button){background:var(--panel-raised)!important;color:var(--panel-ink)!important;border-color:var(--panel-line)!important}
+ & .mappa-field :is(.field-actions svg,.field-hour-grid b,.field-hour-grid time){color:inherit!important}
+ & .map-brief-temperature,& .field-hour-grid b,& #mappa-radar-time{font-variant-numeric:tabular-nums}
+ & .mappa-country-name{color:var(--panel-muted)!important;text-shadow:none!important}
+ &[data-map-theme=giorno] #mappa-radar-toggle[aria-pressed=true],&[data-map-theme=giorno] #mappa-radar-toggle[aria-pressed=true] b{color:#fff!important;background:#146580!important}
+ & .mappa-tela{background:#d8e7eb!important}
+ &[data-map-theme=notte] .mappa-tela{background:#10212d!important}
+ &[data-map-theme=notte]{--panel-raised:#173342}
+ & .mappa-alto{inset:12px calc(var(--atlas-side) + 12px) auto 12px;grid-template-rows:44px 42px auto;gap:6px}
+ & .mappa-cerca,& .mappa-subtools button,& .mappa-contatori,& .mappa-live-bar{box-shadow:0 3px 12px #071c2914;border-radius:12px}
+ & .mappa-cerca{min-height:44px}
+ & .mappa-contatori{padding:3px;background:var(--panel);border:1px solid var(--panel-line);gap:2px}
+ & .mappa-pillola{border:0!important;border-radius:8px!important;min-height:34px;padding:5px 8px;box-shadow:none!important;background:transparent!important;color:var(--panel-muted)!important}
+ & .mappa-pillola[aria-pressed=true]{background:var(--panel-ink)!important;color:var(--panel)!important}
+ & .mappa-pillola[aria-pressed=true] :is(strong,span,svg){color:var(--panel)!important}
+ & .mappa-pillola strong{font-size:12px!important}
+ & .mappa-pillola svg{width:17px;height:17px}
+ & .mappa-live-bar{padding:5px 10px;min-height:30px!important;border:1px solid var(--panel-line);grid-template-columns:auto 1fr auto}
+ & #mappa-now{font-size:10px!important;letter-spacing:.03em}
+ & #mappa-data-time{font-size:11px!important}
+ & #mappa-fonti{min-height:28px;font-size:11px;grid-row:1}
+ & .mappa-strumenti{top:152px}
+ & .map-brief{padding:15px 16px 12px!important;gap:7px;border-top:3px solid var(--signature)}
+ & .map-brief h2{font-size:22px!important;line-height:1.15;margin:5px 0}
+ & .map-brief-temperature{font-size:44px!important;line-height:1.1}
+ & .map-brief-kicker{font-size:9px!important;letter-spacing:.08em}
+ & .map-brief-condition{font-size:12px}
+ & .map-brief-metrics{grid-template-columns:1fr 1fr 1.3fr!important;padding-top:8px;gap:8px}
+ & .map-brief-metrics>span:last-child{grid-column:auto!important;border:0;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+ & .map-brief-metrics small{font-size:10px!important}
+ & .map-brief-metrics b{font-size:12px!important}
+ & .desk-tabs{display:grid;grid-template-columns:1fr 1fr 1.3fr;padding:6px 12px;gap:3px;background:var(--panel);border-bottom:1px solid var(--panel-line);flex:none}
+ & .desk-tabs button{min-height:42px;border:0;border-radius:8px;padding:6px 4px;font:600 12px/1.2 system-ui;color:var(--panel-muted)!important;background:transparent!important}
+ & .desk-tabs button[aria-pressed=true]{background:var(--panel-raised)!important;color:var(--panel-ink)!important;box-shadow:inset 0 -2px var(--signature)}
+ & .field-scroll{padding:14px 16px}
+ & .desk-section-title{font-size:14px;margin:0 0 12px}
+ & .field-hour-grid button{min-height:58px}
+ & .field-content .field-actions{grid-template-columns:repeat(4,minmax(0,1fr));padding:8px;gap:4px;background:var(--panel);border-top:1px solid var(--panel-line)}
+ & .field-actions button{min-height:48px!important;flex-direction:column;gap:3px;padding:5px 2px!important;font-size:11px!important;border-radius:9px!important}
+ & .field-actions svg{width:17px;height:17px}
+ & .desk-community{margin:0;padding:8px 0;border:0}
+ & .desk-community h3{font-size:21px;line-height:1.2;margin:12px 0}
+ & .desk-community p{line-height:1.6}
+ & .field-wide{width:100%;padding:10px;min-height:44px;background:var(--panel-raised);color:var(--panel-ink);border:1px solid var(--panel-line);border-radius:10px}
+ & .mappa-basso{left:12px;right:calc(var(--atlas-side) + 12px)}
+ & .mappa-radar-timeline{width:100%;max-width:520px;padding:10px 12px;border-radius:14px;box-shadow:0 6px 24px #061b2926}
+ & .mappa-radar-heading{gap:5px;align-items:center;margin-bottom:6px}
+ & .mappa-radar-heading strong{font-size:10px;letter-spacing:.05em}
+ & #mappa-radar-note,& #mappa-radar-source{font-size:10px}
+ & .mappa-radar-track{grid-template-columns:36px 42px minmax(30px,1fr) 58px 32px;gap:5px}
+ & .mappa-radar-track button{min-height:36px;min-width:0!important}
+ & :is(.mappa-radar-track button,.map-tool-grid button,#mappa-pannello-chiudi){background:var(--panel-raised)!important;color:var(--panel-ink)!important;border-color:var(--panel-line)!important}
+ & .map-tool-grid button :is(b,small,span){color:inherit!important}
+ & #mappa-radar-range{min-width:0;width:100%}
+ & .radar-periods{display:flex;justify-content:space-between;padding:1px 92px 4px 88px;font-size:9px;color:var(--panel-muted);gap:5px}
+ & .radar-periods span:nth-child(2){margin-right:auto;margin-left:20%}
+ & .radar-details{border-top:1px solid var(--panel-line);margin-top:4px;font-size:11px;color:var(--panel-ink)}
+ & .radar-details summary{cursor:pointer;padding:8px 0;min-height:30px;box-sizing:border-box;color:var(--panel-muted)}
+ & .radar-details[open]{max-height:240px;overflow:auto}
+ & #mappa-radar-explanation{font-size:11px;line-height:1.5;margin:6px 0}
+ & #radar-color-key figure{margin:8px 0;padding:8px;background:#fff;color:#132f45;border-radius:8px}
+ & #radar-color-key img{width:100%;height:auto;display:block;margin-top:6px}
+ & .map-tool-section{margin-bottom:22px}
+ & .map-tool-section h3{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--panel-muted)!important;margin:0 0 10px}
+ & .map-tool-grid{gap:6px}
+ & .map-tool-grid button{border-radius:10px;padding:10px}
+ & button:focus-visible,& summary:focus-visible{outline:3px solid var(--signature);outline-offset:2px}
+ & [hidden]{display:none!important}
+}
+@media(max-width:920px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+  & .mappa-alto{inset:8px 8px auto;grid-template-rows:42px 42px auto;gap:5px}
+  & .mappa-tela,&.has-radar .mappa-tela{top:0;right:0;bottom:48%;height:52%}
+  & .mappa-field,& .mappa-field:not(.is-open),&.has-radar .mappa-field,&.has-radar .mappa-field:not(.is-open){top:52%!important;height:48%!important;max-height:48%!important;width:100%;overflow:hidden;display:flex!important}
+  & .map-brief{padding:9px 12px!important;gap:5px;flex:none}
+  & .map-brief h2{font-size:19px!important}
+  & .map-brief-temperature{font-size:35px!important}
+  & .map-brief-metrics{padding-top:4px;gap:6px;grid-template-columns:1fr 1fr!important}
+  & .map-brief-metrics>span{display:flex;align-items:center;gap:6px}
+  & .map-brief-metrics>span:last-child{grid-column:1/-1!important;flex-direction:row;justify-content:space-between;align-items:center}
+  & .desk-tabs{padding:3px 8px}
+  & .desk-tabs button{min-height:38px}
+  & .field-content,& .mappa-field.is-open .field-content{flex:1;min-height:0;overflow:hidden}
+  & .field-scroll{overflow:auto;min-height:0;flex:1;padding:12px}
+  & .field-actions{padding:4px;flex:none;position:static}
+  & .field-actions button{min-height:44px!important;flex-direction:row;font-size:10px!important;gap:4px}
+  & .mappa-basso,&.has-radar .mappa-basso{bottom:calc(48% + 6px);left:8px;right:8px;max-width:none}
+  & .mappa-radar-timeline{max-width:100%;padding:6px 9px}
+  & .mappa-radar-heading{margin:0 0 3px;flex-wrap:wrap}
+  & .mappa-radar-heading strong,& #mappa-radar-note,& #mappa-radar-source{font-size:9px}
+  & .mappa-radar-track{grid-template-columns:32px 37px minmax(20px,1fr) 52px 28px;gap:3px}
+  & .mappa-radar-track button{min-height:32px;padding:3px;font-size:11px}
+  & .radar-periods{padding:0 83px 0 76px;font-size:8px;gap:2px}
+  & .radar-details summary{padding:5px 0;min-height:25px;font-size:10px}
+  & .radar-details[open]{max-height:150px}
+  & .mappa-strumenti{top:145px}
+ }
+}
+@media(max-width:920px) and (orientation:landscape){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
+  --atlas-side:300px;
+  & .mappa-tela,&.has-radar .mappa-tela{right:300px;height:100%;bottom:0}
+  & .mappa-alto{right:308px}
+  & .mappa-field,& .mappa-field:not(.is-open),&.has-radar .mappa-field,&.has-radar .mappa-field:not(.is-open){top:0!important;height:100%!important;max-height:100%!important;width:300px}
+  & .mappa-basso,&.has-radar .mappa-basso{bottom:6px;right:308px}
+ }
+}
+/* Bring forecast and conversations closer to the first screen. */
+html:root[data-phase] body.cielo-design.segnale-design #main{
+ & .weather-hero{min-height:0!important;padding:24px!important;gap:14px}
+ & .weather-hero-copy{padding:0!important}
+ & .has-weather-scene .weather-hero-actions{margin-top:18px!important;gap:8px}
+ & .has-weather-scene .weather-date{font-size:12px}
+ & .weather-big-temp{font-size:clamp(64px,7vw,100px)!important;line-height:1.05}
+ & .weather-hero h2{font-size:clamp(24px,3vw,34px)!important;margin:8px 0}
+ & .weather-hero p{margin:8px 0;font-size:14px}
+ & .weather-art{max-height:180px}
+ & .community-heading{padding:6px 0 12px!important;gap:12px!important;margin-bottom:8px!important}
+ & .community-heading h1{font-size:32px!important;margin:5px 0 8px}
+ & .community-heading p{font-size:14px!important}
+ & .community-compose{padding:12px 16px!important;gap:10px;margin-bottom:10px;display:flex!important;align-items:center}
+ & .community-compose>div{display:flex;gap:6px;margin-top:0}
+ & .community-compose>span{font-size:14px}
+ & .community-hub .network-tabs{padding-bottom:8px;margin-bottom:8px}
+}
+@media(max-width:640px){
+ html:root[data-phase] body.cielo-design.segnale-design #main{
+  & .weather-hero{padding:18px!important}
+  & .weather-art{max-height:120px}
+ & .community-heading h1{font-size:28px!important}
+  & .community-compose{display:block!important}
+  & .community-compose>div{display:grid;grid-template-columns:1fr 1fr;margin-top:8px;gap:6px}
+  & .community-compose :is(button,a){padding:8px!important;font-size:12px!important}
+  & .community-hub .network-tabs button{font-size:12px;padding:8px}
+ }
+}

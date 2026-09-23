@@ -1,5 +1,6 @@
 // Geography remains useful when a weather provider is unavailable.
 import {validPlace} from './map-weather-core.js';
+import {modelTime} from './map-live-status.js';
 
 export function cityCatalog(weather, catalog, towns, selected) {
   const result=[];
@@ -11,21 +12,23 @@ export function cityCatalog(weather, catalog, towns, selected) {
     const existing=result.find(q=>same(p,q));
     if(!existing)result.push({...p});else if(p.localized)existing.name=p.name;
   }
-  if(validPlace(selected)&&selected.name){const i=result.findIndex(p=>same(p,selected));const previous=i<0?{}:result.splice(i,1)[0];result.unshift({...previous,...selected,current:selected.current||previous.current,selected:true});}
+  if(validPlace(selected)&&selected.name){const i=result.findIndex(p=>same(p,selected));const previous=i<0?{}:result.splice(i,1)[0];const current=(modelTime(previous.current)??-Infinity)>(modelTime(selected.current)??-Infinity)?previous.current:selected.current||previous.current;result.unshift({...previous,...selected,current,selected:true});}
   return result;
 }
 
 export function weatherAge(current, now=Date.now()) {
-  if(typeof current?.time!=='string')return {stale:false,label:'Orario non disponibile'};
+  if(current?.kind==='forecast'&&Number.isFinite(current.validUntil)&&Number.isFinite(current.issuedAt)){const start=current.time_epoch*1000;return {stale:now<start||now>=current.validUntil||now-current.issuedAt>7200000,label:'Previsione per questa ora'};}
+  if(typeof current?.time!=='string')return {stale:true,label:'Orario non disponibile'};
   const raw=current.time;const at=Date.parse(/(Z|[+-]\d\d:\d\d)$/.test(raw)?raw:raw+'Z');
-  if(!Number.isFinite(at))return {stale:false,label:'Orario non disponibile'};
+  if(!Number.isFinite(at))return {stale:true,label:'Orario non disponibile'};
+  if(at>now+5*60000)return {stale:true,label:'Orario futuro da verificare'};
   const minutes=Math.max(0,Math.floor((now-at)/60000));
   const hours=Math.floor(minutes/60),days=Math.floor(minutes/1440);
-  return {stale:minutes>120,label:minutes<60?`${minutes} min fa`:minutes<1440?`${hours} ${hours===1?'ora':'ore'} fa`:`${days} ${days===1?'giorno':'giorni'} fa`};
+  return {stale:minutes>30,label:minutes<60?`${minutes} min fa`:minutes<1440?`${hours} ${hours===1?'ora':'ore'} fa`:`${days} ${days===1?'giorno':'giorni'} fa`};
 }
 
 const overlaps=(a,b,gap=5)=>a.left<b.right+gap&&a.right>b.left-gap&&a.top<b.bottom+gap&&a.bottom>b.top-gap;
-export function arrangeCityLabels(candidates, viewport, reserved=[]) {
+export function arrangeCityLabels(candidates, viewport, reserved=[],limit=80) {
   const placed=[],occupied=[...reserved];
   const ranked=candidates.filter(c=>Number.isFinite(c.x)&&Number.isFinite(c.y)&&Number.isFinite(c.width)&&c.width>0)
     .map((c,i)=>({...c,order:i})).sort((a,b)=>Number(!!b.selected)-Number(!!a.selected)||(b.priority||0)-(a.priority||0)||a.order-b.order);
@@ -38,7 +41,7 @@ export function arrangeCityLabels(candidates, viewport, reserved=[]) {
       if(box.left<6||box.top<6||box.right>viewport.width-6||box.bottom>viewport.height-6||occupied.some(b=>overlaps(box,b)))continue;
       placed.push({...p,dx,dy,width:w,height:h,box});occupied.push(box);break;
     }
-    if(placed.length>=80)break;
+    if(placed.length>=limit)break;
   }
   return placed;
 }

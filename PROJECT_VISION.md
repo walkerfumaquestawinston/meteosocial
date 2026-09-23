@@ -1,3 +1,76 @@
+## 23 settembre 2026 — Riferimento visivo prioritario: Argos Atlas
+
+L’utente chiede di ricordare https://argosatlas.com/map/#country=AQ come riferimento per la prossima evoluzione della mappa MeteoSocial: stesso genere di esperienza cartografica, adattata a meteo, eventi, radar e funzioni comprensibili a tutti. Riferimento effettivamente aperto e osservato: grande cartografia scura mondiale, accenti luminosi ciano, pannello laterale del luogo, barra verticale di strumenti, ricerca e filtri in alto. L’URL Antarctica è un riferimento grafico, non una richiesta di impostare l’Antartide come località iniziale.
+
+Direzione da applicare ai prossimi interventi: cartografia protagonista, estetica tecnica curata con identità MeteoSocial, comandi raccolti e pannello del luogo affiancato. Conservare giorno/notte automatico già richiesto, quindi anche una variante chiara coerente. Testi leggibili in italiano e icone accompagnate da etichette; dettagli progressivi e raggruppamento dei punti allo zoom, senza riprodurre il sovraccarico di simboli del riferimento.
+
+Organizzare i livelli meteo (temperatura, pioggia, neve, vento, temporali e grandine), radar con cronologia, eventi e segnalazioni. Un livello meteo principale alla volta, sovrapposizioni pertinenti selezionabili, fonte/orario/copertura visibili, legenda accanto al dato. Distinguere sempre analisi e previsione, eventi ufficiali e racconti non verificati; rispettare disponibilità reali delle fonti. Conservare le funzioni attuali raggiungibili senza affollare la vista iniziale. Il riferimento non autorizza nuovi abbonamenti, copie di marchi/asset, né aggiunte di voli, navi o altre categorie estranee al meteo.
+
+Questo aggiornamento registra una preferenza persistente, non un restyling già implementato. Pubblicazione invariata v106. La nuova richiesta supera eventuali indicazioni estetiche precedenti incompatibili, senza annullare leggibilità, fonti trasparenti o giorno/notte automatico.
+
+## 22 settembre 2026 — Versioni 94–96 pubblicate: Community e Lente
+
+Community: filtro Ultime 2 ore e confronto guidato previsioni/racconti. Lente: fonte e orario nel contesto iniziale, domande di seguito In tre punti e Cosa va verificato?, sempre invio manuale. Corrette etichette WeatherAPI, uso UTC in Stesso cielo, focus del pannello, contrasto dialogo e filtri mobile. Dettagli: docs/COMMUNITY-LENTE-V94.md.
+
+Build e 70 suite attive superate; verifica locale desktop/390 px, filtro e domanda preparata senza invio. Nessuna nuova generazione OpenAI reale, nessun post di prova in produzione. Nessun nuovo abbonamento. Anteprima 4597 aggiornata. Non è una certificazione completa del sito o dei telefoni fisici.
+
+Durante il rilascio l’utente ha chiesto di confrontare i dati con altri meteo. v96 conserva testo condizioni WeatherAPI e località abbinata; pioggia nelle vicinanze non diventa più pioggia certa nella descrizione principale/scena. Verificato online: San Benedetto correttamente abbinata (42.95, 13.883), WeatherAPI 15 °C alle 11:15, 3B Meteo previsione 22 °C alle 11. Scarto tra fonti non risolto/certificato; Roma 26,7 °C WeatherAPI contro 26,8 °C iLMeteo. Non sostituire arbitrariamente temperature. Dettagli docs/VERIFICA-DATI-METEO.md.
+
+Pubblicazione v96 riuscita 2026-09-22T09:30:52.229717+00:00: https://scudo-meteo-community.walkerthehate.chatgpt.site . Sites runtime 58a01c708828a3306582dfc56d5a621c5494df13 e GitHub 5d36b331ab4d529cd494f8e6f91ec8dd9f669b9b condividono tree 474f0c4558fd2dd6499403e5ada57aaecc7253f3. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_8b9cac7cb6c88191b50934aa5993d470; deployment appgdep_6ab24a610de8819185ce83478245ef1b; ambiente 10, pubblico preservato. CI 35710571751 riuscita, 70 suite. Packaging Windows non avviabile: build remota. Anteprima 4597 attiva. Ramo codex/weather-scenery-20260922, PR draft #21. Successivi commit solo documentazione.
+
+## 22 settembre 2026 — Versione 93 pubblicata: previsioni WeatherAPI e consumi
+
+WeatherAPI attivo per /api/forecast: Oggi, Meteo, prossime ore della mappa e Lente. Cache persistente attuale cinque minuti, previsioni quindici; budget condiviso 3.000 richieste/ora e protezione a 2,4M/mese di chiamate dell’app. Non legge il consumo totale dell’account. Mappa limitata a otto luoghi visibili, sequenza interrotta al cambio vista, richieste sospese in background; confronto città caricato solo aprendolo. Nessun abbonamento aggiunto.
+
+Dati specialistici mancanti restano null; orari locali e UTC conservati. Le funzioni secondarie storiche e specialistiche mantengono le proprie fonti Open-Meteo: non dichiarare indipendenza totale. Radar separati e invariati. Dettagli in docs/WEATHERAPI-PREVISIONI.md. Perimetro e stima V1 in docs/PRONTEZZA-V1.md: 3–5 giornate di rifiniture/collaudo più 5–7 giorni di prova, stima condizionata e non esecuzione automatica.
+
+Pubblicazione riuscita 2026-09-22T08:57:36.739352+00:00: https://scudo-meteo-community.walkerthehate.chatgpt.site/#mappa-eventi . Sites runtime f45a8b24fb8ee35e2abe110fc0e293f4f76916a3 e GitHub d5f179f8eed2ca3cdbd5fced5f5932b2ca698449 condividono tree df04a4ab88d936a94eeea12ef2191cd625826d91. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_3aac1b4105dc8191ae83bf36c65d03e9; deployment appgdep_6ab242b539508191b9e446869e45b237; ambiente 10, pubblico preservato. Workflow Sites apertura/push riusciti, packaging Windows non avviabile: build remota.
+
+70 suite superate; CI 35707431725 riuscita. Verifica funzionale API reali post-attivazione: Roma HTTP 200 WeatherAPI, Europe/Rome, 7 giorni/168 ore, 24,5 °C alle 10:45; Tokyo HTTP 200 WeatherAPI, Asia/Tokyo, 7 giorni/168 ore, 25,7 °C alle 17:45; entrambe offline=false e current available/mapCurrent presente. Sono esempi di verifica, non valori da fissare nell’app. Nessuna chiave esposta. Anteprima 4597 aggiornata nel codice, senza chiave WeatherAPI reale: usa Open-Meteo; percorso pagato verificato da test e API produzione. Nessuna certificazione su telefoni fisici o carico reale.
+
+Ramo codex/weather-scenery-20260922, PR draft #21. Successivi commit di sole note, nessun nuovo deploy richiesto.
+
+
+## 22 settembre 2026 — Versione 91 pubblicata: interfaccia più leggibile
+
+Restyling senza nuovi abbonamenti: Oggi a due colonne sul desktop, navigazione superiore sulle pagine principali e dock mobile, tipografia e controlli uniformi, dettagli della variazione meteo apribili, Community a due colonne di pulsanti sul telefono. Fonti e orari restano visibili. Home senza hash evita il pre-caricamento MapLibre (937395 byte non compressi); nessun benchmark di velocità dichiarato. Dettagli in docs/DESIGN-FINITURE.md.
+
+Pubblicazione riuscita 2026-09-22T08:07:40.245148Z: https://scudo-meteo-community.walkerthehate.chatgpt.site/#home . Sites runtime 9d591516076e48096f1bc035e4c86e1a95332756 e GitHub e9f371ab22719476c5604c62c2d6d8cb35a2e558 condividono tree a99980a3a8cbec83d4867ece3ffbf897fbeae8ef. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_38f81f52c45c819189880d560d362ab3; deployment appgdep_6ab236f556d88191ae080a243682d8fb; ambiente 10, audience pubblica preservata. Apertura e push con workflow Sites riusciti; packaging locale non avviabile su Windows, usata build remota.
+
+Build e 69 suite superate, CI 35702914439 riuscita. Ritocchi finali CSS ricompilati; anteprima 4597 verificata desktop, 390 e 320 px, dettaglio cronologia apribile, navigazione e radar con quadro 09:55. Nessuna certificazione WCAG, di prestazioni o su dispositivo fisico. Open-Meteo rimane indisponibile nel controllo locale: il restyling non risolve il problema dei dati, che restano marcati come precedenti. Conferma pubblicazione tramite stato Sites; nessuna nuova verifica browser del sito pubblico richiesta per questo rilascio.
+
+Ramo codex/weather-scenery-20260922, PR draft #21. I successivi commit registrano solo queste note e non richiedono nuovo deploy.
+
+## 22 settembre 2026 — Versione 90 pubblicata: radar grandine gratuito e tema automatico
+
+Radar-DPC POH Italia integrato gratuitamente, con probabilità, fonte, licenza e orario reale del quadro; aggiornamento nominale 5 minuti, copertura non uniforme e ritardo possibile. Non è conferma a terra né radar mondiale. Tema automatico giorno/notte per cartografia e pannelli, opzioni manuali in Strumenti, indice dei sei livelli e più spazio radar sul telefono.
+
+Sites runtime 4ad7ed3100104ed8ddde48c7b9547a5551aabf0b e GitHub f1c0e1a320cc220ef6825df9c7902d0714d404dc condividono tree a85eb03d441f58ba18182e3b80b7d2b017d98cc7. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_53b0d1a594b081918f531d064fd5a259; deployment appgdep_6ab2316aede08191abc10fc7a3771a09 riuscito 2026-09-22T07:43:42.483704Z, ambiente revisione 10. Build remota: il nuovo workflow Sites locale è stato tentato, ma non avvia il comando di preparazione su questo host Windows.
+
+Build e 69 suite passate nella revisione completa; test radar e build ripetuti dopo la correzione, CI finale 35700696862 riuscita. v89 pubblicata ma endpoint radar rispondeva 503: v90 cambia redirect da error a manual, rifiutando comunque tutte le risposte non 2xx, e aggiunge diagnostica senza URL firmati. Endpoint pubblico verificato 200 image/tiff, 322324 byte, quadro 09:35 CEST. Anteprima 4597 e verifiche desktop, 390 e 320 px; tema chiaro/scuro e ripristino Automatico. Nessuna certificazione meteorologica o su dispositivi fisici. Limite Open-Meteo precedente ancora presente, indipendente dal radar.
+
+Continuare ramo codex/weather-scenery-20260922 e PR draft #21. Dettagli in docs/RADAR-GRANDINE-TEMA.md. Successivi commit di note non richiedono un nuovo deploy. Nessun abbonamento aggiunto.
+
+## 22 settembre 2026 — Radar grandine gratuito e mappa giorno/notte, revisione pronta
+
+Richiesta più recente: radar grandine gratuito (supera la breve preferenza a pagamento). Collegato Radar-DPC POH Italia, senza nuovo abbonamento, separato dalle osservazioni della community. Tema automatico cartografia e pannelli, con opzioni manuali negli Strumenti e indice dei livelli. Ultima pubblicazione confermata 88; attendere nota di esito. Dettagli e limiti in docs/RADAR-GRANDINE-TEMA.md.
+
+## 22 settembre 2026 — Cartografia MapTiler
+
+Utente approva integrazione MapTiler e chiede il link per pagare Flex. Conservare mappa e pannello affiancati, stile leggibile con pochi elementi di fondo, etichette meteo in evidenza. Creato Atlante chiaro nel suo account. Fonte cartografica distinta dal meteo.
+
+## 22 settembre 2026 — Acquisto richiesto
+
+L’utente chiede di attivare un abbonamento e integrarlo, poi domanda la differenza tra Starter e Pro+. Registrazione WeatherAPI aperta, nessun acquisto completato. Collegamento server predisposto; attivazione dipende dalla chiave del suo account. Nessun rinnovo annuale richiesto.
+
+## 22 settembre 2026 — Preferenze aggiornate dopo la v85
+
+L'utente non approva ancora la mappa. Vuole copertura mondiale, dati recenti con orario esatto e pannello dettagliato sempre affiancato alla cartografia. Budget dati massimo 50 euro al mese. Sul telefono verticale preservare leggibilità mantenendo due aree visibili. Non comprare servizi senza un'offerta precisa; nessun abbonamento attivato. Non confondere frequenza delle chiamate, passi delle previsioni e nuove osservazioni al secondo. Ricerca ufficiale e correzione del campione obsoleto: docs/MAPPA-DATI-RECENTI.md. Questa preferenza supera la precedente scheda richiudibile della v85.
+
+## 22 settembre 2026 — Una mappa dettagliata che si capisce subito
+
+L'utente chiede una mappa molto utile, ricca e riconoscibile, comprensibile senza difficoltà. Dare priorità a luogo, tempo attuale, prossimo cambiamento e azioni esplicite; dettagli progressivi e strumenti secondari raccolti. Identità inchiostro/lime per i pannelli della mappa, cartografia sincronizzata alle fasi solari. Nessuna promessa di perfezione, unicità assoluta o osservazioni al secondo senza fonte. Prima applicazione: docs/MAPPA-ATLANTE-LOCALE.md; pubblicazione indicata nelle note di esito.
+
 ## Direzione attuale: mappa locale — 16 settembre 2026
 
 ## 22 settembre 2026 — Cielo vivo e calendario automatico

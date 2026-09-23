@@ -3,6 +3,7 @@ const paths={
   shelter:'<path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"/><path d="M9 8h6"/>',
   temperature:'<path d="M9 14.5V5a3 3 0 0 1 6 0v9.5a5 5 0 1 1-6 0Z"/><path d="M12 7v11m5-10h3m-3 4h2"/>',
   pioggia:'<path d="M6 15a5 5 0 1 1 2-9 6 6 0 0 1 11 3 3 3 0 0 1-1 6"/><path d="m7 17-1 3m6-3-1 3m6-3-1 3"/>',
+  neve:'<path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 3 3-3M9 20l3-3 3 3M3 10l4-1-1-4M21 14l-4 1 1 4M3 14l4 1-1 4M21 10l-4-1 1-4"/>',
   grandine:'<path d="M5 12a4 4 0 1 1 3-6 5 5 0 0 1 9 2 3 3 0 0 1 2 5"/><path d="m7 16 2 2-2 2-2-2Zm8-1 3 3-3 3-3-3Z"/>',
   vento:'<path d="M3 8h12a3 3 0 1 0-3-3M2 12h17a3 3 0 1 1-3 3M4 16h5a3 3 0 1 1-3 3"/>',
   fulmini:'<path d="m14 2-9 12h6l-1 8 9-12h-6l1-8Z"/>',

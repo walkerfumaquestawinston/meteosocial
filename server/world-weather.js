@@ -1,6 +1,6 @@
 // Shared, persistent source cache. Requests refresh at most every 15 minutes while viewed.
-async function globeSnapshot(env,name,loader){const now=Date.now(),old=await q(env,'SELECT * FROM globe_snapshots WHERE name=?',name).first();const cached=()=>old?.payload?{...JSON.parse(old.payload),stale:true}:null;
- if(old?.payload&&now-old.updated<900000)return {...JSON.parse(old.payload),stale:false};
+async function globeSnapshot(env,name,loader,ttl=900000){const now=Date.now(),old=await q(env,'SELECT * FROM globe_snapshots WHERE name=?',name).first();const cached=()=>old?.payload?{...JSON.parse(old.payload),stale:true}:null;
+ if(old?.payload&&now-old.updated<ttl)return {...JSON.parse(old.payload),stale:false};
  const lock=await q(env,"INSERT INTO globe_snapshots(name,attempted,lease) VALUES(?,?,?) ON CONFLICT(name) DO UPDATE SET attempted=excluded.attempted,lease=excluded.lease WHERE globe_snapshots.lease<? AND globe_snapshots.attempted<? RETURNING name",name,now,now+45000,now,now-60000).first();
  if(!lock){const value=cached();if(value)return value;fail(503,'La fonte è in aggiornamento. Riprova tra poco.')}
  try{const value=await loader();await q(env,'UPDATE globe_snapshots SET payload=?,updated=?,lease=0 WHERE name=? AND lease=?',JSON.stringify(value),now,name,now+45000).run();return {...value,stale:false}}

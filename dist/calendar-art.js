@@ -1,0 +1,21 @@
+// Decorative calendar artwork, deliberately separate from weather and hazard layers.
+const motifs={
+ flower:'<path d="M0 0C-29-30-4-48 0-17C4-48 29-30 0 0C38-12 38 20 7 8C25 38-9 47-4 12C-32 35-44 3 0 0Z" fill="currentColor" opacity=".22"/><circle r="7" fill="currentColor"/><path d="M0 11v28m0-12q20-15 18-2Q11 37 0 32"/>',
+ sun:'<circle r="17" fill="currentColor" opacity=".2"/><circle r="17"/><path d="M0-27v-8m0 62v8m-27-35h-8m62 0h8m-54-19-6-6m38 38 6 6m-6-44 6-6m-38 38-6 6"/>',
+ leaf:'<path d="M-25 25Q-40-16 25-32Q43 21-25 25Z" fill="currentColor" opacity=".2"/><path d="M-25 25Q-40-16 25-32Q43 21-25 25ZM-33 34 18-22M-12 12l-7-19m20 6 17 1"/>',
+ crystal:'<path d="M0-34v68m-29-51 58 34m-58 0 58-34M-7-28l7 7 7-7m-7 49-7 7m7-7 7 7M-28-9l10-2-2-10m40 42-2-10 10-2M-20 21l2-10-10-2m56-18-10-2 2-10"/>',
+ tree:'<path d="M0-30-18-8h10L-27 15h15L-34 34h68L12 15h15L8-8h10Z" fill="currentColor" opacity=".2"/><path d="M0-30-18-8h10L-27 15h15L-34 34h68L12 15h15L8-8h10ZM0 34v10"/><circle cx="-9" cy="10" r="3" fill="currentColor"/><circle cx="13" cy="25" r="3" fill="currentColor"/>',
+ star:'<path d="m0-34 9 23 25 2-20 16 7 25L0 18-21 32l7-25-20-16 25-2Z" fill="currentColor" opacity=".22"/><path d="m0-34 9 23 25 2-20 16 7 25L0 18-21 32l7-25-20-16 25-2Z"/>',
+ heart:'<path d="M0 30C-62-8-23-49 0-19C23-49 62-8 0 30Z" fill="currentColor" opacity=".22"/><path d="M0 30C-62-8-23-49 0-19C23-49 62-8 0 30Z"/>',
+ egg:'<path d="M0-35C-13-35-28-6-28 12C-28 44 28 44 28 12C28-6 13-35 0-35Z" fill="currentColor" opacity=".18"/><path d="M0-35C-13-35-28-6-28 12C-28 44 28 44 28 12C28-6 13-35 0-35ZM-25 0q12 13 25 0t25 0m-50 18 12-6 13 6 13-6 12 6"/>',
+ pumpkin:'<path d="M0-18c-46-25-46 61 0 48c46 13 46-73 0-48Z" fill="currentColor" opacity=".2"/><path d="M0-18c-46-25-46 61 0 48c46 13 46-73 0-48ZM0-18q-5-14 10-17M-10-13q-15 20 0 39m20-39q15 20 0 39"/>',
+ branch:'<path d="M-24 32Q8 5 15-32m-29 52q-25-3-21-20 20 0 21 20m15-19q-24-8-16-23 19 4 16 23m8-20q6-20 22-14-1 20-22 14m-7 24q22 3 28-14-20-7-28 14"/>',
+ spark:'<circle r="6" fill="currentColor"/><path d="M0-16v-22m0 54v22m-16-38h-22m54 0h22m-49-11-15-15m37 37 15 15m-15-37 15-15m-37 37-15 15"/><circle cx="29" cy="-29" r="3"/><circle cx="-29" cy="29" r="3"/>'
+};
+const seasons={primavera:['flower','La stagione dei nuovi inizi'],estate:['sun','La luce delle giornate lunghe'],autunno:['leaf','Il tempo dei colori caldi'],inverno:['crystal','La stagione della luce sottile'],neutro:['star','Ogni giorno, un cielo diverso']};
+const holidays={capodanno:['spark','Un nuovo anno, nuovi cieli'],epifania:['star','Un ultimo bagliore di festa'],'san-valentino':['heart','Un cielo da condividere'],liberazione:['branch','25 aprile · Festa della Liberazione'],lavoro:['branch','1 maggio · Festa del Lavoro'],repubblica:['branch','2 giugno · Festa della Repubblica'],ferragosto:['sun','Il cuore dell’estate'],halloween:['pumpkin','Una notte dai colori d’autunno'],ognissanti:['branch','1 novembre · Ognissanti'],immacolata:['star','8 dicembre · Immacolata'],vigilia:['tree','La magia dell’attesa'],natale:['tree','Un augurio sotto lo stesso cielo'],'santo-stefano':['tree','Le feste continuano'],'san-silvestro':['spark','L’ultimo cielo dell’anno'],pasqua:['egg','Un augurio di rinascita'],pasquetta:['flower','Una giornata da condividere']};
+export function calendarDecoration(state){
+ const [motif,caption]=holidays[state.holiday?.id]||seasons[state.season]||seasons.neutro;
+ const tricolor=['liberazione','repubblica'].includes(state.holiday?.id)?'<path d="M115 86h16" stroke="#16845a"/><path d="M131 86h16" stroke="#fff"/><path d="M147 86h16" stroke="#c84e4e"/>':'';
+ return {key:state.holiday?.id||state.season,motif,caption,art:`<svg viewBox="0 0 220 110" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="135" cy="55" r="48" fill="currentColor" opacity=".06" stroke="none"/><path d="M20 81Q100 25 201 75M35 92Q115 40 210 89" opacity=".18"/><g transform="translate(136 52)">${motifs[motif]}</g><g transform="translate(62 37) scale(.35) rotate(-20)" opacity=".5">${motifs[motif]}</g><g transform="translate(191 79) scale(.24) rotate(18)" opacity=".45">${motifs[motif]}</g>${tricolor}</svg>`};
+}

@@ -1,0 +1,16 @@
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa .mappa-legenda{max-width:330px}
+.map-coverage{margin:8px 0 0;padding-top:8px;border-top:1px solid var(--panel-line,#7996a744);font-size:12px;line-height:1.45;font-weight:500;color:inherit}
+.map-coverage-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.map-coverage-actions button{padding:7px 10px;min-height:36px;font-size:12px;border:1px solid currentColor;border-radius:9px;color:inherit;background:transparent}
+.mappa-place-label.is-location-only{opacity:.85}
+.mappa-place-label.is-location-only .mappa-place-value:empty{display:none}
+@media(max-width:760px){
+ html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa .mappa-legenda{max-width:calc(100% - 82px);padding:6px 9px}
+ .map-coverage{font-size:11px;line-height:1.3;margin-top:4px;padding-top:4px}
+ .map-coverage-actions{margin-top:4px}
+ .map-coverage-actions button{min-height:36px;font-size:11px;padding:5px 8px}
+}
+
+.map-coverage-detail>summary{cursor:pointer;min-height:36px;display:list-item;padding-top:6px;font-size:12px;font-weight:600;list-style:disclosure-closed inside}
+.map-coverage-detail[open]>summary{list-style-type:disclosure-open}
+.mappa-place-label.is-location-only{background:var(--panel-bg)!important;box-shadow:0 2px 7px #10263c14!important;border-color:transparent!important}

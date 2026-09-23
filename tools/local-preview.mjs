@@ -41,13 +41,14 @@ export function createLocalEnvironment(root, dataDir=path.join(root,'.local-deve
   return {env,close:()=>db.close()};
 }
 
-export async function startLocalPreview({root,port=4589,dataDir,loadAi=true,liveReload=false}) {
+export async function startLocalPreview({root,port=4589,dataDir,loadAi=true,liveReload=false,mapConfig={}}) {
   let key='',model='';
   if(loadAi){
     const envFile=path.join(root,'.env.local');if(fs.existsSync(envFile))process.loadEnvFile(envFile);
     key=process.env.OPENAI_API_KEY||'';model=process.env.OPENAI_MODEL||'';
   }
   const local=createLocalEnvironment(root,dataDir,{key,model});
+  for(const name of ['MAPTILER_BROWSER_KEY','MAPTILER_STYLE_ID','MAPTILER_ENABLED'])if(typeof mapConfig[name]==='string')local.env[name]=mapConfig[name];
   const session=randomBytes(32).toString('hex');let stamp='',worker,origin='';
   async function loadWorker(){const file=path.join(root,'dist/server/index.js'),next=fs.statSync(file).mtimeMs;if(next!==stamp){worker=(await import(pathToFileURL(file).href+'?preview='+next)).default;stamp=next}return worker}
   const server=http.createServer(async(req,res)=>{

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {samplePlaces,coverageText} from './dist/map-coverage.js';
+const city=(name,latitude,longitude,selected=false)=>({name,latitude,longitude,selected});
+const points=[city('A',40,10,true),city('B',40.01,10.01),city('C',50,0),city('D',35,30),city('E',55,30)];
+const sample=samplePlaces(points,points[0],3);
+assert.equal(sample.length,3);assert.equal(sample[0].name,'A');assert.ok(!sample.some(p=>p.name==='B'),'near duplicate must not consume the sparse sample before distant areas');assert.equal(points.length,5);
+assert.deepEqual(samplePlaces([],null),[]);assert.equal(samplePlaces(points,null,0).length,0);
+assert.equal(samplePlaces([...points,{latitude:NaN,longitude:0}],null,8).length,5);
+const wrap=samplePlaces([city('anchor',0,179,true),city('near',0,-179),city('far',0,120)],null,2);assert.equal(wrap[1].name,'far');
+const row=current=>[{current}];
+assert.match(coverageText('neve',row({weather_code:0}),'ok'),/non disponibili/);
+assert.match(coverageText('neve',row({weather_code:73}),'ok'),/senza centimetri/);
+assert.match(coverageText('neve',row({snowfall:0}),'ok'),/Campione/);
+assert.match(coverageText('pioggia',row({precipitation:null}),'ok'),/non disponibili/);
+assert.match(coverageText('pioggia',row({precipitation:0}),'ok'),/Non esclude/);
+assert.match(coverageText('temperature',[],'error'),/assenti/);
+console.log('Spatial sampling preserves budget, selected place and dateline; coverage distinguishes missing and zero.');

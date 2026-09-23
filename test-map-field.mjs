@@ -10,7 +10,7 @@ const origin='https://test.invalid';
 async function request(path,body,user='A',extra={}){const headers={...extra};if(user){headers['oai-authenticated-user-id']=user;headers['oai-authenticated-user-email']=user+'@example.invalid'}if(body){headers.origin??=origin;headers['content-type']='application/json'}const r=await worker.fetch(new Request(origin+'/api/'+path,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined}),env);return {status:r.status,data:await r.json(),headers:r.headers};}
 const url=(layer='grandine',radius=150,lat=41.9,lon=12.5)=>`atlas/field-reports?layer=${layer}&radius=${radius}&lat=${lat}&lon=${lon}`;
 await request('profile',{name:'Tester'});await request('profile',{name:'Other'},'B');
-for(const [layer,kind] of Object.entries({temperature:'Temperatura',pioggia:'Pioggia',grandine:'Grandine',vento:'Vento',fulmini:'Fulmini'})){
+for(const [layer,kind] of Object.entries({temperature:'Temperatura',pioggia:'Pioggia',neve:'Neve',grandine:'Grandine',vento:'Vento',fulmini:'Fulmini'})){
  const id=crypto.randomUUID(),post={id,city:'Roma',text:'Osservazione di prova '+kind,kind,rapid:true,mapPoint:{latitude:41.91234,longitude:12.51234,consent:true}};
  assert.equal((await request('posts',post,null)).status,401,'auth required');
  assert.equal((await request('posts',post,'A',{origin:'https://evil.invalid'})).status,403,'origin enforced');

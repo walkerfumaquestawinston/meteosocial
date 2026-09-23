@@ -1,0 +1,12 @@
+.map-weather-surface{position:absolute;pointer-events:none}
+.surface-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:0 0 6px;padding:3px;border-radius:10px;background:#809bae22}
+.surface-switch button{min-height:36px;padding:5px 10px;border:0;border-radius:8px;background:transparent;color:inherit;font-size:12px;font-weight:600}
+.surface-switch button[aria-pressed=true]{background:#17394c!important;color:#fff!important}
+.surface-caption{font-size:11px;line-height:1.4;margin:3px 0 7px;font-weight:600}
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa .surface-legend .mappa-scala{display:block!important;height:7px;margin:6px 0;background:linear-gradient(90deg,#4263de,#39b2e0,#43ba97,#eed254,#f5863a,#dc4152)}
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa .surface-legend .mappa-scala.wind{background:linear-gradient(90deg,#5bc2df,#39b493,#f6b53d,#d74467)}
+html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa .surface-legend .mappa-scale-values{display:flex!important;justify-content:space-between;font-size:10px}
+.surface-legend .map-coverage-detail>summary{min-height:28px}
+@media(max-width:760px){.surface-switch button{min-height:34px}.surface-caption{font-size:10px;margin-bottom:4px}.surface-legend .map-coverage-detail>summary{font-size:11px}}
+
+html:root body.cielo-design.segnale-design #main .mappa .surface-switch button[aria-pressed=false]{background:transparent!important;color:inherit!important;border:1px solid #7996a744}
