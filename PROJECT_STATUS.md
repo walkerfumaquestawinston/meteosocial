@@ -1,3 +1,11 @@
+## 23 settembre 2026 — v106 pubblicata: stagioni e festività illustrate
+
+Fascia illustrata automatica in Oggi: fiori, sole, foglie e cristalli per le stagioni; albero, stelle, cuori, uova, zucca, rami e scintille per le ricorrenze italiane già configurate. Segue il calendario astronomico e il fuso locale, senza selettori manuali. A fine festa torna la stagione. Controllo ogni 30 secondi a pagina visibile e al ritorno; nessuna modifica a radar o dati meteo. Dettagli docs/CALENDARIO-DECORAZIONI.md.
+
+Build e 72 suite attive superate (5 ritirate); test calendario ampliati a illustrazioni, equinozio, emisfero e ritorno da Natale/Pasqua. 240 coppie di colori esistenti >=4,5:1. Verifica browser locale desktop e banner a 390 px, Natale notte/Pasqua e ritorno inverno. Anteprima principale 4597 aggiornata; dimostratore date solo locale non pubblicato. Nessun nuovo servizio o costo. Non audit completo accessibilità o telefoni fisici. CI 35842406970 riuscita.
+
+Pubblicazione v106 riuscita 2026-09-23T09:23:35.038252+00:00, ambiente 12, pubblico preservato. Sites runtime 00309f31ddbc8a5852f80303e760dff44c0f0649; GitHub 0e303f96ad57b21a6e7a814992bf387cbcf40c91; tree 1a798be27c98a4cc26c4cb1c4338839665ee6fd2. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_5d97178f0a3c819183f070552b429f62; deployment appgdep_6ab39a4b801081919e421d12c93050f9. Build remota per packaging locale non disponibile. Ramo codex/weather-scenery-20260922, PR draft #21. Successivi commit solo note senza nuovo deploy. Le sezioni sotto sono cronologia.
+
 ## 23 settembre 2026 — Decorazioni automatiche pronte
 
 Pagina Oggi con illustrazioni stagionali e festive collegate al calendario esistente, cambio automatico e ritorno alla stagione a fine ricorrenza. Build e 72 suite superate, test calendario ampliati e anteprima desktop/390 px verificata. Nessun costo o nuova API. Dettagli docs/CALENDARIO-DECORAZIONI.md. Ultima pubblicata v105; nuovo rilascio in preparazione.
