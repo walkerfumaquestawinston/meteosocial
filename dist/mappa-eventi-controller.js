@@ -1,3 +1,4 @@
+import {samplePlaces,coverageText} from './map-coverage.js';
 import {createHailRadar} from './map-hail-radar.js';
 import {createMapTilerBase} from './map-basemap.js';
 import {MAP_REFRESH_MS,sourceStatus,checkStatus,elapsedLabel,modelTime} from './map-live-status.js';
@@ -130,12 +131,13 @@ export function createMappaEventi(ctx) {
   }
   async function loadVisibleWeather(token){
     const request=++visibleRequest;
-    const candidates=cityCatalog([], [...CITIES,...CITTA_MONDO],towns,selected).filter(p=>insideViewport(p,bounds())).slice(0,8);
+    const center=map.getCenter();
+    const candidates=samplePlaces(cityCatalog([], [...CITIES,...CITTA_MONDO],towns,selected).filter(p=>insideViewport(p,bounds())),{latitude:center.lat,longitude:center.lng},8);
     const rows=[];
     // Bounded sequential calls: stop spending requests once the view changes.
     for(const p of candidates){
       if(!alive||token!==revision||request!==visibleRequest||document.hidden)return;
-      try{const d=await pointWeather(p);rows.push({...p,current:d.current});}catch{}
+      try{const d=await pointWeather(p);rows.push({...p,current:d.current});if(alive&&token===revision&&request===visibleRequest){world=[...rows];weatherState='loading';draw();}}catch{}
     }
     if(alive&&token===revision&&request===visibleRequest){world=rows;weatherState=rows.length===candidates.length?'ok':rows.length?'partial':'error';updated=Date.now();draw();}
   }
@@ -231,7 +233,7 @@ export function createMappaEventi(ctx) {
       const r=el.getBoundingClientRect();reserved.push({left:r.left-root.left,right:r.right-root.left,top:r.top-root.top,bottom:r.bottom-root.top});
     }
     const catalog=cityCatalog(allPoints(),[...CITIES.map(c=>({...c,localized:true})),...CITTA_MONDO],towns,selected);
-    const candidates=catalog.filter(p=>insideViewport(p,bounds())&&(p.selected||labelText(p))).map((p,i)=>{
+    const candidates=catalog.filter(p=>insideViewport(p,bounds())).map((p,i)=>{
       const lng=p.longitude+360*Math.round((map.getCenter().lng-p.longitude)/360),xy=map.latLngToContainerPoint([p.latitude,lng]),text=labelText(p);
       return {...p,lng,x:xy.x,y:xy.y,text,width:Math.min(210,Math.max(106,p.name.length*7.2+24,text.length*7+28)),height:p.name.length>25&&text?64:48,priority:p.selected?100000:(text?2000:0)+Math.max(0,500-i)};
     });
@@ -239,8 +241,8 @@ export function createMappaEventi(ctx) {
     const placed=arrangeCityLabels(candidates,{width:root.width,height:root.height},reserved,limit);
     for(const p of placed){
       const age=weatherAge(p.current),stale=p.current&&(age.stale);
-      const tone=mode==='temperature'&&p.current?mappaColore(p.current.temperature_2m):MODES.find(m=>m.id===mode).color;
-      const icon=L.divIcon({className:'mappa-place-label mode-'+mode+(p.selected?' is-selected':'')+(stale?' is-old':''),html:'<span class="mappa-place-name">'+esc(p.name)+'</span><span class="mappa-place-value" style="--reading:'+tone+'">'+esc(p.text)+(stale&&p.text?'<small aria-label="Dato precedente"> ◷</small>':'')+'</span>',iconSize:[p.width,p.height],iconAnchor:[-p.dx,-p.dy]});
+      const tone=mode==='temperature'&&Number.isFinite(p.current?.temperature_2m)?mappaColore(p.current.temperature_2m):MODES.find(m=>m.id===mode).color;
+      const icon=L.divIcon({className:'mappa-place-label mode-'+mode+(!p.text&&!p.selected?' is-location-only':'')+(p.selected?' is-selected':'')+(stale?' is-old':''),html:'<span class="mappa-place-name">'+esc(p.name)+'</span><span class="mappa-place-value" style="--reading:'+tone+'">'+esc(p.text)+(stale&&p.text?'<small aria-label="Dato precedente"> ◷</small>':'')+'</span>',iconSize:[p.width,p.height],iconAnchor:[-p.dx,-p.dy]});
       const marker=L.marker([p.latitude,p.lng],{icon,title:p.name+(p.text?' · '+p.text:'')+(p.current?' · '+sourceTime(p.current)+' · '+age.label:''),alt:p.name+(p.text?', '+p.text:'')+', apri dettagli',bubblingMouseEvents:false,riseOnHover:true,zIndexOffset:1000});
       marker.on('click',()=>selectPlace(p,false));cityLabels.addLayer(marker);marker.getElement()?.setAttribute('aria-label',p.name+(p.text?', '+p.text:'')+', apri dettagli');
       cityLabels.addLayer(L.circleMarker([p.latitude,p.lng],{radius:p.selected?4:2,weight:1,color:'#bedbe5',fillColor:'#edfaff',fillOpacity:.85,interactive:false}));
@@ -300,6 +302,13 @@ export function createMappaEventi(ctx) {
   function renderLegend(){
     const slot=$('#mappa-legenda');if(!slot)return;
     slot.innerHTML=mode==='neve'?'<span>❄ Neve fresca · modello</span><small>cm nell’intervallo indicato · tocca un punto. Zero punti non esclude neve.</small>':mode==='temperature'?'<span>Temperatura · °C</span><div class="mappa-scala"></div><div class="mappa-scale-values"><span>−10</span><span>0</span><span>10</span><span>20</span><span>30</span><span>40+</span></div>':mode==='vento'?'<span>Vento al suolo · km/h</span><div class="mappa-scala wind"></div><div class="mappa-scale-values"><span>0</span><span>20</span><span>40</span><span>60+</span></div><small>Frecce = direzione verso cui soffia</small>':mode==='pioggia'?'<span class="mappa-key rain">● Punti: pioggia da modello</span><small>Tocca per quantità e intervallo · radar sovrapposto</small>':mode==='grandine'?'<span class="mappa-key hail">◇ Grandine segnalata</span><small>Community · ultime 2 ore · non verificata</small>':'<span class="mappa-key storm">ϟ Viola: previsione · ambra: community</span><small>Viola: modello · ambra: osservazioni. Nessun sensore di scariche</small>';
+    if(mode!=='grandine'){
+      const message=coverageText(mode,summary().points,weatherState);
+      const title=message.startsWith('Quantità di neve')?'Neve: quantità non disponibili':message.startsWith('Quantità di pioggia')?'Pioggia: quantità non disponibili':!summary().points.length?'Copertura meteo da verificare':'Copertura: '+summary().points.length+' località';
+      slot.innerHTML+='<details class="map-coverage-detail" '+(matchMedia('(min-width:761px)').matches?'open':'')+'><summary>'+esc(title)+'</summary><p class="map-coverage">'+esc(message)+'</p><div class="map-coverage-actions">'+(mode!=='temperature'?'<button id="map-show-temperatures">Temperature</button>':'')+'<button id="map-show-rain">Apri radar pioggia</button></div></details>';
+      $('#map-show-temperatures')?.addEventListener('click',()=>selectMode('temperature'));
+      $('#map-show-rain')?.addEventListener('click',()=>selectMode('pioggia'));
+    }
   }
   function panel(title,html,focus=true){
     sourcesOpen=false;$('#mappa-fonti')?.setAttribute('aria-expanded','false');
@@ -414,7 +423,7 @@ export function createMappaEventi(ctx) {
     const {atlasLand,atlasBorders,atlasRegions}=geographicData;
     map=L.map(host,{preferCanvas:true,zoomControl:false,attributionControl:false,worldCopyJump:true,minZoom:2,maxZoom:16}).setView([43,13],5);
     // CSS panels and route transitions can resize the map without a window resize.
-    mapResize=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(alive&&life===revision&&host.isConnected)map?.invalidateSize({pan:false,debounceMoveend:true});});});mapResize.observe(host);
+    mapResize=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(alive&&life===revision&&host.isConnected)map?.invalidateSize({pan:true,debounceMoveend:true});});});mapResize.observe(host);
     map.createPane('atlas-geography').style.zIndex=220;
     const regionPane=map.createPane('atlas-region-labels');regionPane.style.cssText='z-index:240;pointer-events:none';regionPane.setAttribute('aria-hidden','true');
     const streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true});
@@ -453,7 +462,7 @@ export function createMappaEventi(ctx) {
     $('#mappa-city-names').onclick=()=>{showCityNames=!showCityNames;$('#mappa-city-names').setAttribute('aria-pressed',String(showCityNames));scheduleLabels();};
     radar=createAtlasRadar({L,map,rainbow:true,onChange:s=>{if(radarKind==='rain')renderRadar(s)}});
     hailRadar=createHailRadar({L,map,onChange:s=>{if(radarKind==='hail')renderRadar(s)}});
-    const place=ctx.get().place;if(validPlace(place)){selected={...place,current:null};map.setView([place.latitude,place.longitude],5,{animate:false});$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
+    const place=ctx.get().place;if(validPlace(place)){selected={...place,current:null};map.setView([place.latitude,place.longitude],6,{animate:false});$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
     $('#mappa-centra').onclick=()=>{const p=selected||ctx.get().place;if(validPlace(p)){closePanel();map.setView([p.latitude,p.longitude],Math.max(7,map.getZoom()),{animate:false});}else $('#mappa-cerca-testo').focus();};
     $('#mappa-zona').onclick=()=>{const p=ctx.get().place;if(validPlace(p))selectPlace(p);else $('#mappa-cerca-testo').focus();};
     $('#mappa-layer-select').onchange=e=>selectMode(e.target.value);
