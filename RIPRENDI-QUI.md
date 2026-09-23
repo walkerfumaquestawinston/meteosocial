@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v108 pubblicata: Community e anteprima post
+
+Pubblicazione riuscita 2026-09-23T10:01:05.892499+00:00, ambiente 12 e pubblico preservati. Runtime Sites 40269a6e378a24e71832d200a4584f0456c34eb3; GitHub d3fcb4ecddadbc87cae1e15bcf645a95e67815cd; tree identico aa422bfe90c7d66712e0b0955e228c773b528e80. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_5632ddad7ee48191a0b7d8076cb9571d; deployment appgdep_6ab3a31155a08191ba0e5aac67295afd. Build remota per packaging locale Windows non disponibile. CI 35846095952 riuscita, 73 suite attive superate e 5 ritirate. PR draft #21 aggiornata, ramo codex/weather-scenery-20260922, anteprima locale 4597 aggiornata.
+
+Browser pubblico: nuovo titolo, tre sezioni, filtri per fenomeno e Ricerca e salvati verificati. Pubblicazione provata solo nel database locale con contenuto esplicitamente dimostrativo; niente post artificiali online. Verifica desktop/390 px e contrasto delle azioni, autore e anteprima. Dettagli docs/COMMUNITY-RINNOVATA.md. L’orario di osservazione nei post ordinari resta nel testo dell’autore, non è un nuovo dato strutturato; foto/video e segnalazioni rapide conservano i flussi esistenti. Successivi commit solo note, senza nuovo deploy. Le sezioni sotto sono cronologia.
+
 ## 23 settembre 2026 — Community rinnovata, rilascio pronto
 
 Feed con tre sezioni Vicino a te/Seguiti/Esplora, Salvati in Ricerca e salvati, filtri rapidi per fenomeno. Schede con tipo, indicazione non verificato e ora di pubblicazione esplicita (fuso del dispositivo), azioni secondarie raccolte, collegamento al luogo in mappa. Modulo racconti con tre passaggi visivi e anteprima obbligatoria prima della conferma. Nessuna modifica al database, alle segnalazioni rapide o ai dati esistenti. Dettagli docs/COMMUNITY-RINNOVATA.md.
