@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v113 pubblicata: copertura della mappa
+
+Pubblicazione riuscita 2026-09-23T11:40:48.801412+00:00; ambiente 12 e pubblico preservati. Sites runtime cbecb8019f728b08388cd5367ed7840f41e601db; GitHub f82dfe3a4299a9c470e55ff8de972200dd21584b; tree identico 81c4e582d308ae29639053ad12ca48e7cc9e8e01. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_d5e3b12317fc8191bb3ce57e567885be; deployment appgdep_6ab3ba781cc88191862441e64d5b778a. CI 35855726137 riuscita. Build e 75 suite attive superate, 5 ritirate; due suite mirate ripetute. Compilazione remota per limite packaging Windows.
+
+Diagnosi pubblica: Neve selezionata, quantità neve Rainbow mancanti e radar spento; Temperature mostrava valori reali. Etichette prima limitate ai dati del livello e campione pagato di 8 città in ordine di catalogo. Ora città esplorabili, valori progressivi, campione distribuito nello stesso limite, copertura e dati mancanti espliciti, accessi a Temperature/radar, zoom 6 e centro preservato al resize. Anteprima locale desktop/390 px verificata e aggiornata. Dettagli docs/MAPPA-COPERTURA.md. Nessun campo continuo di temperatura/vento, nessun nuovo provider o abbonamento. Ramo e PR draft #21 salvati; successivi commit solo note senza altro deploy.
+
 ## 23 settembre 2026 — Copertura della mappa chiarita
 
 Verifica pubblica v112: livello Neve salvato, radar OFF, Rainbow con quantità neve mancanti; passando a Temperatura appaiono valori reali. Limite di 8 richieste per vista e filtro che nascondeva le città senza valore del livello. Correzione: città esplorabili senza dati inventati, letture progressive e distribuite nello stesso budget, messaggi di copertura con accesso a Temperature/radar, zoom iniziale 6 e centro preservato al resize. Build e 75 suite attive superate, 5 ritirate; dettagli docs/MAPPA-COPERTURA.md. Ultima pubblicazione v112, rilascio in preparazione.
