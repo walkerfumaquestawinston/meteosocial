@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v107 pubblicata: Lente contestuale
+
+Pubblicazione riuscita 2026-09-23T09:43:24.307480+00:00, ambiente 12 e pubblico preservati. Sites runtime 4cc9f53860894eab5a84b289fe028ea11907197e; GitHub 725df7c5f1c376519d89a2609e2c0e6db60db423; tree identico d59df547d49ce0c0837d11c72050643e50d485a5. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_c9a2cd9366488191af9002cf7555bea4; deployment appgdep_6ab39ef433e48191b0f1444a55c63a72. Build remota per packaging locale Windows non disponibile. CI 35844401003 riuscita. GitHub ramo codex/weather-scenery-20260922 e PR draft #21 aggiornati; anteprima locale 4597 aggiornata.
+
+Quattro attività IA e accessi contestuali, bozze/conversazioni separate, fonte effettiva e percorso Rainbow senza vecchia chiave WeatherAPI. Build e 72 suite passate; browser locale desktop/390 px senza overflow, modalità e domanda preparata senza invio. Browser online: nuovo ingresso e pagina Lente con Rainbow, fonte e orario verificati. Sessione non autenticata: nessuna generazione OpenAI reale effettuata. I test usano risposte simulate, non certificano la qualità delle risposte live. Dettagli docs/LENTE-CONTESTUALE.md. Successivi commit solo note, nessun nuovo deploy. Le sezioni sotto sono cronologia.
+
 ## 23 settembre 2026 — Potenziamento Lente pronto
 
 Lente contestuale nelle pagine del sito con modalità Capire i dati, Organizzare la giornata, Capire i racconti e Scrivere un contenuto. Bozze e conversazioni separate per attività, città, livello e post; invio manuale. La mappa conserva la propria interfaccia IA e riceve le istruzioni server migliorate. Corretto il percorso Rainbow senza dipendenza da WEATHERAPI_KEY e rimossa attribuzione Open-Meteo fissa nelle istruzioni. Nessuna nuova chiave, abbonamento o quota: riuso autorizzato il 23 settembre. Dettagli docs/LENTE-CONTESTUALE.md.
