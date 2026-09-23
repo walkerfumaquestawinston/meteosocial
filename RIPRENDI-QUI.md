@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v114 pubblicata: superfici meteo stimate
+
+Pubblicazione riuscita 2026-09-23T12:04:18.052447+00:00; ambiente 12 e pubblico preservati. Sites runtime 056ccf11247b5fef96f22ded8b5604f713d152c6; GitHub 0538d885dd9527361fbe6e9c97d6db1d70fdb0a9; tree identico b2e2c2061b390efc55df1b764b8657b111c5f8d2. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_6b4380fa700c8191aad34a0f8a338351; deployment appgdep_6ab3bff555508191be8f084e8ff114d3. CI 35857974397 riuscita; build e 76 suite attive superate, 5 ritirate. Compilazione remota per limite del packaging Windows.
+
+Temperatura a colori e vento vettoriale con frecce, selettore Superficie/Punti, fonte e ora. Stime interpolate da località visibili, non misure al suolo né campo nativo del provider: almeno tre punti recenti compatibili, nessuna estrapolazione fuori supporto; rilievi e microclimi non risolti. Radar separato. Nessun incremento richieste, nuovo provider o costo. Desktop/390 px verificati; anteprima locale 4597 aggiornata. Dettagli docs/MAPPA-SUPERFICIE.md. Ramo e PR draft #21 preservati; commit successivi solo note, senza ulteriore deploy.
+
 ## 23 settembre 2026 — v113 pubblicata: copertura della mappa
 
 Pubblicazione riuscita 2026-09-23T11:40:48.801412+00:00; ambiente 12 e pubblico preservati. Sites runtime cbecb8019f728b08388cd5367ed7840f41e601db; GitHub f82dfe3a4299a9c470e55ff8de972200dd21584b; tree identico 81c4e582d308ae29639053ad12ca48e7cc9e8e01. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_d5e3b12317fc8191bb3ce57e567885be; deployment appgdep_6ab3ba781cc88191862441e64d5b778a. CI 35855726137 riuscita. Build e 75 suite attive superate, 5 ritirate; due suite mirate ripetute. Compilazione remota per limite packaging Windows.
