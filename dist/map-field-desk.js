@@ -9,7 +9,7 @@ import {distanceText,rankShelters,directionsURL} from './nearby-tools.js';
 // Owns local exploration, never starts an AI request or reads GPS automatically.
 export function createFieldDesk(o){
  const {$,esc,L,map,api}=o,layer=L.layerGroup().addTo(map),rings=L.layerGroup().addTo(map),drafts=new Map(),cache=new Map();
- let provider=null,nowcast=null,nowcastState='loading',nowcastError='';
+ let provider=null,nowcast=null,nowcastState='loading',nowcastError='',deskTab='now',rainRequestLife=0;
  let key='',mode='temperature',place=null,radius=150,posts=[],reportState='loading',truncated=false,forecast=null,weatherState='loading',life=0,dead=false,open=false,places=[],shelterToken=0,refreshAt=0,expiryTimer;
  const current=()=>FIELD_MODES[mode],near=()=>place?(mode==='grandine'?hailSelection(posts,place,{radius,minutes:hailMinutes,includeEnded,sort:hailSort}):withinField(posts,place,radius)):[],time=t=>new Date(t).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',timeZone:forecast?.timezone||undefined}),fmt=n=>Number.isFinite(n)?n.toLocaleString('it-IT',{maximumFractionDigits:1}):'—';
  const pending=new Map();let cacheGeneration=0;
@@ -19,15 +19,21 @@ export function createFieldDesk(o){
  function sync(p,m){
   if(!p||dead)return;const next=[(Math.round(p.latitude*100)/100).toFixed(2),(Math.round(p.longitude*100)/100).toFixed(2),m].join(':');
   if(next===key&&Date.now()-refreshAt<60000){if(place?.name!==p.name||place.latitude!==p.latitude||place.longitude!==p.longitude){place={...p};render();draw();}return;}
-  const changed=next!==key;key=next;place={...p};mode=m;refreshAt=Date.now();const token=++life;
+  const changed=next!==key;if(m!==mode)deskTab=m==='pioggia'?'rain':'now';key=next;place={...p};mode=m;refreshAt=Date.now();const token=++life;
   if(changed){posts=[];reportUpdatedAt=0;truncated=false;places=[];shelterToken++;forecast=null;provider=null;nowcast=null;nowcastState='loading';nowcastError='';}reportState='loading';weatherState='loading';render();draw();
   const lat=Math.round(place.latitude*100)/100,lon=Math.round(place.longitude*100)/100;
   if(!changed){cache.delete('reports:'+key);cache.delete('weather:'+lat+':'+lon);}
   cached('reports:'+key,()=>api('atlas/field-reports?'+new URLSearchParams({lat,lon,layer:mode,radius:150}))).then(d=>{if(dead||token!==life)return;posts=d.posts||[];reportUpdatedAt=cache.get('reports:'+key)?.at||Date.now();truncated=!!d.truncated;reportState='ok';render();draw();}).catch(()=>{if(dead||token!==life)return;reportState='error';render();draw();});
   const wxkey=lat+':'+lon;
-  if(mode==='pioggia')loadRainNowcast(place).then(d=>{if(dead||token!==life)return;nowcast=d;nowcastState='ok';render();}).catch(e=>{if(dead||token!==life)return;nowcastState='error';nowcastError=e.message;render();});
+  if(mode==='pioggia'||deskTab==='rain')requestRain();
   cached('provider:'+wxkey,()=>api('forecast/current?'+new URLSearchParams({lat,lon}))).then(d=>{if(dead||token!==life)return;provider=d;render();}).catch(()=>{if(dead||token!==life)return;provider=provider?{...provider,status:'stale'}:null;render();});
   cached('weather:'+wxkey,()=>api('forecast?'+new URLSearchParams({lat,lon}))).then(d=>{if(dead||token!==life)return;forecast=d;weatherState='ok';render();}).catch(()=>{if(dead||token!==life)return;weatherState='error';render();});
+ }
+
+ function requestRain(){
+  if(dead||!place||rainRequestLife===life)return;
+  const token=life;rainRequestLife=token;
+  loadRainNowcast(place).then(d=>{if(dead||token!==life)return;nowcast=d;nowcastState='ok';render();}).catch(e=>{if(dead||token!==life)return;nowcastState='error';nowcastError=e.message;render();});
  }
 
  function forecastMarkup(){
@@ -50,7 +56,12 @@ export function createFieldDesk(o){
   const config=current(),list=near(),closest=list.find(p=>!p.ended);
   if(mode==='grandine'){const count=$('[data-conteggio="grandine"]');if(count)count.textContent=reportState==='ok'?list.length+(truncated?'+':''):'—';}
   slot.classList.toggle('is-open',open);$('.mappa')?.classList.toggle('has-field-open',open);
-  slot.innerHTML=(providerBrief(place,provider)||briefMarkup(place,forecast,weatherState))+'<button class="field-mobile-handle" aria-expanded="'+open+'" id="field-expand"><span>'+mapIcon(mode)+' '+esc(config.name)+' · dettagli</span><b>'+(open?'Chiudi −':'Apri +')+'</b></button><div class="field-content"><div class="field-scroll"><h3 class="desk-section-title">'+mapIcon(mode)+' '+esc(config.name)+'</h3>'+(mode==='grandine'?hailMarkup(list):'<section aria-label="Prossime ore">'+(mode==='pioggia'?nowcastMarkup(nowcast,nowcastState,nowcastError):'')+forecastMarkup()+changeMarkup(forecast,weatherState)+'</section><section class="desk-community" aria-label="Dal territorio"><h3>Dal territorio</h3><p>'+ (reportState==='loading'?'Cerco osservazioni nella zona…':reportState==='error'?'Segnalazioni non disponibili.':list.length?list.length+' osservazioni recenti entro '+radius+' km.':'Nessuna osservazione recente entro '+radius+' km.')+'</p><small>Community · non verificata · ultime 2 ore</small></section>')+(providerMarkup(provider)?'<details class="desk-source-details" data-desk-detail="provider"><summary>Condizioni e fonte del meteo locale</summary>'+providerMarkup(provider)+'</details>':'')+(mode==='fulmini'?lightningGuide():'')+'<p class="field-footnote">'+(mode==='grandine'?'Community · ultimi '+hailMinutes+' minuti · posizioni approssimate. Nessuna segnalazione non significa assenza di rischio.':'Osservazioni entro '+radius+' km · ultime 2 ore · non verificate.')+'</p></div><div class="field-actions"><button id="field-report" aria-label="Segnala '+config.name.toLowerCase()+'">'+mapIcon('plus')+' Segnala</button><button id="field-reports" aria-label="Osservazioni di '+config.name.toLowerCase()+' entro '+radius+' km">'+mapIcon('list')+' '+(reportState==='ok'?list.length+(truncated?'+':''):'—')+' report</button><button id="field-shelters" aria-label="Trova punti coperti entro 5 km">'+mapIcon('shelter')+' Ripari</button><button id="field-ai" class="field-ai" aria-label="Leggi '+config.name.toLowerCase()+' con Lente IA">'+mapIcon('ai')+' Lente IA</button></div></div>';
+  const community='<section class="desk-community" aria-label="Dal territorio"><span class="field-eyebrow">'+esc(config.name)+' · COMMUNITY</span><h3>Il cielo raccontato da chi c’è</h3><p>'+(reportState==='loading'?'Cerco osservazioni nella zona…':reportState==='error'?'Segnalazioni non disponibili.':list.length?list.length+' osservazioni recenti entro '+radius+' km.':'Nessuna osservazione recente entro '+radius+' km.')+'</p><p class="field-note">Ultime 2 ore · racconti non verificati. Nessuna segnalazione non significa assenza del fenomeno.</p><button id="desk-open-reports" class="field-wide">Apri le osservazioni ↗</button></section>';
+  const content=deskTab==='reports'?community:deskTab==='rain'?nowcastMarkup(nowcast,nowcastState,nowcastError)+(mode==='pioggia'?forecastMarkup():'<p class="field-note">Previsione della pioggia per la località scelta. Il livello sulla mappa mantiene la propria fonte e il proprio orario.</p>'):('<h3 class="desk-section-title">'+mapIcon(mode)+' '+esc(config.name)+'</h3>'+(mode==='grandine'?hailMarkup(list):forecastMarkup()+changeMarkup(forecast,weatherState))+(mode==='fulmini'?lightningGuide():'')+(providerMarkup(provider)?'<details class="desk-source-details" data-desk-detail="provider"><summary>Condizioni e fonte del meteo locale</summary>'+providerMarkup(provider)+'</details>':''));
+  slot.innerHTML=(providerBrief(place,provider)||briefMarkup(place,forecast,weatherState))+'<button class="field-mobile-handle" aria-expanded="'+open+'" id="field-expand"><span>'+mapIcon(mode)+' '+esc(config.name)+' · dettagli</span><b>'+(open?'Chiudi −':'Apri +')+'</b></button><div class="desk-tabs" role="group" aria-label="Dettagli della località">'+[['now','Adesso'],['rain','Pioggia'],['reports','Segnalazioni']].map(([id,label])=>'<button id="desk-tab-'+id+'" data-desk-tab="'+id+'" aria-pressed="'+(deskTab===id)+'" aria-controls="desk-content">'+label+'</button>').join('')+'</div><div class="field-content"><div class="field-scroll" id="desk-content">'+content+'</div><div class="field-actions"><button id="field-report" aria-label="Segnala '+config.name.toLowerCase()+'">'+mapIcon('plus')+' Segnala</button><button id="field-reports" aria-label="Osservazioni di '+config.name.toLowerCase()+' entro '+radius+' km">'+mapIcon('list')+' '+(reportState==='ok'?list.length+(truncated?'+':''):'—')+' report</button><button id="field-shelters" aria-label="Trova punti coperti entro 5 km">'+mapIcon('shelter')+' Ripari</button><button id="field-ai" class="field-ai" aria-label="Leggi '+config.name.toLowerCase()+' con Lente IA">'+mapIcon('ai')+' Lente IA</button></div></div>';
+  slot.querySelectorAll('[data-desk-tab]').forEach(b=>b.onclick=()=>{deskTab=b.dataset.deskTab;render();slot.querySelector('.field-scroll')?.scrollTo(0,0);if(deskTab==='rain')requestRain();});
+  if($('#desk-open-reports'))$('#desk-open-reports').onclick=reportList;
+
   for(const name of openedDetails){const el=slot.querySelector('[data-desk-detail="'+name+'"]');if(el)el.open=true;}
   $('#field-expand').onclick=()=>{open=!open;render();};
   slot.querySelectorAll('[data-field-radius]').forEach(b=>b.onclick=()=>{radius=Number(b.dataset.fieldRadius);render();draw();frame();});

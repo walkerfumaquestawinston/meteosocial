@@ -27,7 +27,7 @@ const bundle=await build({absWorkingDir:process.cwd(),entryPoints:['dist/main.js
 // Keep dependency audit paths consistent across operating systems.
 bundle.metafile.inputs=Object.fromEntries(Object.entries(bundle.metafile.inputs).map(([k,v])=>[k.replace(/^workspace:/,''),v]));
 for(const input of Object.keys(bundle.metafile.inputs))if(retired.test(input.replace(/^dist\//,'')))throw Error('Retired module in bundle: '+input);
-const styles=['design.css','social.css','global.css','experience.css','sensory.css','refinements.css','network.css','assets/leaflet.css','atlas.css','pulse.css','editorial.css','fitcheck.css','lente.css','atmosphere.css','living-world.css','design-system.css','local-map.css','mappa-eventi.css','map-field.css','community-hub.css','cielo-design.css','season-design.css','weather-scene.css','next-change.css','map-live.css','map-cockpit.css','map-workspace.css','interface-polish.css','rain-nowcast.css'];
+const styles=['design.css','social.css','global.css','experience.css','sensory.css','refinements.css','network.css','assets/leaflet.css','atlas.css','pulse.css','editorial.css','fitcheck.css','lente.css','atmosphere.css','living-world.css','design-system.css','local-map.css','mappa-eventi.css','map-field.css','community-hub.css','cielo-design.css','season-design.css','weather-scene.css','next-change.css','map-live.css','map-cockpit.css','map-workspace.css','interface-polish.css','rain-nowcast.css','map-refined.css'];
 // Preserve the former HTML cascade: app styles first, MapLibre styles last.
 const css=await transform([...styles.map(f=>fs.readFileSync('dist/'+f,'utf8')),fs.readFileSync('node_modules/maplibre-gl/dist/maplibre-gl.css','utf8')].join('\n'),{loader:'css',minify:true});
 fs.writeFileSync('dist/app/style.css',css.code);

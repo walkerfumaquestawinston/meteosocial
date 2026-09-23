@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Restyling mappa pronto per pubblicazione
+
+Pannello con Adesso/Pioggia/Segnalazioni, Strumenti Vista/Dati/Aiuto, timeline compatta e legenda apribile, spazi desktop/mobile corretti. Meteo e Community più compatti. Fonti e servizi invariati; nessun nuovo costo. Build e 72 suite superate, controlli browser desktop/390 px; anteprima 4597 aggiornata. Dettagli docs/MAPPA-LEGGIBILE.md. Pubblicazione da verificare; ultima confermata v103.
+
 ## 23 settembre 2026 — v103 pubblicata: Nowcast e Tiles Rainbow
 
 Nowcast globale integrato in Meteo e nel pannello Pioggia: fino a 240 minuti, intensità mm/h, tipo e cursore accessibile. Mappa Rainbow: 37 quadri da -2 ore a +4 ore, passo 10 minuti, analisi e previsione esplicite. Adesso torna al quadro di base; RainViewer resta fallback dichiarato. Radar grandine DPC separato. Fonte non aggiornata al secondo; controllo e validità distinti, nessuna emissione nowcast inventata.
