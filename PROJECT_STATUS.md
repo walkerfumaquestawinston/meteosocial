@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Migrazione Rainbow richiesta, non attiva
+
+Account Rainbow attivo e autorizzazione al trasferimento della chiave ricevuta. Il controllo automatico blocca il passaggio della credenziale attraverso l'output dello strumento: RAINBOW_API_KEY non salvata in Sites. Client server isolato preparato in server/rainbow-client.mjs, test-rainbow.mjs superato con fixture; non incluso nel Worker. Restano credenziale, risposta reale, fusi/giornate locali, quota/cache, integrazione UI e pubblicazione. Dettagli docs/RAINBOW-INTEGRAZIONE.md. Sito pubblico ancora v96 WeatherAPI.
+
 ## 22 settembre 2026 — Versioni 94–96 pubblicate: Community e Lente
 
 Community: filtro Ultime 2 ore e confronto guidato previsioni/racconti. Lente: fonte e orario nel contesto iniziale, domande di seguito In tre punti e Cosa va verificato?, sempre invio manuale. Corrette etichette WeatherAPI, uso UTC in Stesso cielo, focus del pannello, contrasto dialogo e filtri mobile. Dettagli: docs/COMMUNITY-LENTE-V94.md.

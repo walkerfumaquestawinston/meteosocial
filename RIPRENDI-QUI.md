@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Rainbow attivo nell'account, migrazione del sito incompleta
+
+Utente chiede Rainbow al posto del fornitore meteo esistente e autorizza il trasferimento della chiave nei segreti MeteoSocial. Account Rainbow verificato attivo. Trasferimento del segreto bloccato dal controllo automatico: non salvato in Sites, nessuna richiesta meteo autenticata verificata. Client server isolato e test con fixture preparati, ancora esclusi dal Worker. Dettagli e passi mancanti: docs/RAINBOW-INTEGRAZIONE.md. Produzione resta v96 WeatherAPI; non dichiarare Rainbow integrato, né la temperatura prevista una misura dal vivo.
+
 ## 23 settembre 2026 — Valutazione Google Weather e Rainbow
 
 Utente conferma fatturazione Google in Italia e account Rainbow non ancora creato. Prezzi ufficiali e vincoli SEE verificati in docs/GOOGLE-RAINBOW-VALUTAZIONE.md. Nessuna API nuova attivata: produzione ancora v96 WeatherAPI. Non promettere temperature perfette o lavoro locale a PC spento; attività cloud non configurata. Prossimo requisito esterno: account/credenziali Rainbow e Google, da configurare nei segreti del sito, mai in chat.
