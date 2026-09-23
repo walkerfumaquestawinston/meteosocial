@@ -1,5 +1,7 @@
 ## 23 settembre 2026 — v105 pubblicata: mappa con dettagli progressivi
 
+Verifica conclusiva 11:07 CEST: anche il catalogo Rainbow è tornato disponibile nel browser dopo la ricarica; Nowcast visibile con 233 minuti residui, timeline Rainbow analisi e previsione +240 minuti selezionabile. Questo recupero non esclude ulteriori ritardi del servizio.
+
 Restyling completato: pannello Adesso/Pioggia/Segnalazioni; Strumenti Vista/Dati/Aiuto; comandi e timeline compatti, legenda apribile; Meteo e Community più compatti. Corretto contrasto dei comandi notte, verificato dopo la transizione: testo #f4f9fa su #173342. Tema Automatico ripristinato. Messaggi di timeout Nowcast comprensibili in italiano. Dettagli docs/MAPPA-LEGGIBILE.md.
 
 Build, 72 suite attive superate (5 ritirate), test mirati field/lifecycle/refinement e Rainbow ripetuti; CI 35840669711 riuscita. Browser locale desktop/390 px e schede online verificati. Nessuna prova su telefoni fisici, certificazione meteo o audit completo di accessibilità. Anteprima locale 4597 aggiornata senza segreti.
