@@ -50,6 +50,9 @@
     "dist/editorial-world.js",
     "dist/map-live-status.js",
     "dist/map-weather-core.js",
+    "dist/map-city-labels.js",
+    "dist/map-surface-core.js",
+    "dist/map-surface.js",
     "dist/map-coverage.js",
     "dist/map-hail-radar.js",
     "dist/map-basemap.js",
@@ -62,7 +65,6 @@
     "dist/map-visuals.js",
     "dist/map-field-desk.js",
     "dist/map-radar.js",
-    "dist/map-city-labels.js",
     "dist/map-weather-source.js",
     "dist/citta-mondo.js",
     "dist/map-land.js",
@@ -82,7 +84,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 532975,
+    "dist/app/main.js": 540281,
     "dist/app/sky-postcard-YT7MLGUJ.js": 5122,
     "dist/app/chunk-FBI4HGUQ.js": 14011,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,
