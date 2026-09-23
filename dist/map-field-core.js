@@ -5,7 +5,7 @@ export const FIELD_MODES={
  pioggia:{name:'Pioggia',kind:'Pioggia',title:'La tua finestra per uscire',unit:' mm',field:'precipitation',extra:'precipitation_probability',extraLabel:'Probabilità',question:'Individua la finestra con meno pioggia nelle prossime 6 ore. Riporta probabilità, quantità oraria e incertezza: non inventare minuti di arrivo.'},
  grandine:{name:'Grandine',kind:'Grandine',title:'Osserva. Orientati. Riparati.',question:'Spiega cosa possiamo sapere della grandine dalle previsioni disponibili. Distingui condizioni favorevoli da grandine osservata e indica i limiti: non stimare traiettorie, impatto o disponibilità dei ripari.'},
  vento:{name:'Vento',kind:'Vento',title:'Conta anche la raffica',unit:' km/h',field:'wind_speed_10m',extra:'wind_gusts_10m',extraLabel:'Raffiche',question:'Leggi vento medio e raffiche delle prossime 6 ore. Individua il picco previsto e quando diminuiscono, senza garantire che un percorso sia sicuro.'},
- fulmini:{name:'Fulmini',kind:'Fulmini',title:'Un cielo da tenere d’occhio',unit:'',field:'weather_code',question:'Quali ore mostrano temporali nel modello delle prossime 6 ore? Distingui probabilità di pioggia, codice temporale e fulmini realmente rilevati. Non hai un sensore di scariche.'}
+ fulmini:{name:'Temporali',kind:'Fulmini',title:'Un cielo da tenere d’occhio',unit:'',field:'weather_code',question:'Quali ore mostrano temporali nel modello delle prossime 6 ore? Distingui probabilità di pioggia, codice temporale e fulmini realmente rilevati. Non hai un sensore di scariche.'}
 };
 export function fieldHours(data,now=Date.now()){
  const h=data?.hourly;if(!Array.isArray(h?.time))return [];

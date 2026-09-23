@@ -63,3 +63,11 @@ html:root[data-phase] body.cielo-design.segnale-design #main .lente-page{
   & .lente-side-note{display:none}
  }
 }
+
+html:root body.cielo-design.segnale-design .lente-signin{padding:14px 16px;margin-bottom:14px;background:var(--signal-surface);color:var(--signal-ink);border:1px solid var(--signal-line);border-radius:14px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
+html:root body.cielo-design.segnale-design .lente-signin p{font-size:14px;margin:0;color:var(--signal-muted)}
+html:root body.cielo-design.segnale-design .lente-signin button{grid-column:2;grid-row:1/3;background:var(--signal-ink);color:var(--signal-surface);padding:10px 16px}
+html:root[data-phase] body.cielo-design.segnale-design :is(#lente-dialog,.lente-page) .lente-composer-foot{background:var(--signal-paper)!important;color:var(--signal-muted)!important}
+html:root[data-phase] body.cielo-design.segnale-design :is(#lente-dialog,.lente-page) .lente-composer-foot span{color:var(--signal-muted)!important;background:transparent!important}
+html:root[data-phase] body.cielo-design.segnale-design :is(#lente-dialog,.lente-page) .lente-signin button{background:var(--signal-ink)!important;color:var(--signal-surface)!important}
+@media(max-width:600px){html:root body.cielo-design.segnale-design .lente-signin{display:block}html:root body.cielo-design.segnale-design .lente-signin button{margin-top:10px;width:100%}}

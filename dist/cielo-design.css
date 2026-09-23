@@ -98,9 +98,9 @@ html:root body.cielo-design #main .community-hub .text-moment{background:#173642
 html:root body.cielo-design #main .community-hub .text-moment :is(p,span){background:transparent!important;color:#f4f8fa!important}
 html:root body.cielo-design #main .community-hub .network-actions button{background:transparent!important}
 html:root body.cielo-design #main .community-hub :is(.network-actions,.network-reactions) button[aria-pressed=true]{background:#2e4225!important;color:#e5ffb8!important}
-html:root body.cielo-design #dialog,html:root body.cielo-design #dialog :is(h2,h3,p,small,label,fieldset,legend,span){background:#10242f!important;color:#f4f8fa!important}
-html:root body.cielo-design #dialog :is(input,textarea,select){background:#091c27!important;color:#f4f8fa!important;border-color:#708996!important}
-html:root body.cielo-design #dialog a{color:#a9dfef!important}
+html:root body.cielo-design #dialog,html:root body.cielo-design #dialog :is(h2,h3,p,small,label,fieldset,legend,span){background:var(--signal-surface)!important;color:var(--signal-ink)!important}
+html:root body.cielo-design #dialog :is(input,textarea,select){background:var(--signal-paper)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important}
+html:root body.cielo-design #dialog a{color:var(--signal-accent)!important}
 /* Forecast as the lead story: a quiet data layer over one original artwork. */
 html:root body.cielo-design #main .atmo-heading{margin:10px 0 24px;align-items:end}
 html:root body.cielo-design #main :is(.atmo-heading,.atlas-title) h1{font-size:clamp(32px,4vw,50px);line-height:1.05;font-weight:500;letter-spacing:-1.8px;color:#f4f8fa!important;max-width:760px}
@@ -344,9 +344,6 @@ html:root body.cielo-design.segnale-design #main .atmo-following button{border-r
 html:root body.cielo-design.segnale-design .brand>span:first-child{box-shadow:none!important}
 html:root body.cielo-design.segnale-design .brand>span:first-child::after{display:none!important}
 html:root body.cielo-design.segnale-design .shell>nav.signal-nav>a{font-size:14px!important}
-html:root:has(body.segnale-design #main:not([data-page="home"]):not([data-page="tendenze"]):not([data-page="community"]):not([data-page="assistente"])),
-html:root:has(body.segnale-design #main:not([data-page="home"]):not([data-page="tendenze"]):not([data-page="community"]):not([data-page="assistente"])) body.cielo-design.segnale-design{background:#07141c!important;color:#f4f8fa!important}
-html:root:has(body.segnale-design #main:not([data-page="home"]):not([data-page="tendenze"]):not([data-page="community"]):not([data-page="assistente"])) body.cielo-design.segnale-design #main{color:#f4f8fa!important}
 html:root:has(body.segnale-design) body.cielo-design.segnale-design>header{background:var(--signal-paper)!important}
 @media(max-width:760px){html.large-text body.cielo-design.segnale-design .shell>nav.signal-nav{grid-template-columns:repeat(5,minmax(76px,1fr))!important;overflow-x:auto;padding-top:8px!important}html.large-text body.cielo-design.segnale-design .shell>nav.signal-nav>a{font-size:1rem!important}html.large-text body.cielo-design.segnale-design .shell>nav.signal-nav>a.signal-nav-map{margin-top:0!important}}
 
@@ -414,7 +411,6 @@ html:root body.cielo-design.segnale-design #main .community-live summary{color:v
 html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa .mappa-pillola[aria-pressed=true]{box-shadow:inset 0 -3px var(--signal-accent)!important}
 html:root body.cielo-design.segnale-design #main .mappa-cerca input{border:0!important;box-shadow:none!important}
 /* Secondary tools retain their dark cards until their own surface is migrated. */
-html:root body.cielo-design.segnale-design #main:not([data-page="home"]):not([data-page="tendenze"]):not([data-page="community"]):not([data-page="assistente"]):not([data-page="mappa-eventi"]){--signal-paper:#0d1821;--signal-ink:#f2eee5;--signal-muted:#becbd3;--signal-surface:#1d2c38;--signal-line:#536574;--signal-accent:#ffb28f}
 
 html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa-alto::before{background:linear-gradient(var(--signal-paper) 65%,transparent)}
 html:root[data-phase]:not([data-phase="notte"]) body.cielo-design.segnale-design #main .mappa :is(.mappa-cerca button,.mappa-strumenti button,.mappa-subtools button,.mappa-stato button){background:var(--signal-paper)!important;color:var(--signal-ink)!important}

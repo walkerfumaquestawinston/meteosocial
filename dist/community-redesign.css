@@ -89,3 +89,13 @@ html:root.community-view.atlas-light body.cielo-design.segnale-design #main .com
 
 html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub .network-actions button{color:var(--community-text)!important;background:transparent!important}
 html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub .community-same{background:var(--community-surface)!important;color:var(--community-text)!important}html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub .community-same :is(h2,p){color:var(--community-text)!important}
+
+@media(max-width:600px){
+ html:root body.cielo-design.segnale-design #main .community-heading{padding-top:0!important;margin-bottom:10px!important;padding-bottom:8px!important}
+ html:root body.cielo-design.segnale-design #main .community-tabs,html:root body.cielo-design.segnale-design #main .network-tabs{margin-block:8px!important}
+ html:root body.cielo-design.segnale-design #main .community-topic-strip{padding-block:4px!important;margin-block:4px!important}
+ html:root body.cielo-design.segnale-design #main .community-filter-row{margin-block:4px!important;padding-block:2px!important}
+ html:root body.cielo-design.segnale-design #main .network-status{padding-block:6px!important;margin-block:4px!important;font-size:12px}
+ html:root body.cielo-design.segnale-design #main .network-empty{padding:18px!important}
+ html:root body.cielo-design.segnale-design #main .network-empty h2{font-size:23px!important;margin:8px 0!important}
+}
