@@ -1,0 +1,31 @@
+/* Calendar decoration stays in its own banner; it never depicts live weather. */
+html:root[data-phase] body.cielo-design.segnale-design #main .calendar-scene{
+ --calendar-surface:#fff;--calendar-ink:#14253b;--calendar-muted:#485a70;--calendar-line:#bbc9d8;--calendar-accent:var(--season-light);
+ display:flex;align-items:center;justify-content:space-between;position:relative;isolation:isolate;overflow:hidden;
+ min-height:104px;gap:12px;padding:10px 22px;margin:0 0 20px;border:1px solid var(--calendar-line);border-radius:20px;
+ background:linear-gradient(110deg,var(--calendar-surface),color-mix(in srgb,var(--season-glow) 12%,var(--calendar-surface)));
+ color:var(--calendar-ink);
+ & .calendar-copy{min-width:0;position:relative;z-index:1}
+ & .calendar-meta{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+ & .calendar-badge{padding:0;border:0;background:none;font-size:18px!important;font-weight:750;color:var(--calendar-accent)!important}
+ & .calendar-badge::before{display:none}
+ & time{font-size:12px;color:var(--calendar-muted)!important}
+ & [data-calendar-caption]{font-size:14px!important;line-height:1.4;margin:7px 0 0;color:var(--calendar-muted)!important}
+ & .calendar-art{width:220px;height:110px;flex:none;margin:-10px -10px -10px 0;color:var(--calendar-accent);pointer-events:none}
+ & .calendar-art svg{display:block;width:100%;height:100%}
+}
+html:root[data-holiday]:not([data-holiday=""]) body.cielo-design.segnale-design #main .calendar-scene{border-left:4px solid var(--calendar-accent)}
+@media(max-width:640px){
+ html:root[data-phase] body.cielo-design.segnale-design #main .calendar-scene{
+  min-height:96px;padding:12px 14px;gap:0;border-radius:16px;
+  & .calendar-copy{flex:1}
+  & .calendar-meta{display:block}
+  & .calendar-badge{display:block;font-size:17px!important}
+  & time{display:block;margin-top:3px;font-size:11px}
+  & [data-calendar-caption]{font-size:12px!important;max-width:26ch}
+  & .calendar-art{width:104px;height:88px;margin:0 -8px 0 0}
+  & .calendar-art svg{width:176px;height:88px;max-width:none;margin-left:-45px}
+ }
+}
+
+html:root[data-phase=notte] body.cielo-design.segnale-design #main .calendar-scene{--calendar-surface:#142238;--calendar-ink:#f4f7fc;--calendar-muted:#b9c9dd;--calendar-line:#425671;--calendar-accent:var(--season-dark)}

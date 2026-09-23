@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Decorazioni automatiche pronte
+
+Pagina Oggi con illustrazioni stagionali e festive collegate al calendario esistente, cambio automatico e ritorno alla stagione a fine ricorrenza. Build e 72 suite superate, test calendario ampliati e anteprima desktop/390 px verificata. Nessun costo o nuova API. Dettagli docs/CALENDARIO-DECORAZIONI.md. Ultima pubblicata v105; nuovo rilascio in preparazione.
+
 ## 23 settembre 2026 — v105 pubblicata: mappa con dettagli progressivi
 
 Verifica conclusiva 11:07 CEST: anche il catalogo Rainbow è tornato disponibile nel browser dopo la ricarica; Nowcast visibile con 233 minuti residui, timeline Rainbow analisi e previsione +240 minuti selezionabile. Questo recupero non esclude ulteriori ritardi del servizio.

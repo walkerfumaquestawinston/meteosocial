@@ -1,6 +1,7 @@
 {
   "inputs": [
     "dist/weather-tools.js",
+    "dist/calendar-art.js",
     "dist/season-dates.js",
     "dist/calendar-theme.js",
     "dist/community-context.js",
@@ -76,7 +77,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 514862,
+    "dist/app/main.js": 519327,
     "dist/app/sky-postcard-YT7MLGUJ.js": 5122,
     "dist/app/chunk-FBI4HGUQ.js": 14011,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,

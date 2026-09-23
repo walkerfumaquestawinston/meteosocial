@@ -1,3 +1,4 @@
+import {calendarDecoration} from './calendar-art.js';
 import {SEASON_DATES} from './season-dates.js';
 
 const names=['Primavera','Estate','Autunno','Inverno'];
@@ -43,5 +44,8 @@ export function applyCalendarTheme(weather,place={},at=Date.now()){
  const label=state.holiday?.label||state.seasonName;
  for(const el of document.querySelectorAll('[data-calendar-label]'))el.textContent=label;
  for(const el of document.querySelectorAll('[data-calendar-date]'))el.textContent=state.dateLabel;
+ const decoration=calendarDecoration(state);
+ for(const el of document.querySelectorAll('[data-calendar-caption]'))el.textContent=decoration.caption;
+ for(const el of document.querySelectorAll('[data-calendar-art]')){if(el.getAttribute?.('data-calendar-key')!==decoration.key){el.innerHTML=decoration.art;el.setAttribute?.('data-calendar-key',decoration.key);}}
  return state;
 }
