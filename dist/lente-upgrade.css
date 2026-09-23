@@ -11,3 +11,55 @@ html[data-phase=notte] .lente-taskbar button[aria-pressed=true]{background:#d7ee
 
 .lente-composer-foot{background:#eef5f6;color:#173342}
 html[data-phase=notte] .lente-composer-foot{background:#173342;color:#f4f9fa}
+
+/* Contextual help is part of the heading, leaving the first screen to the data. */
+html:root[data-phase] body.cielo-design.segnale-design #main .lente-context-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:none;width:auto;min-height:44px;padding:8px 12px!important;font-size:13px!important;border:1px solid var(--signal-line)!important;border-radius:12px;background:var(--signal-surface)!important;color:var(--signal-ink)!important;white-space:nowrap}
+.lente-context-button svg{width:23px;height:23px;flex:none}
+html:root[data-phase] body.cielo-design.segnale-design #main .lente-page{
+ color:var(--signal-ink)!important;--lente-bg:var(--signal-paper);--lente-ink:var(--signal-ink);
+ & .lente-intro h1{font-size:clamp(26px,3vw,36px)!important;line-height:1.15;margin:6px 0;color:var(--signal-ink)!important}
+ & .lente-intro p{font-size:14px;margin:6px 0 16px;color:var(--signal-muted)!important}
+ & .lente-page-top{margin-bottom:10px}
+ & .lente-wordmark{color:var(--signal-ink)!important}
+ & .lente-reset{background:var(--signal-surface)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important;padding:8px 12px}
+ & .lente-hero{min-height:0!important;padding:20px!important;display:grid;grid-template-columns:1fr 220px;gap:16px;margin:0 0 16px!important;background:var(--signal-surface)!important;color:var(--signal-ink)!important;border:1px solid var(--signal-line)!important;border-radius:16px}
+ & .lente-hero h1{font-size:32px!important;line-height:1.15;letter-spacing:-1px;margin:8px 0!important;color:var(--signal-ink)!important}
+ & .lente-hero p{font-size:14px;margin:8px 0;color:var(--signal-muted)!important}
+ & .lente-hero-art{position:relative!important;inset:auto!important;min-height:0!important;height:138px!important;width:100%!important;overflow:hidden;border-radius:12px}
+ & .lente-hero-art img{height:100%;object-fit:cover}
+ & .lente-art-caption{display:none}
+ & .lente-page-workspace{grid-template-columns:minmax(0,1fr) 250px;gap:24px;margin-top:16px}
+ & .lente-session{background:var(--signal-surface);color:var(--signal-ink);border:1px solid var(--signal-line);border-radius:16px;padding:20px}
+ & .lente-session :is(p,label,.lente-personas-label){color:var(--signal-muted)!important}
+ & .lente-composer{margin:12px 0 0;background:var(--signal-surface)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important}
+ & .lente-composer label{font-size:21px!important;color:var(--signal-ink)!important;margin-bottom:12px}
+ & .lente-input-row{background:var(--signal-paper)!important;border:1px solid var(--signal-line)!important}
+ & textarea{background:transparent!important;color:var(--signal-ink)!important}
+ & textarea::placeholder{color:var(--signal-muted)!important;opacity:1}
+ & .lente-wordmark b{background:var(--signal-ink)!important;color:var(--signal-surface)!important}
+ & .lente-hero-art .lente-temperature{color:#fff!important;background:#102333db;padding:6px;border-radius:8px;left:8px;right:8px;bottom:8px}
+ & .lente-hero-art .lente-temperature small{color:#eaf5fc!important;font-size:11px!important}
+ & .lente-composer-foot{background:var(--signal-paper)!important;color:var(--signal-muted)!important;padding:8px;font-size:12px}
+ & .lente-modebar{background:var(--signal-surface)!important;border:1px solid var(--signal-line);padding:4px;margin-top:12px}
+ & .lente-modebar button{min-height:44px!important}
+ & :is(.lente-data-note,.lente-disclosure,.lente-disclosure summary,.lente-context-details summary,.lente-voice summary,.lente-prompt-number){color:var(--signal-muted)!important}
+ & .lente-context-chip{color:var(--signal-ink)!important;background:var(--signal-paper)!important;border-color:var(--signal-line)!important}
+ & .lente-message.answer{background:var(--signal-paper)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important}
+ & :is(.lente-modebar,.lente-taskbar,.lente-prompts,.lente-personas) button{background:var(--signal-paper)!important;color:var(--signal-ink)!important;border-color:var(--signal-line)!important}
+ & :is(.lente-modebar,.lente-taskbar,.lente-personas) button[aria-pressed=true]{background:var(--signal-ink)!important;color:var(--signal-surface)!important}
+ & .lente-eyebrow,& .lente-side-note :is(h2,p,span){color:var(--signal-muted)!important}
+ & .lente-side-note{border-color:var(--signal-line);padding:16px}
+}
+.lente-context-details,.lente-voice{border-bottom:1px solid var(--signal-line);padding:0 0 6px;margin:0 0 8px}
+.lente-context-details>summary,.lente-voice>summary{cursor:pointer;min-height:44px;padding:10px 0;font-size:13px;color:var(--signal-muted)}
+.lente-context-details .lente-context-brief{margin:8px 0}
+@media(max-width:760px){
+ html:root[data-phase] body.cielo-design.segnale-design #main .lente-page{
+  & .lente-hero{grid-template-columns:1fr;padding:16px!important}
+  & .lente-hero h1{font-size:28px!important}
+  & .lente-hero-art{display:none}
+  & .lente-page-workspace{grid-template-columns:1fr}
+  & .lente-session{padding:16px}
+  & .lente-side-note{display:none}
+ }
+}

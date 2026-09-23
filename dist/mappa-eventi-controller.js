@@ -37,7 +37,7 @@ export function createMappaEventi(ctx) {
   let L,map,markers,selectionMarker,timer,refreshTimer,clockTimer,alive=false,revision=0,panelRevision=0,searchRevision=0;
   let mode='temperature',showEvents=false,selected=null,world=[],towns=[],readings=new Map(),events=[],hail=[];
   let weatherState='loading',townState='loading',hailState='loading',eventState='idle',updated=null,selectedAt=0,townRequest=0;
-  let paletteChanged,loadTask=null,checkedAt=0,sourcesOpen=false;
+  let mapResize=null,resizeFrame=0,paletteChanged,loadTask=null,checkedAt=0,sourcesOpen=false;
   let cityLabels,labelsFrame=0,showCityNames=true,overviewOpen=false,townWeatherRequest=0;
   const cache=createFreshCache(); let focusedBeforePanel=null,radar=null,radarState={enabled:false,frames:[],status:'idle'},aiHistory=[],aiPlaceKey='';
   try {const saved=localStorage.getItem('meteosocial:weather-map:mode');if(MODES.some(x=>x.id===saved))mode=saved;} catch {}
@@ -412,6 +412,8 @@ export function createMappaEventi(ctx) {
     if(!alive||life!==revision||!host.isConnected)return;
     const {atlasLand,atlasBorders,atlasRegions}=geographicData;
     map=L.map(host,{preferCanvas:true,zoomControl:false,attributionControl:false,worldCopyJump:true,minZoom:2,maxZoom:16}).setView([43,13],5);
+    // CSS panels and route transitions can resize the map without a window resize.
+    mapResize=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{if(alive&&life===revision&&host.isConnected)map?.invalidateSize({pan:false,debounceMoveend:true});});});mapResize.observe(host);
     map.createPane('atlas-geography').style.zIndex=220;
     const regionPane=map.createPane('atlas-region-labels');regionPane.style.cssText='z-index:240;pointer-events:none';regionPane.setAttribute('aria-hidden','true');
     const streets=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true});
@@ -473,6 +475,6 @@ export function createMappaEventi(ctx) {
     refreshTimer=setInterval(()=>{if(!document.hidden){load();fieldDesk?.sync(selected,mode);if(radarState.enabled)activeRadar()?.refresh(true);}},MAP_REFRESH_MS);draw();if(mode==='grandine')chooseRadar('hail');else if(mode==='pioggia')chooseRadar('rain');void load();
 
   }
-  function dispose(){hailRadar?.dispose();hailRadar=null;radarKind='rain';basemap?.dispose();basemap=null;basemapActive=false;if(paletteChanged)document.removeEventListener('meteosocial:phase',paletteChanged);paletteChanged=null;alive=false;loadTask=null;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);clearInterval(clockTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);fieldDesk?.dispose();fieldDesk=null;radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
+  function dispose(){mapResize?.disconnect();mapResize=null;cancelAnimationFrame(resizeFrame);hailRadar?.dispose();hailRadar=null;radarKind='rain';basemap?.dispose();basemap=null;basemapActive=false;if(paletteChanged)document.removeEventListener('meteosocial:phase',paletteChanged);paletteChanged=null;alive=false;loadTask=null;revision++;panelRevision++;searchRevision++;selectedAt++;clearTimeout(timer);clearInterval(refreshTimer);clearInterval(clockTimer);cancelAnimationFrame(labelsFrame);document.removeEventListener('keydown',keydown);document.removeEventListener('visibilitychange',visibility);fieldDesk?.dispose();fieldDesk=null;radar?.dispose();radar=null;if(map)map.remove();map=null;markers=null;selectionMarker=null;}
   return {page,bind,dispose,preload,active:()=>ctx.get().route==='mappa-eventi'};
 }
