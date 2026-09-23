@@ -32,17 +32,20 @@ export async function fetchRainbowWeather({key,latitude,longitude,beforeRequest,
  // Caller must reserve quota before a billable request; no unbounded default.
  if(typeof beforeRequest!=='function')throw Error('Protezione consumi Rainbow non configurata');
  await beforeRequest();
- let response,raw;
+ let response,raw,providerDetail=null;
  try{
   response=await fetcher(`${ORIGIN}/weather/v1/forecast/${longitude}/${latitude}?forecast_hours=168`,{headers:{'Ocp-Apim-Subscription-Key':key.trim()},signal:AbortSignal.timeout(12000),redirect:'manual'});
-  if(!response.ok)throw Error('Provider unavailable');
+  if(!response.ok){
+   if([400,422].includes(response.status))providerDetail=(await response.text()).replaceAll(key.trim(),'[segreto omesso]').replace(/[A-Za-z0-9_+-]{24,}/g,'[identificativo omesso]').slice(0,400);
+   throw Error('Provider unavailable');
+  }
   const body=await response.text();
   if(body.length>1500000)throw Error('Response too large');
   raw=JSON.parse(body);
  }catch{
   // Never expose upstream bodies, URLs with credentials, or request headers.
   const error=Error('Rainbow Weather temporaneamente non disponibile');
-  error.providerStatus=response?.status||null;throw error;
+  error.providerStatus=response?.status||null;error.providerDetail=providerDetail;throw error;
  }
  const data=normalizeRainbowWeather(raw,now);
  if(Math.abs(data.latitude-latitude)>.1||Math.abs(data.longitude-longitude)>.1)throw Error('Località Rainbow non corrispondente');

@@ -27,6 +27,7 @@ await assert.rejects(fetchRainbowWeather({...options,beforeRequest:undefined}),/
 await assert.rejects(fetchRainbowWeather({...options,beforeRequest:async()=>{throw Error('Quota raggiunta')}}),/Quota/);
 assert.equal(calls,1);
 await assert.rejects(fetchRainbowWeather({...options,fetcher:async()=>new Response('private upstream text',{status:401})}),/^Error: Rainbow Weather temporaneamente non disponibile$/);
+await assert.rejects(fetchRainbowWeather({...options,fetcher:async()=>new Response('Invalid forecast_hours; fixture-not-a-real-key',{status:400})}),e=>e.providerStatus===400&&e.providerDetail.includes('forecast_hours')&&!e.providerDetail.includes(options.key));
 await assert.rejects(fetchRainbowWeather({...options,fetcher:async()=>new Response(JSON.stringify({...raw,location:{lat:35,lon:139}}))}),/Località/);
 await assert.rejects(fetchRainbowWeather({...options,latitude:NaN}),/Coordinate/);
 console.log('Rainbow client: unit conversion, UTC validity, source, quota guard and sanitized failures passed.');
