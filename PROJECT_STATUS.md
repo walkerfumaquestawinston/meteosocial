@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v109 pubblicata: design coerente e cartografia più robusta
+
+Pubblicazione riuscita 2026-09-23T10:32:01.825104+00:00, ambiente 12 e pubblico preservati. Sites runtime 2968ec314d65356c329bee049d3803eed6e8c7c6; GitHub e1ee15b67aebe969bafa8477355ab4501f3616e6; tree identico 327bfbce15feeadaa085d849fa48bc4ed48cdff7. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_878bfbd544e88191a64a88d9c51faeca; deployment appgdep_6ab3aa44193c8191a4cba4416f732558. CI 35849142648 riuscita: 73 suite attive superate e 5 ritirate; controlli mirati ripetuti dopo rifiniture. Build remota per confezionamento locale Windows non disponibile. Anteprima 4597 aggiornata, ramo codex/weather-scenery-20260922 e PR draft #21 salvati.
+
+Oggi mette il meteo prima del calendario, Community e Lente sono più compatti, tema IA allineato al giorno/notte. Mappa: completamento del lotto prima del passaggio a MapTiler, fallback in caso di caricamento parziale e ridimensionamento del contenitore osservato. Verifica locale desktop/390 px, mappa e pannello visibili insieme, tema scuro e ritorno Automatico; nessun overflow rilevato. Nessuna nuova spesa o chiave, nessun nuovo post o invio IA reale. Il difetto intermittente bianco non è stato riprodotto nella scheda pubblica riaperta prima della modifica: non dichiarare accertata la causa o eliminati tutti i casi. Dettagli in docs/DESIGN-COERENTE.md. Successivi commit solo note, nessun ulteriore deploy.
+
 ## 23 settembre 2026 — Revisione design pronta
 
 Oggi con meteo prima del calendario, Community compatta e filtri raccolti, Lente con domanda prima delle opzioni e tema giorno/notte coerente. Mappa con gestione dei tasselli parziali, ridimensionamento osservato e comandi più leggibili. Nessuna nuova API o spesa. Dettagli e limiti in docs/DESIGN-COERENTE.md.
