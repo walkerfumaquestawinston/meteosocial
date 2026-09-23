@@ -1,0 +1,67 @@
+/* Community surfaces share paired colors across the automatic solar phases. */
+.community-hub,.composer-route,.community-publication-preview{--community-surface:#fff;--community-soft:#edf5f6;--community-line:#c5d8df;--community-text:#162e3c;--community-secondary:#465e6b;--community-accent:#146580}
+html[data-phase=notte] :is(.community-hub,.composer-route,.community-publication-preview){--community-surface:#142b3b;--community-soft:#1b394a;--community-line:#587686;--community-text:#f1f7fa;--community-secondary:#c0d2db;--community-accent:#9ae5ed}
+html body .community-hub{--community-ink:var(--community-text);--community-muted:var(--community-secondary)}
+html body .community-hub .community-heading{border-bottom:1px solid var(--community-line);padding:12px 0 22px;margin-bottom:22px}
+html body .community-hub .community-heading h1{font-size:clamp(1.9rem,3.6vw,3rem);max-width:760px}
+html body .community-hub .community-compose{display:block;background:var(--community-soft);border-color:var(--community-line);padding:22px}
+.community-compose>span{display:block;margin-bottom:16px}.community-compose small{display:block;font-size:.88rem;font-weight:400;line-height:1.5;margin-top:6px}
+html body .community-hub .network-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:20px}
+.community-topic-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;scrollbar-width:thin}
+html body .community-hub .community-topic-strip button{flex:none;font-size:.85rem;padding:8px 12px;white-space:nowrap}
+html body .community-hub :is(.community-topic-strip button,.network-filter-drawer button)[aria-pressed=true]{background:#163b4e!important;color:#fff!important;border-color:#163b4e!important}
+html body .community-hub :is(.network-post,.network-empty,.community-rail>section,.community-live,.community-same){background:var(--community-surface);border-color:var(--community-line);color:var(--community-text)}
+html body .community-hub :is(button,input,select){background:var(--community-surface);color:var(--community-text);border-color:var(--community-line)}
+html body .community-hub :is(.person-link,.network-caption p,.network-caption b,.text-moment p){color:var(--community-text)!important}
+html body .community-hub :is(.community-note,.network-status,.person-link small,.network-context>span,.community-post-time,.network-more summary){color:var(--community-secondary)!important}
+html body .community-hub :is(a,.community-kicker){color:var(--community-accent)}
+.community-post-facts{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:0 18px;font-size:.78rem;color:var(--community-secondary)}
+.community-kind{display:inline-block;padding:5px 10px;border:1px solid var(--community-line);border-radius:8px;font-weight:700;color:var(--community-text);background:var(--community-soft)}
+.community-post-time{padding:0 18px;margin:8px 0 16px;font-size:.78rem!important;line-height:1.5}
+html body .community-hub .text-moment{background:var(--community-soft);min-height:0;padding:24px}
+html body .community-hub .text-moment p{font-size:1.2rem!important;line-height:1.55;overflow-wrap:anywhere}
+html body .community-hub .text-moment>.eyebrow,html body .community-hub .text-moment>span:last-child{display:none}
+html body .community-hub .network-actions{display:flex;justify-content:space-between;gap:4px;padding:12px 16px}
+html body .community-hub .network-caption{padding:0 20px 20px;overflow-wrap:anywhere}
+.community-hub .network-context{gap:10px;align-items:start}.community-hub .network-context>span{font-size:.78rem;line-height:1.5}
+.community-hub .network-more .network-reactions{padding:10px 0}
+.community-compose-step{display:flex;gap:12px;align-items:start;margin:24px 0 12px}.community-compose-step>span{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:50%;background:#173b4d;color:#fff;font-weight:700}.community-compose-step h2{font-size:1.15rem;margin:0 0 5px}.community-compose-step p{font-size:.9rem;margin:0;line-height:1.5}
+.community-publication-preview{padding:20px;border:1px solid var(--community-line);border-radius:16px;background:var(--community-surface);color:var(--community-text)}
+.community-publication-preview h2{color:var(--community-text);margin:10px 0}.community-publication-preview img{display:block;max-width:100%;max-height:320px;object-fit:contain;margin:16px auto}.community-preview-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;color:var(--community-text)!important}.community-preview-note{font-size:.9rem;line-height:1.5}
+@media(max-width:600px){html body .community-hub .community-heading{align-items:start;gap:12px;flex-direction:column}html body .community-hub .community-compose{padding:16px}.community-hub .community-compose>div{display:grid;grid-template-columns:1fr 1fr;width:100%}.community-hub .network-tabs button{padding:10px 4px;font-size:.84rem}.community-hub .community-filter-row{flex-wrap:wrap}.community-hub .community-filter-row details{max-width:none;flex-basis:100%}.community-hub .community-filter-row summary{text-align:left}.community-hub .network-status{align-items:start;gap:10px}html body .community-hub .network-actions button{font-size:.8rem;padding:8px;min-width:44px}html body .community-hub .text-moment{padding:20px}}
+
+html:root body.cielo-design #dialog .community-publication-preview :is(h2,p,span){background:transparent!important;color:var(--community-text)!important}
+html:root body.cielo-design #dialog .community-publication-preview .community-kind{background:var(--community-soft)!important}
+
+html:root.community-view.atlas-light body.cielo-design .community-hub .text-moment{background:var(--community-soft)!important}
+html:root.community-view.atlas-light body.cielo-design .community-hub .text-moment :is(p,span){background:transparent!important;color:var(--community-text)!important}
+
+/* Final component boundary supersedes historical page-wide styles. */
+html:root.community-view body.cielo-design.segnale-design #main .community-hub{
+ & .community-compose{display:block!important;background:var(--community-soft)!important;border:1px solid var(--community-line)!important;padding:20px!important}
+ & .community-compose>div{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin-top:12px}
+ & .community-compose :is(button,a){background:var(--community-surface)!important;color:var(--community-text)!important;border-color:var(--community-line)!important;white-space:normal!important;padding:10px!important;min-width:0}
+ & .community-compose>span{color:var(--community-text)!important;margin:0;font-size:16px!important}
+ & .community-map-link{color:var(--community-accent)!important}
+ & .network-tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px;gap:8px!important}
+ & .network-tabs button[aria-pressed=true]{background:#163b4e!important;color:#fff!important;border-radius:12px!important}
+ & .community-filter-row{flex-wrap:wrap!important}
+ & .community-filter-row details{flex-basis:100%;max-width:none}
+ & .community-filter-row summary{text-align:left}
+ & .network-post{background:var(--community-surface)!important;color:var(--community-text)!important;border:1px solid var(--community-line)!important}
+ & .network-caption :is(p,b){color:var(--community-text)!important}
+}
+@media(max-width:600px){html:root.community-view body.cielo-design.segnale-design #main .community-hub .community-compose>div{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub{
+ & .text-moment{background:var(--community-soft)!important;padding:22px!important;min-height:0!important}
+ & .text-moment :is(p,span){background:transparent!important;color:var(--community-text)!important}
+ & .text-moment p{font-size:18px!important;line-height:1.55!important;margin:0!important}
+ & .person-link,& .person-link b{color:var(--community-text)!important}
+ & .person-link small{color:var(--community-secondary)!important}
+ & .network-status button{flex-shrink:0;min-width:74px;padding:8px!important}
+ & .network-status>span{min-width:0;overflow-wrap:anywhere}
+}
+
+html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub .network-actions button{color:var(--community-text)!important;background:transparent!important}
+html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub .community-same{background:var(--community-surface)!important;color:var(--community-text)!important}html:root.community-view.atlas-light body.cielo-design.segnale-design #main .community-hub .community-same :is(h2,p){color:var(--community-text)!important}
