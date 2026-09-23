@@ -41,7 +41,8 @@ export async function fetchRainbowWeather({key,latitude,longitude,beforeRequest,
   raw=JSON.parse(body);
  }catch{
   // Never expose upstream bodies, URLs with credentials, or request headers.
-  throw Error('Rainbow Weather temporaneamente non disponibile');
+  const error=Error('Rainbow Weather temporaneamente non disponibile');
+  error.providerStatus=response?.status||null;throw error;
  }
  const data=normalizeRainbowWeather(raw,now);
  if(Math.abs(data.latitude-latitude)>.1||Math.abs(data.longitude-longitude)>.1)throw Error('Località Rainbow non corrispondente');
