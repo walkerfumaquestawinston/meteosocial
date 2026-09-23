@@ -1,3 +1,9 @@
+## 23 settembre 2026 — Potenziamento Lente pronto
+
+Lente contestuale nelle pagine del sito con modalità Capire i dati, Organizzare la giornata, Capire i racconti e Scrivere un contenuto. Bozze e conversazioni separate per attività, città, livello e post; invio manuale. La mappa conserva la propria interfaccia IA e riceve le istruzioni server migliorate. Corretto il percorso Rainbow senza dipendenza da WEATHERAPI_KEY e rimossa attribuzione Open-Meteo fissa nelle istruzioni. Nessuna nuova chiave, abbonamento o quota: riuso autorizzato il 23 settembre. Dettagli docs/LENTE-CONTESTUALE.md.
+
+Build riuscita; 72 suite attive passate, 5 ritirate (71 nella corsa completa e Rainbow ripetuta dopo correzione del contatore della fixture). Test nuovi: fonte Rainbow senza WeatherAPI, isolamento attività, scopo del post e istruzioni per bozze. Browser locale desktop/390 px: ingresso e modalità Community, domanda preparata senza invio. IA reale non chiamata nell’anteprima senza segreti. Pubblicazione in preparazione, ultima confermata v106.
+
 ## 23 settembre 2026 — v106 pubblicata: stagioni e festività illustrate
 
 Fascia illustrata automatica in Oggi: fiori, sole, foglie e cristalli per le stagioni; albero, stelle, cuori, uova, zucca, rami e scintille per le ricorrenze italiane già configurate. Segue il calendario astronomico e il fuso locale, senza selettori manuali. A fine festa torna la stagione. Controllo ogni 30 secondi a pagina visibile e al ritorno; nessuna modifica a radar o dati meteo. Dettagli docs/CALENDARIO-DECORAZIONI.md.

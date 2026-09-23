@@ -1,0 +1,13 @@
+/* Contextual entry lives in page flow; no floating overlay over map controls. */
+.lente-page-entry{max-width:1200px;margin:0 auto 12px;padding:0 4px}
+.lente-page-entry button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:10px 14px;border:1px solid #b5c9d1;border-radius:14px;background:#eef5f6;color:#173342;text-align:left;font-size:14px}
+.lente-page-entry button>span:last-child{margin-left:auto}
+.lente-taskbar{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 8px}
+.lente-taskbar button{min-height:44px;padding:8px 12px;border:1px solid #b5c9d1;border-radius:12px;background:#eef5f6;color:#173342;font-size:13px}
+.lente-taskbar button[aria-pressed=true]{background:#173342;color:#f4f9fa;border-color:#173342}
+.lente-taskbar button:focus-visible,.lente-page-entry button:focus-visible{outline:3px solid #2786ad;outline-offset:3px}
+html[data-phase=notte] .lente-page-entry button,html[data-phase=notte] .lente-taskbar button{background:#173342;color:#f4f9fa;border-color:#668898}
+html[data-phase=notte] .lente-taskbar button[aria-pressed=true]{background:#d7eef4;color:#173342}
+
+.lente-composer-foot{background:#eef5f6;color:#173342}
+html[data-phase=notte] .lente-composer-foot{background:#173342;color:#f4f9fa}

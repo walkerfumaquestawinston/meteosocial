@@ -32,13 +32,19 @@ const {default:worker}=await import('./dist/server/index.js');
 const {default:os}=await import('node:os');const {default:path}=await import('node:path');
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'rainbow-test-')),local=createLocalEnvironment(process.cwd(),dir),env={...local.env,RAINBOW_API_KEY:'fixture-not-secret',WEATHERAPI_KEY:'unused-fixture'},original=globalThis.fetch;
 let calls=0;const epoch=Math.floor(Date.now()/3600000)*3600;
-globalThis.fetch=async(url,init)=>{calls++;assert.equal(new URL(url).hostname,'api.rainbow.ai');assert.equal(init.headers['Ocp-Apim-Subscription-Key'],'fixture-not-secret');return new Response(JSON.stringify({generatedAtTimestamp:epoch,location:{lat:41.9,lon:12.5},units:{temperature:'celsius',windSpeed:'meter_per_second'},timelines:{hourly:Array.from({length:168},(_,i)=>({startTimestamp:epoch+i*3600,temperature:20,windSpeed:2,condition:'Clear'}))}}));};
+globalThis.fetch=async(url,init)=>{assert.equal(new URL(url).hostname,'api.rainbow.ai');calls++;assert.equal(init.headers['Ocp-Apim-Subscription-Key'],'fixture-not-secret');return new Response(JSON.stringify({generatedAtTimestamp:epoch,location:{lat:41.9,lon:12.5},units:{temperature:'celsius',windSpeed:'meter_per_second'},timelines:{hourly:Array.from({length:168},(_,i)=>({startTimestamp:epoch+i*3600,temperature:20,windSpeed:2,condition:'Clear'}))}}));};
 const call=async suffix=>{const r=await worker.fetch(new Request('https://test.invalid/api/forecast'+suffix),env);return {status:r.status,data:await r.json()}};
 try{
  assert.equal((await call('/provider')).data.source,'Rainbow Weather');
  const f=await call('?lat=41.9&lon=12.5');assert.equal(f.status,200);assert.equal(f.data.source,'Rainbow Weather');assert.equal(f.data.timezone,'Europe/Rome');
  const c=await call('/current?lat=41.9&lon=12.5');assert.equal(c.data.status,'available');assert.equal(c.data.kind,'forecast');assert.equal(c.data.observedAt,null);assert.equal(calls,1,'forecast and map share persistent cache');
  assert.equal(JSON.stringify(c).includes('fixture-not-secret'),false);
+ const rainbowFetch=globalThis.fetch;let aiInput;
+ globalThis.fetch=async(url,init)=>{if(String(url)==='https://api.openai.com/v1/responses'){const body=JSON.parse(init.body);aiInput=JSON.parse(body.input);return Response.json({output:[{content:[{type:'output_text',text:'Previsione Rainbow Weather.'}]}]})}return rainbowFetch(url,init)};
+ const ai=await worker.fetch(new Request('https://test.invalid/api/ai',{method:'POST',headers:{origin:'https://test.invalid','content-type':'application/json','oai-authenticated-user-id':'rainbow-test','oai-authenticated-user-email':'test@example.invalid'},body:JSON.stringify({question:'Spiega il dato',city:'Roma',latitude:41.9,longitude:12.5,section:'weather',task:'explain'})}),{...env,WEATHERAPI_KEY:'',OPENAI_API_KEY:'test-only'});
+ assert.equal(ai.status,200);assert.equal(aiInput.forecast.source,'Rainbow Weather','Lente uses Rainbow even without WeatherAPI key');assert.equal(aiInput.forecast.kind,'forecast');assert.equal(calls,1,'AI reuses forecast cache');
+ globalThis.fetch=rainbowFetch;
+
  await env.DB.prepare('UPDATE limits SET count=5000 WHERE key=?').bind('rainbow-weather-month:'+new Date().toISOString().slice(0,7)).run();
  assert.equal((await call('/current?lat=42&lon=13')).data.status,'unavailable');assert.equal(calls,1,'monthly quota blocks upstream request');
 }finally{globalThis.fetch=original;local.close();fs.rmSync(dir,{recursive:true,force:true});}

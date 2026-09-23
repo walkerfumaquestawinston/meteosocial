@@ -36,6 +36,7 @@
     "dist/atmosphere-core.js",
     "dist/places.js",
     "dist/atmosphere.js",
+    "dist/lente-context.js",
     "dist/weather-labels.js",
     "dist/lente.js",
     "dist/assets/leaflet.js",
@@ -77,7 +78,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 519327,
+    "dist/app/main.js": 523149,
     "dist/app/sky-postcard-YT7MLGUJ.js": 5122,
     "dist/app/chunk-FBI4HGUQ.js": 14011,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,

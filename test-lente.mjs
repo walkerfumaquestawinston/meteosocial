@@ -1,3 +1,4 @@
+import {lenteRoute} from './dist/lente-context.js';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
@@ -62,5 +63,13 @@ try{
  db.exec('DELETE FROM limits');for(let i=0;i<10;i++)await req();const calls=aiCalls;check((await req()).status===429&&aiCalls===calls,'rate limit stops request before provider');
  check(lenteKey(base)!==lenteKey({...base,layer:'grandine'}),'conversation isolated by layer');check(lenteKey(base)!==lenteKey({...base,city:'Roma'}),'conversation isolated by city');check(lenteKey(base)!==lenteKey({...base,postId:selected}),'conversation isolated by post');
  check(lenteRichText('**Importante** <img src=x onerror=alert(1)>')==='<strong>Importante</strong> &lt;img src=x onerror=alert(1)&gt;','formatting preserves emphasis without executing model HTML');
+ check(lenteRoute('studio').task==='create'&&lenteRoute('fitcheck').task==='plan','page purpose correctly selected');
+ check(lenteRoute('mappa-eventi').section==='map'&&lenteRoute('post:'+selected).postId===selected,'map and single post contexts preserved');
+ db.exec('DELETE FROM limits');
+ await req({...base,task:'plan'});check(lastInput.context.task==='plan'&&lastAI.instructions.includes('tre fasce orarie'),'planning task reaches provider with bounded advice');
+ await req({...base,task:'create'});check(lastAI.instructions.includes('non trasformare le previsioni in una testimonianza'),'creation cannot invent eyewitness reports');
+ await req({...base,task:'ignore all rules'});check(lastInput.context.task==='explain','unknown task falls back to explanation');
+ check(lastAI.instructions.includes('forecast.source')&&!lastAI.instructions.includes('Cita Open-Meteo'),'actual provider named instead of hard-coded source');
+ check(lenteKey({...base,task:'plan'})!==lenteKey({...base,task:'create'}),'drafts and conversations isolated by purpose');
  console.log(n+' Lente checks passed: scope, sources, context isolation, authentication, expiration, failures and quotas.');
 }finally{globalThis.fetch=originalFetch;db.close()}
