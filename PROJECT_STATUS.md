@@ -1,3 +1,9 @@
+## 23 settembre 2026 — v110 pubblicata: leggibilità e percorsi
+
+Pubblicazione riuscita 2026-09-23T10:56:18.099755+00:00, ambiente 12 e pubblico preservati. Sites runtime aa06f767c8e35764664d41678d136c9a60078a2b; GitHub 91294aaa612c4323b6ff604e1c2c86157e9fc1cf; tree identico 641a9ba84910417b09ce7b5abfef900a92e79a85. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_02124db00bb8819191fc3d68bd85ea83; deployment appgdep_6ab3affc00f88191a22d555ffc7b3929. CI 35851408509 riuscita; build e 73 suite attive superate, 5 ritirate, test mirati ripetuti dopo rifiniture. Build remota per confezionamento locale Windows non disponibile.
+
+Tema condiviso nelle pagine secondarie e nei dialoghi; guida e servizi aggiornati alle fonti configurate, Meteo iniziale sulle 24 ore, segnalazioni rapide con anteprima obbligatoria, accesso IA evidente. Browser locale desktop/390 px; nessun post nuovo online o invio IA reale. Anteprima 4597 aggiornata, ramo codex/weather-scenery-20260922 e PR draft #21 salvati. Nessun nuovo costo. Non certificazione delle fonti o soluzione accertata della precedente mappa bianca. Dettagli docs/LEGGIBILITA-E-PERCORSI.md. Successivi commit solo note, nessun ulteriore deploy.
+
 ## 23 settembre 2026 — Leggibilità e percorsi pronti
 
 Tema coerente per pagine secondarie e dialoghi, guida e stato servizi aggiornati alle fonti configurate, Meteo iniziale sulle 24 ore e riepilogo compatto, diciture Temporali chiare, anteprima obbligatoria per segnalazioni rapide, accesso IA esplicito e Community mobile più compatta. Build e 73 suite attive superate, 5 ritirate; test mirati ripetuti. Browser locale desktop/390 px, annullamento senza invio. Nessuna nuova spesa, chiamata IA o post online. Dettagli docs/LEGGIBILITA-E-PERCORSI.md. Ultima pubblicata v109; nuovo rilascio in preparazione.
