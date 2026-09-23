@@ -1,3 +1,13 @@
+## 23 settembre 2026 — v105 pubblicata: mappa con dettagli progressivi
+
+Restyling completato: pannello Adesso/Pioggia/Segnalazioni; Strumenti Vista/Dati/Aiuto; comandi e timeline compatti, legenda apribile; Meteo e Community più compatti. Corretto contrasto dei comandi notte, verificato dopo la transizione: testo #f4f9fa su #173342. Tema Automatico ripristinato. Messaggi di timeout Nowcast comprensibili in italiano. Dettagli docs/MAPPA-LEGGIBILE.md.
+
+Build, 72 suite attive superate (5 ritirate), test mirati field/lifecycle/refinement e Rainbow ripetuti; CI 35840669711 riuscita. Browser locale desktop/390 px e schede online verificati. Nessuna prova su telefoni fisici, certificazione meteo o audit completo di accessibilità. Anteprima locale 4597 aggiornata senza segreti.
+
+Limite rilevato online: Rainbow Nowcast inizialmente in timeout, successivo controllo HTTP 200 con 235 intervalli residui per San Benedetto (42.95, 13.88); catalogo /api/rainbow/snapshot oltre 30 secondi nella prova. Radar alternativo RainViewer visibile con fonte esplicita. Meteo orario Rainbow presente (19,7 °C alle 11:00 locali nella verifica, non valore fissato). Non dichiarare risolta la disponibilità intermittente Tiles/Nowcast; analizzare latenza/catalogo in un intervento dedicato. Legenda Rainbow deriva dalle immagini della documentazione ufficiale, non conversione in millimetri.
+
+Pubblicazione v105 riuscita 2026-09-23T09:05:23.481690+00:00, ambiente 12 e pubblico preservati. Sites runtime f34f800d2a9588466a4073693692d591e3245726; GitHub fb8732ce40120c1109d24a5a57b9395d5ef114e6; tree ad835b99be311e7f8486a35f352b8b4af4ba1d9f. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_58aa1d2b9a1c81918df46089f9bdb1e1; deployment appgdep_6ab3960972f48191acf26d8ff7a8bac4. v104 introduce il layout, v105 rifinisce contrasto ed errori. Build remota per packaging locale non disponibile. PR draft #21 e ramo codex/weather-scenery-20260922. Successivi commit solo documentazione, senza ulteriore deploy. Le sezioni sotto sono cronologia.
+
 ## 23 settembre 2026 — Restyling mappa pronto per pubblicazione
 
 Pannello con Adesso/Pioggia/Segnalazioni, Strumenti Vista/Dati/Aiuto, timeline compatta e legenda apribile, spazi desktop/mobile corretti. Meteo e Community più compatti. Fonti e servizi invariati; nessun nuovo costo. Build e 72 suite superate, controlli browser desktop/390 px; anteprima 4597 aggiornata. Dettagli docs/MAPPA-LEGGIBILE.md. Pubblicazione da verificare; ultima confermata v103.
