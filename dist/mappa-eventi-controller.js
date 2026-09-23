@@ -106,7 +106,8 @@ export function createMappaEventi(ctx) {
     if(mode==='grandine')chooseRadar('hail');else if(mode==='pioggia')chooseRadar('rain');else if(radarKind==='hail')chooseRadar('rain',false);
   }
   const cached=(key,load,ttl=MAP_REFRESH_MS)=>cache.read(key,load,ttl);
-  const mapSource=()=>paidSource?'WeatherAPI':'Open-Meteo';
+  let providerName='Fonte meteo';
+  const mapSource=()=>providerName;
   let paidSource=false,sourceReady=null,visibleRequest=0;
   let preparation;
   const preload=()=>preparation||(preparation=Promise.all([import('./assets/leaflet.js'),import('./map-land.js')]).catch(error=>{preparation=null;throw error}));
@@ -177,11 +178,12 @@ export function createMappaEventi(ctx) {
     const status=checkStatus({checkedAt,checking:!!loadTask,failed,outdated:!!selected?.current&&sourceStatus({current:selected.current}).stale,offline:navigator.onLine===false});
     slot.textContent=status.label;slot.dataset.tone=status.tone;
     const now=new Date(),at=modelTime(selected?.current);
+    const futureRain=radarState.enabled&&radarState.source==='Rainbow Weather'&&radarState.time>radarState.issuedAt;
     const radarAt=radarState.enabled&&Number.isFinite(radarState.time)?radarState.time*1000:null;
-    $('#mappa-now').textContent=radarState.enabled?(radarKind==='hail'?'RADAR GRANDINE':'RADAR PIOGGIA'):(paidSource?'PREVISIONE '+(selected?.current?.source||'METEO').toUpperCase():'MODELLO OPEN-METEO');
+    $('#mappa-now').textContent=radarState.enabled?(radarKind==='hail'?'RADAR GRANDINE':radarState.source==='Rainbow Weather'?(futureRain?'PIOGGIA PREVISTA':'ANALISI PIOGGIA'):'RADAR PIOGGIA'):(paidSource?'PREVISIONE '+(selected?.current?.source||'METEO').toUpperCase():'MODELLO OPEN-METEO');
     $('#mappa-now').title='Fonte del livello sulla mappa; il meteo locale ha il proprio orario nel pannello';
     const shownAt=radarState.enabled?radarAt:at;
-    $('#mappa-data-time').textContent=shownAt===null?'Dato del livello non disponibile':clock(shownAt)+' · '+elapsedLabel(shownAt);
+    $('#mappa-data-time').textContent=shownAt===null?'Dato del livello non disponibile':clock(shownAt)+' · '+(futureRain?'previsione +'+Math.round((radarState.time-radarState.issuedAt)/60)+' min':elapsedLabel(shownAt));
     $('#mappa-data-time').dataset.old=String(shownAt===null||Date.now()-shownAt>30*60000);
     if(sourcesOpen){
       const info=sourceStatus({checkedAt,current:selected?.current,radar:radarState});if(paidSource)info.model=info.model.replace('Modello:',(selected?.current?.source||'Meteo')+':');
@@ -200,7 +202,7 @@ export function createMappaEventi(ctx) {
     document.querySelectorAll('[data-map-action]').forEach(button=>button.onclick=()=>{const target=document.getElementById(button.dataset.mapAction);closePanel();if(button.dataset.mapAction==='local-details'&&selected)locationPanel(selected);else target?.click();});
   }
   function sourcePanel(){
-    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · ${paidSource?'WeatherAPI':'Open-Meteo'}</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · ${radarKind==='hail'?'Radar-DPC POH':'RainViewer'}</dt><dd id="mappa-source-radar"></dd></dl><p>L’età del dato cambia ogni secondo; non è una nuova misura. Il pannello Adesso mostra WeatherAPI, quando disponibile, con il suo orario. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Le condizioni WeatherAPI hanno aggiornamenti della fonte ogni 10–15 minuti; le stime Open-Meteo hanno passi di 15 minuti. Le previsioni orarie hanno una cache fino a 15 minuti. RainViewer espone quadri ogni 10 minuti; Radar-DPC POH ha un passo di 5 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
+    panel('Fonti e orari',`<p>Località: <strong>${esc(selected?.name||'nessuna selezionata')}</strong></p><dl class="mappa-source-list"><dt>Ultimo controllo delle fonti</dt><dd id="mappa-source-check"></dd><dt>Meteo della località · ${esc(mapSource())}</dt><dd id="mappa-source-model"></dd><dt>Quadro radar · ${radarKind==='hail'?'Radar-DPC POH':esc(radarState.source||'Fonte in caricamento')}</dt><dd id="mappa-source-radar"></dd></dl><p>L’età del dato cambia ogni secondo; non è una nuova misura. Il pannello locale indica la fonte effettiva e distingue previsioni da osservazioni. Cerchiamo nuovi dati ogni minuto mentre la mappa è aperta e al ritorno alla pagina.</p><p>Rainbow Weather fornisce previsioni orarie, conservate in cache fino a 15 minuti. Nowcast ha passi di un minuto; le mappe precipitazioni hanno passi di 10 minuti. La fonte Nowcast/Tiles aggiorna circa ogni 10 minuti, con possibili ritardi; i dati ricevuti restano in cache fino a 5 minuti. RainViewer espone quadri ogni 10 minuti; Radar-DPC POH ha un passo di 5 minuti: ciascun quadro può combinare misure di orari diversi.</p><p>I controlli non creano nuove misure. Se una fonte non risponde, mostriamo il problema e conserviamo l’orario del dato precedente. Gli orari qui sono nel fuso del dispositivo; le previsioni orarie usano quello della località.</p><p>Grandine e altre osservazioni provengono dalla community, non sono verificate e riportano l’orario dichiarato. Nessuna segnalazione non significa assenza di fenomeni.</p><button id="mappa-source-refresh" class="mappa-primary">Controlla adesso</button>`);
     sourcesOpen=true;$('#mappa-fonti')?.setAttribute('aria-expanded','true');renderFreshness();
     $('#mappa-source-refresh').onclick=()=>$('#mappa-aggiorna')?.click();
   }
@@ -397,10 +399,10 @@ export function createMappaEventi(ctx) {
   function visibility(){renderFreshness();if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)activeRadar()?.refresh();}}
   async function bind(){
     const host=$('#mappa-tela');if(!host||map)return;alive=true;const life=++revision;
-    sourceReady=ctx.api('forecast/provider').then(d=>{paidSource=['WeatherAPI','Rainbow Weather'].includes(d.source);}).catch(()=>{paidSource=true;});
+    sourceReady=ctx.api('forecast/provider').then(d=>{paidSource=['WeatherAPI','Rainbow Weather'].includes(d.source);providerName=d.source;}).catch(()=>{paidSource=true;});
     await sourceReady;
     if(!alive||life!==revision||!host.isConnected)return;
-    const sourceLink=document.querySelector('.mappa-attribuzioni a[href="https://open-meteo.com/"]');if(sourceLink&&paidSource){sourceLink.href='https://www.weatherapi.com/';sourceLink.textContent='WeatherAPI';}
+    const sourceLink=document.querySelector('.mappa-attribuzioni a[href="https://open-meteo.com/"]');if(sourceLink&&paidSource){sourceLink.href=providerName==='Rainbow Weather'?'https://developer.rainbow.ai/':'https://www.weatherapi.com/';sourceLink.textContent=providerName;}
     let geographicData;try{[L,geographicData]=await preload();}catch{notify('Mappa non disponibile. Ricarica la pagina.');return;}
     if(!alive||life!==revision||!host.isConnected)return;
     const {atlasLand,atlasBorders,atlasRegions}=geographicData;
