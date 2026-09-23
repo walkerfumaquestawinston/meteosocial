@@ -1,3 +1,13 @@
+## 23 settembre 2026 — Riferimento visivo prioritario: Argos Atlas
+
+L’utente chiede di ricordare https://argosatlas.com/map/#country=AQ come riferimento per la prossima evoluzione della mappa MeteoSocial: stesso genere di esperienza cartografica, adattata a meteo, eventi, radar e funzioni comprensibili a tutti. Riferimento effettivamente aperto e osservato: grande cartografia scura mondiale, accenti luminosi ciano, pannello laterale del luogo, barra verticale di strumenti, ricerca e filtri in alto. L’URL Antarctica è un riferimento grafico, non una richiesta di impostare l’Antartide come località iniziale.
+
+Direzione da applicare ai prossimi interventi: cartografia protagonista, estetica tecnica curata con identità MeteoSocial, comandi raccolti e pannello del luogo affiancato. Conservare giorno/notte automatico già richiesto, quindi anche una variante chiara coerente. Testi leggibili in italiano e icone accompagnate da etichette; dettagli progressivi e raggruppamento dei punti allo zoom, senza riprodurre il sovraccarico di simboli del riferimento.
+
+Organizzare i livelli meteo (temperatura, pioggia, neve, vento, temporali e grandine), radar con cronologia, eventi e segnalazioni. Un livello meteo principale alla volta, sovrapposizioni pertinenti selezionabili, fonte/orario/copertura visibili, legenda accanto al dato. Distinguere sempre analisi e previsione, eventi ufficiali e racconti non verificati; rispettare disponibilità reali delle fonti. Conservare le funzioni attuali raggiungibili senza affollare la vista iniziale. Il riferimento non autorizza nuovi abbonamenti, copie di marchi/asset, né aggiunte di voli, navi o altre categorie estranee al meteo.
+
+Questo aggiornamento registra una preferenza persistente, non un restyling già implementato. Pubblicazione invariata v106. La nuova richiesta supera eventuali indicazioni estetiche precedenti incompatibili, senza annullare leggibilità, fonti trasparenti o giorno/notte automatico.
+
 ## 22 settembre 2026 — Versioni 94–96 pubblicate: Community e Lente
 
 Community: filtro Ultime 2 ore e confronto guidato previsioni/racconti. Lente: fonte e orario nel contesto iniziale, domande di seguito In tre punti e Cosa va verificato?, sempre invio manuale. Corrette etichette WeatherAPI, uso UTC in Stesso cielo, focus del pannello, contrasto dialogo e filtri mobile. Dettagli: docs/COMMUNITY-LENTE-V94.md.
