@@ -55,6 +55,7 @@ export function createMappaEventi(ctx) {
     <div class="mappa-pulse is-compact" id="mappa-pulse" aria-label="Confronto nella zona visibile"></div>
     <aside class="mappa-pannello" id="mappa-pannello" hidden aria-labelledby="mappa-pannello-titolo"><div class="mappa-pannello-testa"><h2 id="mappa-pannello-titolo" tabindex="-1"></h2><button id="mappa-pannello-chiudi" aria-label="Chiudi dettagli">×</button></div><div id="mappa-pannello-corpo"></div></aside>
     <div class="mappa-strumenti" role="group" aria-label="Strumenti mappa">
+      <button id="mappa-centra" title="Centra la località selezionata" aria-label="Centra la località selezionata">${mapIcon("locate")}<span>Centra</span></button>
       <button id="mappa-posizione" title="La mia posizione" aria-label="La mia posizione">${mapIcon("locate")}</button>
       <button id="mappa-mondo" title="Vedi il mondo" aria-label="Vedi il mondo">${mapIcon("world")}</button>
       <button id="mappa-elenco" title="Elenco luoghi" aria-label="Elenco luoghi">${mapIcon("list")}</button>
@@ -404,11 +405,11 @@ export function createMappaEventi(ctx) {
   function visibility(){renderFreshness();if(!document.hidden){load();fieldDesk?.refresh();if(radarState.enabled)activeRadar()?.refresh();}}
   async function bind(){
     const host=$('#mappa-tela');if(!host||map)return;alive=true;const life=++revision;
-    sourceReady=ctx.api('forecast/provider').then(d=>{paidSource=['WeatherAPI','Rainbow Weather'].includes(d.source);providerName=d.source;}).catch(()=>{paidSource=true;});
-    await sourceReady;
+    sourceReady=ctx.api('forecast/provider').then(d=>{if(!alive||life!==revision)return;paidSource=['WeatherAPI','Rainbow Weather'].includes(d.source);providerName=d.source;}).catch(()=>{if(alive&&life===revision)paidSource=true;});
+    let startup;try{startup=await Promise.all([sourceReady,preload()]);}catch{if(alive&&life===revision)notify('Mappa non disponibile. Ricarica la pagina.');return;}
     if(!alive||life!==revision||!host.isConnected)return;
     const sourceLink=document.querySelector('.mappa-attribuzioni a[href="https://open-meteo.com/"]');if(sourceLink&&paidSource){sourceLink.href=providerName==='Rainbow Weather'?'https://developer.rainbow.ai/':'https://www.weatherapi.com/';sourceLink.textContent=providerName;}
-    let geographicData;try{[L,geographicData]=await preload();}catch{notify('Mappa non disponibile. Ricarica la pagina.');return;}
+    const geographicData=startup[1][1];L=startup[1][0];
     if(!alive||life!==revision||!host.isConnected)return;
     const {atlasLand,atlasBorders,atlasRegions}=geographicData;
     map=L.map(host,{preferCanvas:true,zoomControl:false,attributionControl:false,worldCopyJump:true,minZoom:2,maxZoom:16}).setView([43,13],5);
@@ -453,6 +454,7 @@ export function createMappaEventi(ctx) {
     radar=createAtlasRadar({L,map,rainbow:true,onChange:s=>{if(radarKind==='rain')renderRadar(s)}});
     hailRadar=createHailRadar({L,map,onChange:s=>{if(radarKind==='hail')renderRadar(s)}});
     const place=ctx.get().place;if(validPlace(place)){selected={...place,current:null};map.setView([place.latitude,place.longitude],5,{animate:false});$('#mappa-ia-testo').placeholder=`Chiedi a Lente di ${place.name}…`;}
+    $('#mappa-centra').onclick=()=>{const p=selected||ctx.get().place;if(validPlace(p)){closePanel();map.setView([p.latitude,p.longitude],Math.max(7,map.getZoom()),{animate:false});}else $('#mappa-cerca-testo').focus();};
     $('#mappa-zona').onclick=()=>{const p=ctx.get().place;if(validPlace(p))selectPlace(p);else $('#mappa-cerca-testo').focus();};
     $('#mappa-layer-select').onchange=e=>selectMode(e.target.value);
     $('#mappa-tools-open').onclick=toolsPanel;

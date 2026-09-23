@@ -34,6 +34,7 @@
     "dist/hail-tools.js",
     "dist/next-change.js",
     "dist/weather-scene.js",
+    "dist/weather-sculpture.js",
     "dist/atmosphere-core.js",
     "dist/places.js",
     "dist/atmosphere.js",
@@ -79,7 +80,7 @@
     "dist/main.js"
   ],
   "outputs": {
-    "dist/app/main.js": 528148,
+    "dist/app/main.js": 529022,
     "dist/app/sky-postcard-YT7MLGUJ.js": 5122,
     "dist/app/chunk-FBI4HGUQ.js": 14011,
     "dist/app/local-map-weather-Q3HDO4XR.js": 12069,

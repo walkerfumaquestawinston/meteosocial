@@ -1,3 +1,7 @@
+## 23 settembre 2026 — Home e illustrazioni con resa 3D pronte
+
+Nuova Home con immagini originali ottimizzate (59.172 byte totali), fonti e orari conservati; selezione illustrazioni coerente con giorno/notte e fenomeni locali. Mappa: Centra e avvio parallelo delle letture iniziali. Build e 74 suite attive superate, 5 ritirate; browser locale desktop/390 px. Nessun nuovo costo. Dettagli docs/HOME-SCULTURE.md. Pubblicazione in preparazione; ultima confermata v110.
+
 ## 23 settembre 2026 — v110 pubblicata: leggibilità e percorsi
 
 Pubblicazione riuscita 2026-09-23T10:56:18.099755+00:00, ambiente 12 e pubblico preservati. Sites runtime aa06f767c8e35764664d41678d136c9a60078a2b; GitHub 91294aaa612c4323b6ff604e1c2c86157e9fc1cf; tree identico 641a9ba84910417b09ce7b5abfef900a92e79a85. Versione appgprj_6aa1e8ab06f88191ab364344053e48d9~appgver_02124db00bb8819191fc3d68bd85ea83; deployment appgdep_6ab3affc00f88191a22d555ffc7b3929. CI 35851408509 riuscita; build e 73 suite attive superate, 5 ritirate, test mirati ripetuti dopo rifiniture. Build remota per confezionamento locale Windows non disponibile.
