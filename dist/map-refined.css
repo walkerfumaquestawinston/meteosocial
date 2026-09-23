@@ -1,6 +1,7 @@
 /* A quiet map canvas, a compact local desk, and progressive detail. */
 html:root[data-phase].mappa-eventi-view body.cielo-design.segnale-design #main .mappa.map-cockpit{
  --atlas-side:344px;
+ &[data-map-theme=notte]{--panel-raised:#173342}
  & .mappa-alto{inset:12px calc(var(--atlas-side) + 12px) auto 12px;grid-template-rows:44px 42px auto;gap:6px}
  & .mappa-cerca,& .mappa-subtools button,& .mappa-contatori,& .mappa-live-bar{box-shadow:0 3px 12px #071c2914;border-radius:12px}
  & .mappa-cerca{min-height:44px}
